@@ -20,7 +20,7 @@ const menus = [
         { label: 'Linhas', href: route('Manager.Linhas.index') },
         { label: 'Produtos', href: route('Manager.Produtos.index') },
     ]},
-    { id: 4, label: 'Enoturismo', icon: faWineGlass, href: route('Manager.Enoturismo.index'), controllers: ['Enoturismo', 'Experiencias']},
+    // { id: 4, label: 'Enoturismo', icon: faWineGlass, href: route('Manager.Enoturismo.index'), controllers: ['Enoturismo', 'Experiencias']},
     { id: 5, label: 'Contato', icon: faEnvelope, href: route('Manager.Contato.index'), controllers: ['Contato', 'Newsletter'] },
     { id: 6, label: 'Política de Privacidade', icon: faFileText, href: route('Manager.Politicas.privacidade'), controllers: ['Politicas'] }
 ];
