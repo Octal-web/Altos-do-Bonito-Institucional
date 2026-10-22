@@ -4,6 +4,7 @@ import { usePage, Link, Head } from '@inertiajs/react';
 import Lenis from '@studio-freight/lenis';
 
 import { CookieModal } from '../Components/CookieModal';
+import { Footer } from '../Components/Footer';
 import { LanguageSwitcher } from '../Components/LanguageSwitcher';
 
 import { useLang } from "@/hooks/useLang";
@@ -88,38 +89,38 @@ const DefaultLayout = ({ children }) => {
     }, [notifyCookie, trackingEnabled]);
 
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-    const canonicalUrl = `${dadosGerais?.siteUrl ?? ''}${currentPath}`;
+    // const canonicalUrl = `${dadosGerais?.siteUrl ?? ''}${currentPath}`;
 
-    const organizationSchema = dadosGerais?.organization ? {
-        "@context": "https://schema.org",
-        "@type": "Winery",
-        "name": dadosGerais.name,
-        "url": dadosGerais.siteUrl,
-        "telephone": dadosGerais.organization.telefone,
-        "image": pagina?.imagem?.endereco,
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": dadosGerais.endereco,
-            "addressLocality": dadosGerais.cidade,
-            "addressRegion": dadosGerais.estado,
-            "postalCode": dadosGerais.cep,
-            "addressCountry": "Brazil",
-        },
-        ...(dadosGerais.geo ? {
-            "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": dadosGerais.lat,
-                "longitude": dadosGerais.lng,
-            }
-        } : {}),
-        "sameAs": [
-            dadosGerais.instagram,
-            dadosGerais.facebook,
-            dadosGerais.youtube,
-            dadosGerais.linkedin,
-            dadosGerais.tiktok,
-        ].filter(Boolean),
-    } : null;
+    // const organizationSchema = dadosGerais?.organization ? {
+    //     "@context": "https://schema.org",
+    //     "@type": "Winery",
+    //     "name": dadosGerais.name,
+    //     "url": dadosGerais.siteUrl,
+    //     "telephone": dadosGerais.organization.telefone,
+    //     "image": pagina?.imagem?.endereco,
+    //     "address": {
+    //         "@type": "PostalAddress",
+    //         "streetAddress": dadosGerais.endereco,
+    //         "addressLocality": dadosGerais.cidade,
+    //         "addressRegion": dadosGerais.estado,
+    //         "postalCode": dadosGerais.cep,
+    //         "addressCountry": "Brazil",
+    //     },
+    //     ...(dadosGerais.geo ? {
+    //         "geo": {
+    //             "@type": "GeoCoordinates",
+    //             "latitude": dadosGerais.lat,
+    //             "longitude": dadosGerais.lng,
+    //         }
+    //     } : {}),
+    //     "sameAs": [
+    //         dadosGerais.instagram,
+    //         dadosGerais.facebook,
+    //         dadosGerais.youtube,
+    //         dadosGerais.linkedin,
+    //         dadosGerais.tiktok,
+    //     ].filter(Boolean),
+    // } : null;
 
     const pageSchemas = pagina?.schemas ?? [];
 
@@ -129,9 +130,9 @@ const DefaultLayout = ({ children }) => {
                 <title>{pagina.titulo}</title>
                 <meta name="description" content={pagina.descricao} />
 
-                <link rel="canonical" href={canonicalUrl} />
+                {/* <link rel="canonical" href={canonicalUrl} /> */}
 
-                {idiomas?.map((locale) => (
+                {/* {idiomas?.map((locale) => (
                     <link
                         key={locale.codigo}
                         rel="alternate"
@@ -147,9 +148,9 @@ const DefaultLayout = ({ children }) => {
                     />
                 )}
 
-                <meta property="og:url" content={canonicalUrl} />
+                <meta property="og:url" content={canonicalUrl} /> */}
                 <meta property="og:type" content="website" />
-                <meta property="og:site_name" content={dadosGerais.name} />
+                {/* <meta property="og:site_name" content={dadosGerais.name} /> */}
                 <meta property="og:locale" content={idioma === 'pt' ? 'pt_BR' : idioma} />
                 <meta property="og:title" content={pagina.tituloCompartilhamento} />
                 <meta property="og:description" content={pagina.descricaoCompartilhamento} />
@@ -168,7 +169,7 @@ const DefaultLayout = ({ children }) => {
 
                 <link rel="icon" href={`/favicon.ico`} type="image/x-icon" />
 
-                {organizationSchema && (
+                {/* {organizationSchema && (
                     <script type="application/ld+json">
                         {JSON.stringify(organizationSchema)}
                     </script>
@@ -178,7 +179,7 @@ const DefaultLayout = ({ children }) => {
                     <script key={i} type="application/ld+json">
                         {JSON.stringify(schema)}
                     </script>
-                ))}
+                ))} */}
             </Head>
            
             <header className={`header absolute top-0 left-0 right-0 z-[99] text-white${['Cases', 'Politica', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' bg-white' : ''}`}>
@@ -221,9 +222,9 @@ const DefaultLayout = ({ children }) => {
                                                 <li className="relative mt-3 2xl:mt-5">
                                                     <Link href={route('Institucional.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('sobre')}</Link>
                                                 </li>
-                                                <li className="relative mt-3 2xl:mt-5">
+                                                {/* <li className="relative mt-3 2xl:mt-5">
                                                     <Link href={route('Enoturismo.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('enoturismo')}</Link>
-                                                </li>
+                                                </li> */}
                                                 <li className="relative mt-3 2xl:mt-5">
                                                     <Link href={route('Contato.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('contato')}</Link>
                                                 </li>
@@ -269,109 +270,11 @@ const DefaultLayout = ({ children }) => {
                 </div>
             </header>
 
-            <main className={`overflow-hidden${['Cases', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]' : ''}`}>
+            <main className={`overflow-x-clip overflow-y-visible${['Cases', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]' : ''}`}>
                 {children}
             </main>
 
-            <footer className="bg-black font-secondary pt-16 lg:pt-20">
-                <div className="container max-w-large">
-                    <div className="flex max-md:flex-col justify-between items-start gap-10">
-                        <img src={`/site/img/logo.png`} alt="Logo" className="max-md:mx-auto block w-44 2xl:w-auto" />
-
-                        <div className="w-full md:w-7/12">
-                            <nav className="relative w-full pb-3 mb-7 before:content-[''] before:absolute before:bottom-0 before:-left-2 before:-right-2 before:border-b before:opacity-50">
-                                <ul className="flex max-lg:flex-wrap justify-around md:justify-between gap-x-2 sm:gap-x-10 gap-y-3 md:gap-2 lg:gap-6 2xl:gap-10">
-                                    <li>
-                                        <Link href={route('Home.index')} className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70">{lang('home')}</Link>
-                                    </li>
-
-                                    <li>
-                                        <Link href={route('Institucional.index')} className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70">{lang('sobre')}</Link>
-                                    </li>
-
-                                    <li>
-                                        <Link href={route('Institucional.sustentabilidade')} className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70">{lang('sustentabilidade')}</Link>
-                                    </li>
-
-                                    <li>
-                                        <Link href={route('Produtos.index')} className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70">{lang('vinhos')}</Link>
-                                    </li>
-
-                                    <li>
-                                        <Link href={route('Enoturismo.index')} className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70">{lang('enoturismo')}</Link>
-                                    </li>
-
-                                    <li>
-                                        <Link href={route('Contato.index')} className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70">{lang('contato')}</Link>
-                                    </li>
-
-                                    <li>
-                                        <a href="https://loja.pizzato.net/" className="text-white text-sm font-medium uppercase transition-all opacity-100 hover:opacity-70" target="_blank">{lang('lojaVirtual')}</a>
-                                    </li>
-                                </ul>
-                            </nav>
-
-                            <div className="w-full md:w-auto text-white text-sm">
-                                <div className="flex max-md:flex-wrap mx-auto">
-                                    <div>
-                                       {lang('endereco1')} {lang('endereco2')}<br />{lang('endereco3')} | {lang('endereco4')}
-                                        <a href="https://maps.app.goo.gl/fsp71cErMbeyHMa86" className="block font-bold underline uppercase opacity-70 transition-all hover:opacity-50 mt-3" target="_blank">{lang('verMapa')}</a>
-                                    </div>
-
-                                    <ul className="md:mx-auto max-md:mt-6 space-y-2 max-md:w-1/2">
-                                        <li>
-                                            <a href="tel:+555430550440" className="text-white text-sm underline transition-all opacity-70 hover:opacity-100">(54) 3055-0440</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="tel:+5554981364858" className="text-white text-sm underline transition-all opacity-70 hover:opacity-100">(54) 98136-4858</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="tel:+5554996497010" className="text-white text-sm underline transition-all opacity-70 hover:opacity-100">(54) 99649-7010</a>
-                                        </li>
-                                    </ul>
-
-                                    <div className="block md:hidden max-md:w-1/2 max-md:mt-6">
-                                        <ul className="flex justify-end gap-4 ml-auto mt-2 mb-6">
-                                            <li><a href="https://www.instagram.com/pizzato/" target="_blank" rel="noopener noreferrer" className="transition-all opacity-70 hover:opacity-100"><img className="w-6" src={`/site/img/instagram.png`} alt="instagram" /></a></li>
-                                            <li><a href="https://www.facebook.com/PIZZATO.Vinicola" target="_blank" rel="noopener noreferrer" className="transition-all opacity-70 hover:opacity-100"><img className="w-6" src={`/site/img/facebook.png`} alt="facebook" /></a></li>
-                                        </ul>
-
-                                        <Link href={route('Politicas.privacidade')} className="block mb-5 text-white text-xs transition-all opacity-50 hover:opacity-100 max-md:text-right">{lang('politicaPrivacidade')}</Link>
-                                        
-                                        <a href="http://pedidos.pizzato.net/pedidos4/login.asp" target="_blank" rel="noopener noreferrer" className="block mb-5 text-white text-xs transition-all opacity-50 hover:opacity-100 max-md:text-right">{lang('areaRestrita')}</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="hidden md:block">
-                            <ul className="flex justify-end gap-4 ml-auto mt-2 mb-6">
-                                <li><a href="https://www.instagram.com/pizzato/" target="_blank" rel="noopener noreferrer" className="transition-all opacity-70 hover:opacity-100"><img className="w-6" src={`/site/img/instagram.png`} alt="instagram" /></a></li>
-                                <li><a href="https://www.facebook.com/PIZZATO.Vinicola" target="_blank" rel="noopener noreferrer" className="transition-all opacity-70 hover:opacity-100"><img className="w-6" src={`/site/img/facebook.png`} alt="facebook" /></a></li>
-                            </ul>
-
-                            <Link href={route('Politicas.privacidade')} className="block mb-2 text-white text-xs text-right transition-all opacity-50 hover:opacity-100">{lang('politicaPrivacidade')}</Link>
-                            
-                            <a href="http://pedidos.pizzato.net/pedidos4/login.asp" target="_blank" rel="noopener noreferrer" className="block mb-5 text-white text-xs text-right transition-all opacity-50 hover:opacity-100 max-md:text-right">{lang('areaRestrita')}</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-neutral-900 mt-6 md:mt-16">
-                    <div className="container max-w-large">
-                        <div className="flex flex-col md:flex-row justify-between items-center h-24 md:h-16 2xl:h-20 py-4 md:py-0">
-                            <span className="text-white text-xs sm:text-sm opacity-70 mb-5 md:mb-0">PIZZATO Vinhas e Vinhos - {lang('todosOsDireitosReservados')} © {new Date().getFullYear()}.</span>
-
-                            <div className="flex items-center gap-4">
-                                <span className="text-white text-xs sm:text-sm opacity-70">{lang('desenvolvidoPor')}: </span>
-                                <img src={`/site/img/8poroito-logo.png`} className="opacity-50" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
 
             {!notifyCookie || !rejectCookie ? (
                 <CookieModal acceptCookies={acceptCookies} visible={notifyCookie ? false : true} />
