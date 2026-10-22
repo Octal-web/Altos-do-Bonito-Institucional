@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\App;
 
 use Inertia\Inertia;
@@ -14,7 +15,8 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 abstract class Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         $routeArray = app('request')->route()->getAction();
         $controllerAction = class_basename($routeArray['controller']);
         list($controller, $action) = explode('Controller@', $controllerAction);
@@ -23,15 +25,15 @@ abstract class Controller
             $idioma = request('lang', -1);
 
             $idiomas = Idioma::all();
-    
+
             $idioma = Idioma::query()
                 ->where(function ($query) use ($idioma) {
                     $query->orWhere([
                         'padrao' => true
                     ])
-                    ->orWhere([
-                        'codigo' => $idioma
-                    ]);
+                        ->orWhere([
+                            'codigo' => $idioma
+                        ]);
                 })
                 ->orderBy('padrao', 'ASC')
                 ->orderBy('id', 'DESC')
@@ -43,35 +45,35 @@ abstract class Controller
                     'acao' => $action
                 ])
                 ->with([
-                    'paginasIdiomas' => function($q) use ($idioma) {
-                        $q->whereHas('idiomas', function($r) use ($idioma) {
+                    'paginasIdiomas' => function ($q) use ($idioma) {
+                        $q->whereHas('idiomas', function ($r) use ($idioma) {
                             $r->where([
                                 'id' => $idioma->id,
                             ]);
                         })
-                        ->with('idiomas');
+                            ->with('idiomas');
                     },
                 ])
                 ->first();
-            
+
             $conteudos = Conteudo::query()
                 ->where([
                     'controladora' => $controller,
                     'acao' => $action
                 ])
                 ->with([
-                    'conteudosIdiomas' => function($q) use ($idioma) {
-                        $q->whereHas('idiomas', function($r) use ($idioma) {
+                    'conteudosIdiomas' => function ($q) use ($idioma) {
+                        $q->whereHas('idiomas', function ($r) use ($idioma) {
                             $r->where([
                                 'id' => $idioma->id,
                             ]);
                         })
-                        ->with('idiomas');
+                            ->with('idiomas');
                     },
                     'parametro'
                 ])
                 ->get()
-                ->map(function($conteudo) {
+                ->map(function ($conteudo) {
                     return [
                         'id' => $conteudo->id,
                         'bloco' => $conteudo->parametro->descricao,
@@ -82,6 +84,7 @@ abstract class Controller
                         'texto' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->texto : null,
                         'habilitar_texto' => $conteudo->parametro->habilitar_texto ? true : false,
                         'texto_formatado' => $conteudo->parametro->texto_formatado ? true : false,
+                        'titulo_formatado' => $conteudo->parametro->titulo_formatado ? true : false,
                         'imagem' => rafator('content/display/' . $conteudo->imagem),
                         'habilitar_img' => $conteudo->parametro->habilitar_img ? true : false,
                         'largura_img' => $conteudo->parametro->largura_img,
@@ -101,7 +104,7 @@ abstract class Controller
                         'galeria' => $conteudo->parametro->galeria ? true : false,
                     ];
                 });
-            
+
             if ($pagina) {
                 $pagina = [
                     'id' => $pagina->id,
@@ -113,7 +116,7 @@ abstract class Controller
                 ];
             }
 
-            $idiomas = Idioma::all()->map(function($linguagem) {
+            $idiomas = Idioma::all()->map(function ($linguagem) {
                 return [
                     'nome' => $linguagem->nome,
                     'codigo' => $linguagem->codigo,
@@ -138,7 +141,7 @@ abstract class Controller
                     $idioma->url = LaravelLocalization::getLocalizedURL($idioma->codigo, null, [], true);
                     return $idioma;
                 });
-    
+
             $idioma = App::getLocale();
 
             $conteudos = Conteudo::query()
@@ -151,13 +154,13 @@ abstract class Controller
                     'conteudosIdiomas' => function ($q) use ($idioma) {
                         $q->whereHas('idiomas', function ($r) use ($idioma) {
                             $r->where('codigo', $idioma)
-                            ->orWhere('padrao', true);
+                                ->orWhere('padrao', true);
                         })
-                        ->orderBy('idioma_id', 'DESC');
+                            ->orderBy('idioma_id', 'DESC');
                     },
                 ])
                 ->get()
-                ->map(function($conteudo) {
+                ->map(function ($conteudo) {
                     return [
                         'id' => $conteudo->id,
                         'titulo' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->titulo : null,
@@ -180,9 +183,9 @@ abstract class Controller
                     'paginasIdiomas' => function ($q) use ($idioma) {
                         $q->whereHas('idiomas', function ($r) use ($idioma) {
                             $r->where('codigo', $idioma)
-                            ->orWhere('padrao', true);
+                                ->orWhere('padrao', true);
                         })
-                        ->orderBy('idioma_id', 'DESC');
+                            ->orderBy('idioma_id', 'DESC');
                     },
                 ])
                 ->first();
@@ -218,8 +221,9 @@ abstract class Controller
             ]);
         }
     }
-    
-    protected function getLanguages($record, $translationModel, $language) {
+
+    protected function getLanguages($record, $translationModel, $language)
+    {
         $idiomas = Idioma::query()
             ->orderByDesc('padrao')
             ->orderBy('codigo')
