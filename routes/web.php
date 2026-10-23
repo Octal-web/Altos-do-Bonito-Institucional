@@ -44,11 +44,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     Route::post('/newsletter/enviar', [NewsletterController::class, 'enviar'])->name('Newsletter.enviar');
 
-    Route::prefix('/sobre-nos')->group(function() {
-        Route::get('/', [InstitucionalController::class, 'index'])->name('Institucional.index');
-        Route::get('/sustentabilidade', [InstitucionalController::class, 'sustentabilidade'])->name('Institucional.sustentabilidade');
-        Route::get('/historia', [InstitucionalController::class, 'historia'])->name('Institucional.historia');
-    });
+    Route::get('/sobre', [InstitucionalController::class, 'index'])->name('Institucional.index');
 
     Route::get('/marca/{slug?}', [LinhasController::class, 'linha'])->name('Linhas.linha');
 
@@ -62,13 +58,13 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/politica-de-privacidade', [PoliticasController::class, 'privacidade'])->name('Politicas.privacidade');
 });
 
-Route::prefix('/manager')->group(function() {
+Route::prefix('/manager')->group(function () {
     Route::get('/', [UsuariosController::class, 'login'])->name('Manager.Usuarios.login');
     Route::post('/', ['as' => 'login', 'uses' => 'App\Http\Controllers\Manager\UsuariosController@authenticate']);
 
     Route::post('/usuarios/logout', [UsuariosController::class, 'logout'])->name('Manager.Usuarios.logout');
 
-    Route::group(['middleware' => ['auth']], function() {
+    Route::group(['middleware' => ['auth']], function () {
         Route::post('/paginas/editar/{id}', [ManagerPaginasController::class, 'editarAction'])->name('Manager.Paginas.editar');
 
         Route::post('/conteudos/editar/{id}', [ManagerConteudosController::class, 'editarAction'])->name('Manager.Conteudos.editar');
@@ -76,7 +72,7 @@ Route::prefix('/manager')->group(function() {
 
         Route::get('/imagens/{id}', [ManagerImagensController::class, 'conteudo'])->name('Manager.Imagens.conteudo');
         Route::post('/imagens/conteudo/adicionar/{id}', [ManagerImagensController::class, 'novo'])->name('Manager.Imagens.novo');
-        
+
         Route::post('/imagens/conteudo/ordenar/{id}', [ManagerImagensController::class, 'ordenar'])->name('Manager.Imagens.ordenar');
         Route::post('/imagens/conteudo/visibilidade/{id}', [ManagerImagensController::class, 'visibilidade'])->name('Manager.Imagens.visibilidade');
         Route::post('/imagens/conteudo/excluir/{id}', [ManagerImagensController::class, 'excluir'])->name('Manager.Imagens.excluir');
@@ -123,7 +119,7 @@ Route::prefix('/manager')->group(function() {
         Route::get('/produtos/baixar-arquivo/{produto}/{id}', [ManagerProdutosController::class, 'baixarArquivo'])->name('Manager.Produtos.baixarArquivo');
 
         Route::get('/produtos/detalhes/{id}', [ManagerDetalhesProdutosController::class, 'index'])->name('Manager.Produtos.Detalhes.index');
-        
+
         Route::post('/produtos/detalhes/ordenar', [ManagerDetalhesProdutosController::class, 'ordenar'])->name('Manager.Produtos.Detalhes.ordenar');
         Route::post('/produtos/detalhes/visibilidade/{id}', [ManagerDetalhesProdutosController::class, 'visibilidade'])->name('Manager.Produtos.Detalhes.visibilidade');
         Route::post('/produtos/detalhes/excluir/{id}', [ManagerDetalhesProdutosController::class, 'excluir'])->name('Manager.Produtos.Detalhes.excluir');
@@ -155,7 +151,7 @@ Route::prefix('/manager')->group(function() {
         Route::get('/categorias/editar/{id}', [ManagerCategoriasController::class, 'editar'])->name('Manager.Categorias.editar');
         Route::post('/categorias/editar/{id}', [ManagerCategoriasController::class, 'atualizar'])->name('Manager.Categorias.atualizar');
 
-        
+
         Route::post('/volumes/ordenar', [ManagerVolumesController::class, 'ordenar'])->name('Manager.Volumes.ordenar');
         Route::post('/volumes/visibilidade/{id}', [ManagerVolumesController::class, 'visibilidade'])->name('Manager.Volumes.visibilidade');
         Route::post('/volumes/excluir/{id}', [ManagerVolumesController::class, 'excluir'])->name('Manager.Volumes.excluir');
