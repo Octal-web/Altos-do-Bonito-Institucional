@@ -1,18 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { usePage, Link, Head } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from "react";
+import { usePage, Head } from "@inertiajs/react";
 
-import Lenis from '@studio-freight/lenis';
+import Lenis from "@studio-freight/lenis";
 
-import { CookieModal } from '../Components/CookieModal';
-import { Footer } from '../Components/Footer';
-import { LanguageSwitcher } from '../Components/LanguageSwitcher';
+import { CookieModal } from "../Components/CookieModal";
+import { Footer } from "../Components/Footer";
+import { Header } from "../Components/Header";
 
-import { useLang } from "@/hooks/useLang";
 
 const DefaultLayout = ({ children }) => {
-    const lang = useLang();
 
-    const { controller, action, pagina, notifyCookie, rejectCookie, idiomas, idioma, dadosGerais } = usePage().props;
+
+    const {
+        controller,
+        action,
+        pagina,
+        notifyCookie,
+        rejectCookie,
+        idiomas,
+        idioma,
+        dadosGerais,
+    } = usePage().props;
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [trackingEnabled, setTrackingEnabled] = useState(false);
@@ -22,7 +30,7 @@ const DefaultLayout = ({ children }) => {
         lenisRef.current = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
+            direction: "vertical",
             smooth: true,
             smoothTouch: false,
         });
@@ -39,8 +47,13 @@ const DefaultLayout = ({ children }) => {
         };
     }, []);
 
+    useEffect(() => {
+        if (isMenuOpen) lenisRef.current?.stop();
+        else lenisRef.current?.start();
+    }, [isMenuOpen]);
+
     const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
+        setIsMenuOpen((open) => !open);
     };
 
     const acceptCookies = () => {
@@ -56,13 +69,11 @@ const DefaultLayout = ({ children }) => {
         //                 'gtm.start': new Date().getTime(),
         //                 event: 'gtm.js'
         //             });
-
         //             const firstScript = document.getElementsByTagName('script')[0];
         //             const gtmScript = document.createElement('script');
         //             gtmScript.async = true;
         //             gtmScript.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-5P3H4J8';
         //             firstScript.parentNode.insertBefore(gtmScript, firstScript);
-
         //             if (!document.querySelector('iframe[src*="googletagmanager.com/ns.html"]')) {
         //                 const noscript = document.createElement('noscript');
         //                 const iframe = document.createElement('iframe');
@@ -75,7 +86,6 @@ const DefaultLayout = ({ children }) => {
         //                 document.body.insertBefore(noscript, document.body.firstChild);
         //             }
         //         }
-
         //         if (!document.querySelector('script[src*="86ee18b8-ca84-4bfe-b470-7a540f8a1d03-loader.js"]')) {
         //             const cloudScript = document.createElement('script');
         //             cloudScript.async = true;
@@ -84,11 +94,11 @@ const DefaultLayout = ({ children }) => {
         //         }
         //     }
         // }, 100);
-
         // return () => clearTimeout(timer);
     }, [notifyCookie, trackingEnabled]);
 
-    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const currentPath =
+        typeof window !== "undefined" ? window.location.pathname : "";
     // const canonicalUrl = `${dadosGerais?.siteUrl ?? ''}${currentPath}`;
 
     // const organizationSchema = dadosGerais?.organization ? {
@@ -124,6 +134,10 @@ const DefaultLayout = ({ children }) => {
 
     const pageSchemas = pagina?.schemas ?? [];
 
+    //dadosGerais.whatsapp ||
+    const whatsapp = "+55 53 0000-0000";
+    const whatsappNumber = String(whatsapp || "").replace(/\D/g, "");
+
     return (
         <>
             <Head>
@@ -151,17 +165,38 @@ const DefaultLayout = ({ children }) => {
                 <meta property="og:url" content={canonicalUrl} /> */}
                 <meta property="og:type" content="website" />
                 {/* <meta property="og:site_name" content={dadosGerais.name} /> */}
-                <meta property="og:locale" content={idioma === 'pt' ? 'pt_BR' : idioma} />
-                <meta property="og:title" content={pagina.tituloCompartilhamento} />
-                <meta property="og:description" content={pagina.descricaoCompartilhamento} />
+                <meta
+                    property="og:locale"
+                    content={idioma === "pt" ? "pt_BR" : idioma}
+                />
+                <meta
+                    property="og:title"
+                    content={pagina.tituloCompartilhamento}
+                />
+                <meta
+                    property="og:description"
+                    content={pagina.descricaoCompartilhamento}
+                />
                 <meta property="og:image" content={pagina.imagem.endereco} />
                 <meta property="og:image:type" content={pagina.imagem.tipo} />
-                <meta property="og:image:width" content={pagina.imagem.largura} />
-                <meta property="og:image:height" content={pagina.imagem.altura} />
+                <meta
+                    property="og:image:width"
+                    content={pagina.imagem.largura}
+                />
+                <meta
+                    property="og:image:height"
+                    content={pagina.imagem.altura}
+                />
 
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={pagina.tituloCompartilhamento} />
-                <meta name="twitter:description" content={pagina.descricaoCompartilhamento} />
+                <meta
+                    name="twitter:title"
+                    content={pagina.tituloCompartilhamento}
+                />
+                <meta
+                    name="twitter:description"
+                    content={pagina.descricaoCompartilhamento}
+                />
                 <meta name="twitter:image" content={pagina.imagem.endereco} />
 
                 <meta name="robots" content="index, follow" />
@@ -181,103 +216,27 @@ const DefaultLayout = ({ children }) => {
                     </script>
                 ))} */}
             </Head>
-           
-            <header className={`header absolute top-0 left-0 right-0 z-[99] text-white${['Cases', 'Politica', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' bg-white' : ''}`}>
-                <div className="container max-w-large">
-                    <div className="flex items-center justify-between">
-                        <div className="grid grid-cols-3 items-center w-full my-8 xl:my-10 2xl:my-16">
-                            <button className="menu-link" onClick={toggleMenu}>
-                                <div className="flex items-center">
-                                    <div className={`w-10 sm:w-12${['Cases', 'Politica', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' invert' : ''}`}>
-                                        <div className="menu-bar bg-white h-[3px] w-8 sm:w-9 transition-all ease-in-out duration-300"></div>
-                                        <div className="menu-bar bg-white h-[3px] w-8 sm:w-9 transition-all ease-in-out duration-300 mt-1.5 sm:mt-2"></div>
-                                        <div className="menu-bar bg-white h-[3px] w-8 sm:w-9 transition-all ease-in-out duration-300 mt-1.5 sm:mt-2"></div>
-                                    </div>
-                                </div>
-                            </button>
 
-                            <h1 className="flex items-center">
-                                <Link href={route('Home.index')} className="flex items-center mx-auto">
-                                    <img src={`/site/img/logo.png`} alt="Logo" className={`block w-44 2xl:w-auto ${['Cases', 'Politica', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' invert' : ''}`} />
-                                </Link>
-                            </h1>
+            <Header
+                isOpen={isMenuOpen}
+                onToggle={toggleMenu}
+                onClose={() => setIsMenuOpen(false)}
+                whatsappHref={`https://wa.me/${whatsappNumber.startsWith("55") ? whatsappNumber : `55${whatsappNumber}`}`}
+            />
 
-                            {/* <LanguageSwitcher isReverse={['Cases', 'Politicas'].includes(controller) || ['produto'].includes(action)} /> */}
-
-                            <div className={`fixed top-0 left-0 z-[3] bg-black w-full h-full transition-opacity duration-500 ${isMenuOpen ? 'opacity-50 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => {setIsMenuOpen(false)}} />
-                            <div className={`${isMenuOpen ? '' : 'transform -translate-x-[101%]'} flex fixed top-0 left-0 z-[4] bg-black min-w-[50%] h-full pl-[5%] 2xl:pl-[10%] pr-10 transition-all duration-500`}>
-                                <div className="relative w-full sm:w-3/5 flex flex-col justify-end min-h-full">
-                                    <div className="ml-auto w-full max-w-[25.5rem]">
-                                        <button className="absolute top-6 md:top-10 2xl:top-16 mt-2 ml-2 mx-auto text-xs" onClick={toggleMenu}>
-                                            <div className="relative inline-block w-4 h-4 2xl:-mb-1">
-                                                <span className="block absolute top-1/2 left-1/2 w-8 sm:w-9 xl:w-7 2xl:w-9 h-[3px] bg-white transform -translate-x-1/2 -translate-y-1/2 rotate-45" />
-                                                <span className="block absolute top-1/2 left-1/2 w-8 sm:w-9 xl:w-7 2xl:w-9 h-[3px] bg-white transform -translate-x-1/2 -translate-y-1/2 -rotate-45" />
-                                            </div>
-                                        </button>
-                                        <nav className="max-sm:mb-14">
-                                            <ul className="relative flex flex-col justify-center sm:after:absolute sm:after:-top-6 sm:after:-bottom-6 sm:after:w-px sm:after:bg-neutral-600 sm:after:right-0">
-                                                <li className="relative">
-                                                    <Link href={route('Home.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('home')}</Link>
-                                                </li>
-                                                <li className="relative mt-3 2xl:mt-5">
-                                                    <Link href={route('Institucional.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('sobre')}</Link>
-                                                </li>
-                                                {/* <li className="relative mt-3 2xl:mt-5">
-                                                    <Link href={route('Enoturismo.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('enoturismo')}</Link>
-                                                </li> */}
-                                                <li className="relative mt-3 2xl:mt-5">
-                                                    <Link href={route('Contato.index')} className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary">{lang('contato')}</Link>
-                                                </li>
-                                                <li className="relative mt-3 2xl:mt-5">
-                                                    <a href="https://loja.pizzato.net/blog" className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary" target="_blank" rel="noopener noreferrer">{lang('blog')}</a>
-                                                </li>
-                                                <li className="relative mt-3 2xl:mt-5">
-                                                    <a href="https://loja.pizzato.net/" className="relative text-2xl 2xl:text-3xl text-white font-light transition-all hover:font-bold hover:text-secondary" target="_blank" rel="noopener noreferrer">{lang('lojaVirtual')}</a>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                        <div className="flex flex-col gap-3 2xl:gap-4 text-white w-full mt-8 2xl:mt-12">
-                                            <div>
-                                                <a
-                                                    href="https://api.whatsapp.com/send?text=Ol%C3%A1%21%20Passei%20pelo%20seu%20site%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es%21&phone=555481140116"
-                                                    className="font-secondary w-56 2xl:w-64 bg-primary text-center h-10 2xl:h-12 uppercase flex gap-3 justify-center items-center transition-all hover:bg-opacity-75"
-                                                    target="_blank"
-                                                ><img src={`/site/img/whatsapp.png`} /> {lang('whatsapp')}</a>
-                                            </div>
-                                            <div>
-                                                <a
-                                                    href="https://maps.app.goo.gl/fsp71cErMbeyHMa86"
-                                                    className="font-secondary w-56 2xl:w-64 bg-primary text-center h-10 2xl:h-12 flex items-center justify-center tracking-wide uppercase transition-all hover:bg-opacity-75"
-                                                    target="_blank"
-                                                >
-                                                    {lang('verMapa')}
-                                                </a>
-                                            </div>
-                                            <p className="font-secondary text-xs 2xl:text-sm text-white opacity-60">{lang('endereco1')} {lang('endereco2')}<br />{lang('endereco3')} | {lang('endereco4')}</p>
-                                            <div className="flex items-center gap-4 pb-8 2xl:pb-20 mt-5 xl:mt-2 2xl:mt-10">
-                                                <h5 className="font-secondary text-xs text-center opacity-35">{lang('nossasRedes')}:</h5>
-                                                <ul className="flex gap-5">
-                                                    <li><a href="https://www.instagram.com/8poroito/" target="_blank"><img src={`/site/img/instagram.png`} alt="instagram" /></a></li>
-                                                    <li><a href="https://www.facebook.com/8poroito/" target="_blank"><img src={`/site/img/facebook.png`} alt="facebook" /></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <main className={`overflow-x-clip overflow-y-visible${['Cases', 'Politicas'].includes(controller) || ['produto'].includes(action) ? ' pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]' : ''}`}>
+            <main
+                className={`overflow-x-clip overflow-y-visible${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
+            >
                 {children}
             </main>
 
             <Footer />
 
             {!notifyCookie || !rejectCookie ? (
-                <CookieModal acceptCookies={acceptCookies} visible={notifyCookie ? false : true} />
+                <CookieModal
+                    acceptCookies={acceptCookies}
+                    visible={notifyCookie ? false : true}
+                />
             ) : null}
         </>
     );
