@@ -18,10 +18,10 @@ export const LinkButton = forwardRef(
             <Link
                 ref={ref}
                 href={href}
-                className={`${isButtonCA ? "button-primary" : "button-secondary"} w-fit ${className}`}
+                className={`${isButtonCA ? "button-primary" : "button-secondary"} group w-fit ${className}`}
                 {...props}
             >
-                <div className="h-px w-8 md:w-10 2xl:w-14 bg-white" />
+                <div className="h-px w-8 md:w-10 2xl:w-14 bg-white group-hover:bg-black" />
                 {children}
             </Link>
         );

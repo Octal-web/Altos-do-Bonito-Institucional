@@ -2,8 +2,8 @@ import { Title } from "../UI/Title";
 
 export const HomeExpressions = ({ content }) => {
     return (
-        <section className="relative overflow-hidden 2xl:pt-20">
-            <div className="container relative z-[1] mx-auto max-w-medium">
+        <section className="relative overflow-hidden pt-40 md:pt-50 2xl:pt-64">
+            <div className="container relative z-30 mx-auto max-w-medium">
                 <div className="aspect-[154/67] md:aspect-[154/47]">
                     <img
                         src={content.imagem}

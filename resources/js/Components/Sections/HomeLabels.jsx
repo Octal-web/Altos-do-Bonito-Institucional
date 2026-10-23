@@ -4,18 +4,19 @@ import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { LinkButton } from "../UI/LinkButton";
 import { Title } from "../UI/Title";
+import { Text } from "../UI/Text";
+import { SectionBackground } from "../UI/SectionBackground";
 
 export const HomeLabels = ({ content, images }) => {
     return (
-        <section className="relative overflow-hidden xl:pt-12 2xl:pt-20 isolate">
-            <img
-                src="/site/backgrounds/5a0f2c3685fc45149e409e30a5b7a7c4.jpg"
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 z-[-2] object-cover rotate-180 top-[19%] aspect-[581/957] md:aspect-[581/507]"
+        <section className="section-overflown pt-20 xl:pt-12 2xl:pt-20 isolate">
+            <SectionBackground
+                direction="right"
+                className="section-background inset-0 z-[-2] top-[4%] aspect-[581/957] md:aspect-[581/407] opacity-40"
             />
 
-            <div className="container relative z-[1] max-w-medium text-center">
+            <div className="container section-content max-w-medium text-center">
+                <HomeWine content={content}/>
                 <Title
                     tag="h3"
                     variant="subtitle"
@@ -26,8 +27,12 @@ export const HomeLabels = ({ content, images }) => {
                     tag="h2"
                     variant="h2"
                     html={content[0].titulo}
-                    className="md:max-w-[900px] mx-auto mt-3 md:mt-7 mb-10 2xl:mb-15"
+                    className="md:max-w-[900px] mx-auto mt-2 2xl:mt-6 mb-5 md:mb-10 2xl:mb-15"
                 />
+
+                <Text className="mb-5 md:mb-10 2xl:mb-14 md:max-w-[840px] mx-auto">
+                    {content[0].texto}
+                </Text>
 
                 <LinkButton
                     // href="/acomodacoes"
@@ -38,8 +43,6 @@ export const HomeLabels = ({ content, images }) => {
             </div>
 
             <Carousel images={images} />
-
-            <HomeCampaign content={content} />
         </section>
     );
 };
@@ -54,7 +57,7 @@ const Carousel = ({ images }) => {
     const carouselImages = Array.from({ length: repeat }, () => images).flat();
 
     return (
-        <div className="mt-20 2xl:mt-28 overflow-hidden">
+        <div className="mt-12 md:mt-20 2xl:mt-28 overflow-hidden">
             <Swiper
                 modules={[Autoplay]}
                 centeredSlides
@@ -88,7 +91,7 @@ const Carousel = ({ images }) => {
                         >
                             <img
                                 loading="lazy"
-                                className="block h-full w-full object-cover"
+                                className="block h-full w-full object-cover border-custom"
                                 src={item.imagem}
                                 alt=""
                             />
@@ -100,22 +103,34 @@ const Carousel = ({ images }) => {
     );
 };
 
-const HomeCampaign = ({ content }) => {
+const HomeWine = ({ content }) => {
     return (
-        <div className="pt-32 xl:pt-80 2xl:pt-[473px] relative z-10">
-            <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-0 container max-w-medium">
-                <img
-                    src={content[1].imagem}
-                    alt={content[1].titulo || ""}
-                    className="aspect-[820/683] 2xl:aspect-[820/783] border-custom object-cover order-2 md:order-1"
-                />
-                <Title
-                    tag="h2"
-                    variant="h2"
-                    html={content[1].titulo}
-                    className="md:max-w-[300px] 2xl:max-w-[460px] md:ml-10 2xl:ml-20 md:order-2"
-                />
+            <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-10 2xl:gap-20 text-start pb-32 md:pb-44 2xl:pb-64">
+                <div>
+                    <Title
+                        tag="h3"
+                        variant="h3"
+                        html={content[1].titulo}
+                        className="md:max-w-[550px]"
+                    />
+                    <Text className="py-5 md:py-10 md:max-w-[490px]">
+                        {content[1].texto}
+                    </Text>
+
+                    <LinkButton
+                    // href="/acomodacoes"
+                    >
+                        Nossa história
+                    </LinkButton>
+                </div>
+
+                <div className="aspect-[193/175]">
+                    <img
+                        src={content[1].imagem}
+                        alt={content[1].titulo || ""}
+                        className="size-full border-custom object-cover"
+                    />
+                </div>
             </div>
-        </div>
     );
 };

@@ -24,11 +24,11 @@ export const HomeNewsletter = ({ content }) => {
     };
 
     return (
-        <div className="text-center text-white">
+        <div className="text-center text-white max-w-[760px] mx-auto">
             <Title tag="p" variant="subtitle">
                 {content.subtitulo}
             </Title>
-            <Title tag="h2" variant="h3" className="mt-3">
+            <Title tag="h2" variant="h3" className="mt-2 2xl:mt-6">
                 {content.titulo}
             </Title>
 
