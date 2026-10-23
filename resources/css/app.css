@@ -1,16 +1,104 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
+    .header-menu[data-state="open"] {
+        animation: header-menu-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .header-menu[data-state="open"]::backdrop {
+        animation: header-backdrop-in 360ms ease both;
+    }
+
+    .header-menu[data-state="open"] .header-menu-item {
+        animation: header-menu-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+        animation-delay: var(--menu-item-delay);
+    }
+
+    .header-menu[data-state="closing"] {
+        animation: header-menu-in 240ms ease reverse both;
+    }
+
+    .header-menu[data-state="closing"]::backdrop {
+        animation: header-backdrop-in 240ms ease reverse both;
+    }
+
+    @keyframes header-menu-in {
+        from { opacity: 0; transform: translateY(-12px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes header-backdrop-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .header-menu,
+        .header-menu::backdrop,
+        .header-menu .header-menu-item {
+            animation: none !important;
+        }
+    }
+
+    .terroir-region-text table {
+        @apply mx-auto mt-8 block max-w-full md:mt-10;
+        width: fit-content !important;
+        min-width: 0 !important;
+    }
+
+    .terroir-region-text colgroup {
+        display: none;
+    }
+
+    .terroir-region-text tbody {
+        display: block;
+    }
+
+    .terroir-region-text tr {
+        @apply flex justify-center;
+    }
+
+    .terroir-region-text th,
+    .terroir-region-text td {
+        @apply relative flex min-w-0 flex-1 items-center justify-center border-0 bg-transparent px-4 py-2 text-center font-primary text-xs font-normal italic text-primary sm:px-7 md:text-sm 2xl:text-base;
+    }
+
+    .terroir-region-text :is(th, td) + :is(th, td) {
+        margin-left: -12px;
+    }
+
+    .terroir-region-text :is(th, td)::before {
+        content: "";
+        @apply pointer-events-none absolute inset-0 rounded-full border border-secondary;
+        clip-path: inset(0 6px);
+    }
+
+    .terroir-region-text :is(th, td):first-child::before {
+        clip-path: inset(0 6px 0 0);
+    }
+
+    .terroir-region-text :is(th, td):last-child::before {
+        clip-path: inset(0 0 0 6px);
+    }
+
+    .terroir-region-text :is(th, td):only-child::before {
+        clip-path: none;
+    }
+
+    .terroir-region-text :is(th, td) p {
+        margin: 0;
+    }
+
     .winery-options {
         @apply flex max-w-full items-center;
     }
 
     .winery-option {
-        @apply relative isolate flex items-center justify-center rounded-full px-4 py-2 font-primary text-xs font-normal text-white/90 transition-colors hover:text-primary sm:px-6 sm:text-sm lg:text-base 2xl:text-xl h-10
+        @apply relative isolate flex items-center justify-center rounded-full px-4 py-2 font-primary text-xs font-normal text-white/90 transition-colors hover:text-primary sm:px-6 sm:text-sm lg:text-base 2xl:text-xl h-10;
     }
 
     .winery-option + .winery-option {
@@ -46,24 +134,40 @@
 
 @layer utilities {
     .border-custom {
-        @apply rounded-xl border border-secondary
+        @apply rounded-xl border border-secondary;
     }
 
     .hover {
-        @apply hover:brightness-110 transition duration-300
+        @apply hover:brightness-110 transition duration-300;
     }
 
     .button-primary {
-        @apply bg-primary py-2 md:py-2.5 px-4 md:px-7 font-admin text-xs sm:text-sm md:text-xl rounded-full flex gap-x-2 md:gap-x-4 items-center hover
+        @apply bg-primary py-2 md:py-2.5 px-4 md:px-7 font-admin text-xs sm:text-sm md:text-xl rounded-full flex gap-x-2 md:gap-x-4 items-center hover;
     }
 
     .button-secondary {
-        @apply flex items-center gap-x-2 md:gap-x-4 rounded-full border border-secondary px-4 py-2 md:px-7 md:py-2.5 font-admin text-xs sm:text-sm md:text-xl whitespace-nowrap hover
+        @apply flex items-center gap-x-2 md:gap-x-4 rounded-full border border-secondary px-4 py-2 md:px-7 md:py-2.5 font-admin text-xs sm:text-sm md:text-xl whitespace-nowrap hover hover:bg-white hover:text-black cursor-pointer;
+    }
+
+    .em-emphasis {
+        @apply [&_em]:text-base [&_em]:md:text-lg [&_em]:lg:text-xl [&_em]:2xl:text-2xl [&_em]:text-white [&_em]:font-primary;
+    }
+
+    .section-overflow {
+        @apply relative overflow-visible;
+    }
+
+    .section-background {
+        @apply pointer-events-none absolute z-10;
+    }
+
+    .section-content {
+        @apply relative z-20;
     }
 }
 
 @layer base {
     section {
-        @apply bg-black text-white
+        @apply bg-black text-white relative;
     }
 }

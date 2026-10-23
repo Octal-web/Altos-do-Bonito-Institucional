@@ -76,7 +76,7 @@ export default {
         function ({ addComponents }) {
             addComponents({
                 "p + p": {
-                    marginTop: "0.6rem",
+                    marginTop: "0.3rem",
                 },
             });
         },
