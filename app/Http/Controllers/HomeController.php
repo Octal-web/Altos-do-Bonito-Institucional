@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 use App\Models\Slide;
-use App\Models\Produto;
 use App\Models\Imagem;
 
 use Illuminate\Support\Collection;
@@ -18,7 +16,8 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index()
+    {
         $idioma = inertia()->getShared('idioma');
 
         $slides = Slide::query()
@@ -30,15 +29,15 @@ class HomeController extends Controller
                 'slidesIdiomas' => function ($q) use ($idioma) {
                     $q->whereHas('idiomas', function ($r) use ($idioma) {
                         $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
+                            ->orWhere('padrao', true);
                     })
-                    ->orderBy('idioma_id', 'DESC');
+                        ->orderBy('idioma_id', 'DESC');
                 }
             ])
             ->orderBy('ordem', 'ASC')
             ->orderBy('id', 'DESC')
             ->get()
-            ->map(function($slide) {
+            ->map(function ($slide) {
                 return [
                     'id' => $slide->id,
                     'tipo' => $slide->tipo,
@@ -48,45 +47,6 @@ class HomeController extends Controller
                     'video_mobile' => $slide->tipo == 'video' ? rafator('content/slides/videos/m/' . $slide->video_mobile) : null,
                     'titulo' => $slide->slidesIdiomas->isNotEmpty() ? $slide->slidesIdiomas[0]->titulo : null,
                     'descricao' => $slide->slidesIdiomas->isNotEmpty() ? $slide->slidesIdiomas[0]->descricao : null,
-                ];
-            });
-
-        $destaques = Produto::query()
-            ->where([
-                'excluido' => NULL,
-                'visivel' => true,
-                'destaque' => true
-            ])
-            ->with([
-                'produtosIdiomas' => function ($q) use ($idioma) {
-                    $q->whereHas('idiomas', function ($r) use ($idioma) {
-                        $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
-                    })
-                    ->orderBy('idioma_id', 'DESC');
-                },
-                'linha' => function ($query) use ($idioma) {
-                    $query->with([
-                        'linhasIdiomas' => function ($q) use ($idioma) {
-                            $q->whereHas('idiomas', function ($r) use ($idioma) {
-                                $r->where('codigo', $idioma)
-                                  ->orWhere('padrao', true);
-                            })
-                            ->orderBy('idioma_id', 'DESC');
-                        },
-                    ]);
-                }
-            ])
-            ->orderBy('ordem', 'ASC')
-            ->orderBy('id', 'DESC')
-            ->get()
-            ->map(function($destaque) {
-                return [
-                    'id' => $destaque->id,
-                    'slug' => $destaque->slug,
-                    'imagem' => rafator('content/products/full/' . $destaque->imagem_infinito),
-                    'nome' => $destaque->produtosIdiomas->isNotEmpty() ? $destaque->produtosIdiomas[0]->nome : null,
-                    'linha' => $destaque->linha->linhasIdiomas->isNotEmpty() ? $destaque->linha->linhasIdiomas[0]->nome : null,
                 ];
             });
 
@@ -112,7 +72,6 @@ class HomeController extends Controller
 
         return Inertia::render('Home/index', [
             'slides' => $slides,
-            'destaques' => $destaques,
             'imagensGaleria' => $imagensGaleria
         ]);
     }
