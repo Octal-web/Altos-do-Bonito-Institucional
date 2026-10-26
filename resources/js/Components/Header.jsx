@@ -54,7 +54,7 @@ export const Header = ({
                     aria-controls="header-menu"
                     className={`button-secondary !border-white justify-self-start ${opened ? "!px-3" : ""}`}
                 >
-                    <FontAwesomeIcon icon={open ? faXmark : faBars} />
+                    <FontAwesomeIcon icon={opened ? faXmark : faBars} />
                     {!opened && <span>Menu</span>}
                 </button>
 
@@ -91,7 +91,7 @@ export const Header = ({
 
     return (
         <>
-            <header className="header absolute inset-x-0 top-0 z-[99] text-white">
+            <header className="header absolute inset-x-0 top-0 z-20 text-white">
                 {bar(false)}
             </header>
 
@@ -103,7 +103,7 @@ export const Header = ({
                     event.preventDefault();
                     onClose();
                 }}
-                className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto border-0 bg-[#4b4b49] p-0 text-white backdrop:bg-[#4b4b49]"
+                className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto border-0 bg-[#4b4b49] p-0 text-white backdrop:bg-[#4b4b49] "
                 data-lenis-prevent
             >
                 {bar(true)}
@@ -115,7 +115,7 @@ export const Header = ({
                         {items.map(({ label, href }) => (
                             <li
                                 key={label}
-                                className="font-primary text-3xl font-normal leading-tight md:text-4xl 2xl:text-5xl"
+                                className="font-primary text-3xl font-normal leading-tight md:text-4xl 2xl:text-5xl section-content"
                             >
                                 {href ? (
                                     <Link
