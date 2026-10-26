@@ -46,11 +46,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     Route::get('/sobre', [InstitucionalController::class, 'index'])->name('Institucional.index');
 
-    Route::get('/marca/{slug?}', [LinhasController::class, 'linha'])->name('Linhas.linha');
-
-    Route::get('/nossos-vinhos', [ProdutosController::class, 'index'])->name('Produtos.index');
-    Route::get('/nossos-vinhos/{slug}', [ProdutosController::class, 'produto'])->name('Produtos.produto');
-    Route::get('/nossos-vinhos/download/{produto}/{id}', [ProdutosController::class, 'download'])->name('Produtos.download');
+    Route::get('/vinhos', [ProdutosController::class, 'index'])->name('Produtos.index');
+    Route::get('/vinhos/{slug}', [ProdutosController::class, 'produto'])->name('Produtos.produto');
 
     Route::get('/contato', [ContatoController::class, 'index'])->name('Contato.index');
     Route::post('/contato/enviar', [ContatoController::class, 'enviar'])->name('Contato.enviar');

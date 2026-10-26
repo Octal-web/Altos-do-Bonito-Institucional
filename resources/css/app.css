@@ -168,6 +168,6 @@
 
 @layer base {
     section {
-        @apply bg-black text-white relative;
+        @apply text-white relative;
     }
 }

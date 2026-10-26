@@ -225,7 +225,7 @@ const DefaultLayout = ({ children }) => {
             />
 
             <main
-                className={`overflow-x-clip overflow-y-visible${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
+                className={`overflow-x-clip overflow-y-visible bg-black ${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
             >
                 {children}
             </main>
