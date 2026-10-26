@@ -4,6 +4,7 @@ const variants = {
     h1: "text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-tertiary leading-10 2xl:leading-[116px] uppercase",
     h2: "text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-tertiary font-primary font-normal text-white [&_strong]:text-primary [&_strong]:font-normal",
     h3: "text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-primary font-normal text-white [&_strong]:text-primary [&_strong]:font-normal",
+    h4: "text-xl lg:text-2xl 2xl:text-3xl font-primary font-normal text-white [&_strong]:text-primary [&_strong]:font-normal",
     subtitle:
         "text-sm md:text-base lg:text-lg 2xl:text-xl font-tertiary font-admin font-light text-primary tracking-[5px] uppercase",
 };
