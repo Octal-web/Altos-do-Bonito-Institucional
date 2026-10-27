@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { Label } from "./Label";
 
 export const InputText = ({ title, name, value, idioma, onChange, max }) => {
     const handleChange = (e) => {
@@ -8,15 +9,12 @@ export const InputText = ({ title, name, value, idioma, onChange, max }) => {
 
     return (
         <div className="mb-6">
-            <div className="flex items-center mb-2">
-                <img src={`/admin/img/flags/${idioma}.png`} className="w-5 mr-1" alt={`${idioma} flag`} />
-                <label className="block font-bold text-gray-500">{title}</label>
-            </div>
+            <Label title={title} idioma={idioma} />
             <input
                 type="text"
                 name={name}
-                value={value ?? ''}
-                className="w-full rounded-lg border-gray-300 bg-transparent p-3 font-normal text-sm text-black outline-none transition focus:border-secondary focus:ring-0 active:border-secondary disabled:cursor-default"
+                value={value ?? ""}
+                className="w-full border-gray-300 bg-transparent p-3 font-normal text-sm text-black outline-none transition focus:border-black focus:ring-0 active:border-black disabled:cursor-default"
                 onChange={handleChange}
                 {...(max ? { maxLength: max } : {})}
             />

@@ -51,7 +51,7 @@ export const ConfirmModal = ({ closeModal, type, confirm, icon }) => {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-[99999] sort-ignore">
             <div className="absolute inset-0 bg-black bg-opacity-50" onClick={closeModal}></div>
-            <div className="animate-fade-in-down [animation-duration:_0.1s] rounded-sm border border-stroke bg-white max-w-xl px-8 py-12 text-center shadow-md relative">
+            <div className="animate-fade-in-down [animation-duration:_0.1s] border border-stroke bg-white max-w-xl px-8 py-12 text-center shadow-md relative">
                 <FontAwesomeIcon icon={icon} className="text-2xl text-red-500 bg-red-100 p-4 rounded-full mb-6" />
                 <h2 className="text-2xl font-bold mb-2">{messages[type]['title']}</h2>
                 <p className="text-slate-500 mb-10">{messages[type]['call']}<br />
@@ -60,7 +60,7 @@ export const ConfirmModal = ({ closeModal, type, confirm, icon }) => {
                 <div className="mx-auto flex gap-x-6 max-w-96">
                     <div className="w-full">
                         <button
-                            className="w-full bg-gray-100 border border-slate-200 text-primary py-2 px-4 rounded mr-2 hover:bg-gray-200"
+                            className="w-full bg-gray-100 border border-slate-200 text-primary py-2 px-4 mr-2 hover:bg-gray-200"
                             onClick={closeModal}
                         >
                             Não
@@ -69,7 +69,7 @@ export const ConfirmModal = ({ closeModal, type, confirm, icon }) => {
 
                     <div className="w-full">
                         <button
-                            className="block w-full bg-red-500 border border-red-500 text-white py-2 px-4 rounded mr-2 hover:bg-red-600"
+                            className="block w-full bg-red-500 border border-red-500 text-white py-2 px-4 mr-2 hover:bg-red-600"
                             onClick={handleSubmit}
                         >
                             Sim
