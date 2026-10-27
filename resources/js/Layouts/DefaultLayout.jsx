@@ -6,11 +6,9 @@ import Lenis from "@studio-freight/lenis";
 import { CookieModal } from "../Components/CookieModal";
 import { Footer } from "../Components/Footer";
 import { Header } from "../Components/Header";
-
+import { AgeGate, hasAgeConfirmation } from "../Components/AgeGate";
 
 const DefaultLayout = ({ children }) => {
-
-
     const {
         controller,
         action,
@@ -24,7 +22,10 @@ const DefaultLayout = ({ children }) => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [trackingEnabled, setTrackingEnabled] = useState(false);
+    const [ageConfirmed, setAgeConfirmed] = useState(hasAgeConfirmation);
     const lenisRef = useRef(null);
+    const mainRef = useRef(null);
+    const focusAfterConfirmation = useRef(false);
 
     useEffect(() => {
         lenisRef.current = new Lenis({
@@ -48,9 +49,16 @@ const DefaultLayout = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        if (isMenuOpen) lenisRef.current?.stop();
+        if (isMenuOpen || !ageConfirmed) lenisRef.current?.stop();
         else lenisRef.current?.start();
-    }, [isMenuOpen]);
+    }, [isMenuOpen, ageConfirmed]);
+
+    useEffect(() => {
+        if (ageConfirmed && focusAfterConfirmation.current) {
+            mainRef.current?.focus({ preventScroll: true });
+            focusAfterConfirmation.current = false;
+        }
+    }, [ageConfirmed]);
 
     const toggleMenu = () => {
         setIsMenuOpen((open) => !open);
@@ -217,6 +225,16 @@ const DefaultLayout = ({ children }) => {
                 ))} */}
             </Head>
 
+            {!ageConfirmed ? (
+                <AgeGate
+                    instagram={dadosGerais?.instagram}
+                    onConfirm={() => {
+                        focusAfterConfirmation.current = true;
+                        setAgeConfirmed(true);
+                    }}
+                />
+            ) : (
+                <>
             <Header
                 isOpen={isMenuOpen}
                 onToggle={toggleMenu}
@@ -225,19 +243,25 @@ const DefaultLayout = ({ children }) => {
             />
 
             <main
+                ref={mainRef}
+                tabIndex={-1}
                 className={`overflow-x-clip overflow-y-visible bg-black ${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
             >
                 {children}
             </main>
 
-            <Footer />
+            <div className="bg-black">
+                <Footer />
+            </div>
 
-            {!notifyCookie || !rejectCookie ? (
+            {notifyCookie || !rejectCookie ? (
                 <CookieModal
                     acceptCookies={acceptCookies}
                     visible={notifyCookie ? false : true}
                 />
             ) : null}
+                </>
+            )}
         </>
     );
 };
