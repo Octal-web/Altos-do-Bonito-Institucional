@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import React, { useState } from "react";
+import { Link, usePage } from "@inertiajs/react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
-import AdminLayout from '@/Layouts/AdminLayout';
-import { Breadcrumb } from '@/Components/Manager/Breadcrumb';
-import { ConfirmModal } from '@/Components/Manager/ConfirmModal';
-import { PageSettings } from '@/Components/Manager/PageSettings';
-import { FormContent } from '@/Components/Manager/FormContent';
-import { BlockContent } from '@/Components/Manager/BlockContent';
+import AdminLayout from "@/Layouts/AdminLayout";
+import { Breadcrumb } from "@/Components/Manager/Breadcrumb";
+import { ConfirmModal } from "@/Components/Manager/ConfirmModal";
+import { PageSettings } from "@/Components/Manager/PageSettings";
+import { FormContent } from "@/Components/Manager/FormContent";
+import { BlockContent } from "@/Components/Manager/BlockContent";
 
 const Page = () => {
     // Content
-    const { pagina, conteudos, idioma, idiomas, contatos, newsletters } = usePage().props;
+    const { pagina, conteudos, idioma, idiomas, contatos, newsletters } =
+        usePage().props;
 
     const breadcrumbItems = [
         // { label: 'Home', link: 'Home.index' },
@@ -21,33 +22,48 @@ const Page = () => {
     ];
 
     const contentContacts = {
-        nome: ['Contatos', 'contato'],
-        controller: 'Contato',
+        nome: ["Contatos", "contato"],
+        controller: "Contato",
         imagens: false,
-        imgClass: '',
+        imgClass: "",
         editavel: false,
-        conteudos: contatos
+        conteudos: contatos,
     };
 
     const contentNewsletters = {
-        nome: ['Assinaturas de Newsletters', 'newsletter'],
-        controller: 'Newsletter',
+        nome: ["Assinaturas de Newsletters", "newsletter"],
+        controller: "Newsletter",
         imagens: false,
-        imgClass: '',
+        imgClass: "",
         editavel: false,
-        conteudos: newsletters
+        conteudos: newsletters,
     };
 
     return (
         <AdminLayout>
-            <Breadcrumb icon={faEnvelope} items={breadcrumbItems} current="Contato" idioma={idioma.codigo} idiomas={idiomas} />
+            <Breadcrumb
+                icon={faEnvelope}
+                items={breadcrumbItems}
+                current="Contato"
+                idioma={idioma.codigo}
+                idiomas={idiomas}
+            />
             <PageSettings page={pagina} idioma={idioma.codigo} />
-            
-            <FormContent content={conteudos[0]} full={true} idioma={idioma.codigo} />
+
+            <FormContent
+                content={conteudos[0]}
+                full={true}
+                idioma={idioma.codigo}
+            />
 
             <BlockContent content={contentContacts} />
 
             <BlockContent content={contentNewsletters} />
+            <FormContent
+                content={conteudos[1]}
+                full={true}
+                idioma={idioma.codigo}
+            />
         </AdminLayout>
     );
 };
