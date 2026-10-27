@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { usePage, Head } from "@inertiajs/react";
 
 import Lenis from "@studio-freight/lenis";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 import { CookieModal } from "../Components/CookieModal";
 import { Footer } from "../Components/Footer";
@@ -36,14 +37,19 @@ const DefaultLayout = ({ children }) => {
             smoothTouch: false,
         });
 
-        function raf(time) {
-            lenisRef.current.raf(time);
-            requestAnimationFrame(raf);
-        }
+        // O Lenis passa a ser movido pelo ticker do GSAP e avisa o ScrollTrigger
+        // a cada frame, mantendo pins e scrubs sincronizados com o scroll suave.
+        lenisRef.current.on("scroll", ScrollTrigger.update);
 
-        requestAnimationFrame(raf);
+        const raf = (time) => lenisRef.current.raf(time * 1000);
+
+        gsap.ticker.add(raf);
+        gsap.ticker.lagSmoothing(0);
+
+        document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
         return () => {
+            gsap.ticker.remove(raf);
             lenisRef.current.destroy();
         };
     }, []);

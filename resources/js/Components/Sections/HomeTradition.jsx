@@ -6,6 +6,7 @@ export const HomeTradition = ({ content }) => {
     return (
         <section className="section-overflow py-16 2xl:pt-24">
             <SectionBackground
+                parallax="8"
                 className="section-background left-0 top-0 h-full md:w-[40vw] opacity-55"
             />
 
@@ -29,9 +30,10 @@ export const HomeTradition = ({ content }) => {
                                     tag="h2"
                                     variant="h2"
                                     html={item?.titulo}
+                                    data-split
                                     className="md:max-w-[400px] 2xl:max-w-[600px]"
                                 />
-                                {item?.texto && <Text className="pt-5 md:pt-10 md:max-w-[500px]">{item?.texto}</Text>}
+                                {item?.texto && <Text data-fade data-delay="0.2" className="pt-5 md:pt-10 md:max-w-[500px]">{item?.texto}</Text>}
                             </div>
 
                             <div
@@ -41,11 +43,16 @@ export const HomeTradition = ({ content }) => {
                                         : "flex justify-end md:order-2"
                                 }
                             >
-                                <img
-                                    src={item?.imagem}
-                                    alt={item?.titulo || ""}
-                                    className="aspect-[72/61] border-custom object-cover"
-                                />
+                                <div
+                                    data-reveal={reverse ? "right" : "left"}
+                                    className="aspect-[72/61] w-full overflow-hidden border-custom"
+                                >
+                                    <img
+                                        src={item?.imagem}
+                                        alt={item?.titulo || ""}
+                                        className="size-full object-cover"
+                                    />
+                                </div>
                             </div>
                         </div>
                     );

@@ -12,6 +12,7 @@ export const HomeLabels = ({ content, images }) => {
         <section className="section-overflown pt-20 xl:pt-12 2xl:pt-20 isolate">
             <SectionBackground
                 direction="right"
+                parallax="8"
                 className="section-background inset-0 z-[-2] top-[4%] aspect-[581/957] md:aspect-[581/407] opacity-40"
             />
 
@@ -21,25 +22,34 @@ export const HomeLabels = ({ content, images }) => {
                     tag="h3"
                     variant="subtitle"
                     html={content[0].subtitulo}
+                    data-fade
                     className=""
                 />
                 <Title
                     tag="h2"
                     variant="h2"
                     html={content[0].titulo}
+                    data-split
+                    data-drift="0"
                     className="md:max-w-[900px] mx-auto mt-2 2xl:mt-6 mb-5 md:mb-10 2xl:mb-15"
                 />
 
-                <Text className="mb-5 md:mb-10 2xl:mb-14 md:max-w-[840px] mx-auto">
+                <Text
+                    data-fade
+                    data-delay="0.15"
+                    className="mb-5 md:mb-10 2xl:mb-14 md:max-w-[840px] mx-auto"
+                >
                     {content[0].texto}
                 </Text>
 
-                <LinkButton
-                    href={route("Produtos.index") }
-                    className="mx-auto"
-                >
-                    Ver catálogo
-                </LinkButton>
+                <div data-fade data-delay="0.3">
+                    <LinkButton
+                        href={route("Produtos.index") }
+                        className="mx-auto"
+                    >
+                        Ver catálogo
+                    </LinkButton>
+                </div>
             </div>
 
             <Carousel images={images} />
@@ -57,7 +67,7 @@ const Carousel = ({ images }) => {
     const carouselImages = Array.from({ length: repeat }, () => images).flat();
 
     return (
-        <div className="mt-12 md:mt-20 2xl:mt-28 overflow-hidden">
+        <div data-fade className="mt-12 md:mt-20 2xl:mt-28 overflow-x-clip">
             <Swiper
                 modules={[Autoplay]}
                 centeredSlides
@@ -87,6 +97,7 @@ const Carousel = ({ images }) => {
                 {carouselImages.map((item, index) => (
                     <SwiperSlide key={`${item.id}-${index}`}>
                         <div
+                            data-parallax={index % 2 === 0 ? "-6" : "6"}
                             className={`w-full aspect-[319/468] overflow-hidden ${index % 2 === 0 ? "mt-8 2xl:mt-11" : ""}`}
                         >
                             <img
@@ -105,30 +116,42 @@ const Carousel = ({ images }) => {
 
 const HomeWine = ({ content }) => {
     return (
-        <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-10 2xl:gap-20 text-start pb-32 md:pb-44 2xl:pb-64">
-            <div>
-                <Title
-                    tag="h3"
-                    variant="h3"
-                    html={content[1].titulo}
-                    className="md:max-w-[550px]"
-                />
-                <Text className="py-5 md:py-10 md:max-w-[490px]">
-                    {content[1].texto}
-                </Text>
+            <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-10 2xl:gap-20 text-start pb-32 md:pb-44 2xl:pb-64">
+                <div>
+                    <Title
+                        tag="h3"
+                        variant="h3"
+                        html={content[1].titulo}
+                        data-split
+                        className="md:max-w-[550px]"
+                    />
+                    <Text
+                        data-fade
+                        data-delay="0.2"
+                        className="py-5 md:py-10 md:max-w-[490px]"
+                    >
+                        {content[1].texto}
+                    </Text>
 
-                <LinkButton href={route("Institucional.index")}>
-                    Nossa história
-                </LinkButton>
-            </div>
+                    <div data-fade data-delay="0.35">
+                        <LinkButton
+                        href={route("Institucional.index")}
+                        >
+                            Nossa história
+                        </LinkButton>
+                    </div>
+                </div>
 
-            <div className="aspect-[193/175]">
-                <img
-                    src={content[1].imagem}
-                    alt={content[1].titulo || ""}
-                    className="size-full border-custom object-cover"
-                />
+                <div
+                    data-reveal="up"
+                    className="aspect-[193/175] overflow-hidden border-custom"
+                >
+                    <img
+                        src={content[1].imagem}
+                        alt={content[1].titulo || ""}
+                        className="size-full object-cover"
+                    />
+                </div>
             </div>
-        </div>
     );
 };

@@ -6,6 +6,7 @@ export const BrandSignature = ({ content, children, bgClassName = "" }) => {
         <section className="relative z-20 overflow-visible py-40 md:py-32 2xl:pt-80 2xl:pb-52">
             <div className="pointer-events-none absolute inset-0 -z-20 overflow-visible" aria-hidden="true">
                 <SectionBackground
+                    parallax="8"
                     direction="right"
                     className={`inset-0 opacity-45 md:opacity-70 max-sm:h-full md:left-96 md:top-40 ${bgClassName}`}
                 />
@@ -15,12 +16,13 @@ export const BrandSignature = ({ content, children, bgClassName = "" }) => {
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
+                data-parallax="20"
                 className="pointer-events-none absolute right-[85%] 2xl:right-[80%] -bottom-80 -z-10 opacity-25 md:-bottom-80 hidden lg:block"
             />
 
             <div className="container mx-auto max-w-medium text-center">
                 {children && (
-                    <div className="relative mx-auto">
+                    <div data-fade className="relative mx-auto">
                         {children}
                     </div>
                 )}
@@ -32,6 +34,7 @@ export const BrandSignature = ({ content, children, bgClassName = "" }) => {
                         src={content.imagem}
                         alt="Altos do Bonito"
                         loading="lazy"
+                        data-wipe
                         className="mx-auto aspect-[823/58]"
                     />
 
@@ -39,6 +42,7 @@ export const BrandSignature = ({ content, children, bgClassName = "" }) => {
                         tag="h3"
                         variant="h3"
                         html={content.titulo}
+                        data-split
                         className="mx-auto [&_strong]:block mt-5 md:mt-10 2xl:mt-20"
                     />
                 </div>

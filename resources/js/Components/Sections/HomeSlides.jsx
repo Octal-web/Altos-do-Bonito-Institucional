@@ -8,18 +8,79 @@ import {
     A11y,
 } from "swiper/modules";
 import "swiper/swiper-bundle.css";
+import { gsap } from "@/lib/gsap";
+import { useGsap } from "@/hooks/useGsap";
 
 export const HomeSlides = ({ slides = [] }) => {
+    const sectionRef = useRef(null);
     const swiperRef = useRef(null);
     const prevButtonRef = useRef(null);
     const nextButtonRef = useRef(null);
 
     const [activeIndex, setActiveIndex] = useState(0);
 
+    useGsap(sectionRef, (_, q) => {
+        // Entrada: a mídia desfaz um zoom lento ao carregar a página
+        gsap.from(q("picture img, video"), {
+            scale: 1.25,
+            duration: 2.8,
+            ease: "expo.out",
+        });
+
+        // Saída: a mídia desce mais devagar que o scroll (efeito cortina),
+        // o conteúdo sobe e some e a tela escurece
+        const scrollTrigger = {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+        };
+
+        gsap.to(q("[data-hero-stage]"), {
+            yPercent: 40,
+            ease: "none",
+            scrollTrigger,
+        });
+        gsap.to(q("[data-hero-content]"), {
+            yPercent: -25,
+            autoAlpha: 0,
+            ease: "none",
+            scrollTrigger: { ...scrollTrigger, end: "60% top" },
+        });
+        gsap.to(q("[data-hero-shade]"), {
+            opacity: 1,
+            ease: "none",
+            scrollTrigger,
+        });
+
+        gsap.fromTo(
+            q("[data-hero-line]"),
+            { scaleY: 0, transformOrigin: "top" },
+            {
+                keyframes: [
+                    { scaleY: 1, duration: 0.9, ease: "expo.inOut" },
+                    {
+                        scaleY: 0,
+                        transformOrigin: "bottom",
+                        duration: 0.9,
+                        ease: "expo.inOut",
+                    },
+                ],
+                repeat: -1,
+                repeatDelay: 0.3,
+            },
+        );
+    });
+
     if (!slides.length) return null;
 
     return (
-        <section className="relative" aria-label="Destaques da Pizzato">
+        <section
+            ref={sectionRef}
+            className="relative overflow-hidden"
+            aria-label="Destaques da Pizzato"
+        >
+            <div data-hero-stage>
             <Swiper
                 ref={swiperRef}
                 slidesPerView={1}
@@ -118,7 +179,10 @@ export const HomeSlides = ({ slides = [] }) => {
                             />
 
                             <div className="container h-full max-w-large">
-                                <div className="container relative z-[1] flex h-full max-w-large items-center justify-center">
+                                <div
+                                    data-hero-content
+                                    className="container relative z-[1] flex h-full max-w-large items-center justify-center"
+                                >
                                     <div
                                         className={`flex flex-col justify-center py-16 md:py-20 m-auto relative w-full min-h-[calc(85vh_-_75px)] xl:min-h-[calc(100vh_-_90px)] 2xl:min-h-[calc(100vh_-_113px)] transition-opacity duration-1000 ease-in-out z-[1] ${activeIndex === index ? "animate-fade-in-down" : "opacity-0"}`}
                                     >
@@ -187,7 +251,10 @@ export const HomeSlides = ({ slides = [] }) => {
                                 </div>
                             </div>
                             <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center">
-                                <span className="mb-3 h-16 w-px bg-white" />
+                                <span
+                                    data-hero-line
+                                    className="mb-3 h-16 w-px bg-white"
+                                />
 
                                 <span className="text-[10px] font-medium tracking-[5px] text-white">
                                     SCROLL
@@ -197,6 +264,13 @@ export const HomeSlides = ({ slides = [] }) => {
                     </SwiperSlide>
                 ))}
             </Swiper>
+            </div>
+
+            <div
+                data-hero-shade
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 z-[2] bg-black opacity-0"
+            />
 
             {/* <div className="absolute bottom-10 z-10 w-full">
                 <div className="container max-w-large">

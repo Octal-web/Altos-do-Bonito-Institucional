@@ -11,6 +11,7 @@ export const SectionBackground = ({
     wrapperClassName = "",
     backgroundClassName = "inset-0",
     overlayClassName = "",
+    parallax,
 }) => {
     const hasChildren = children !== undefined && children !== null;
     const image = (
@@ -19,6 +20,7 @@ export const SectionBackground = ({
             alt=""
             aria-hidden="true"
             loading="lazy"
+            data-parallax={parallax}
             className={`pointer-events-none absolute object-fill ${hasChildren ? "inset-0 size-full" : ""} ${directions[direction] || ""} ${className}`}
         />
     );
