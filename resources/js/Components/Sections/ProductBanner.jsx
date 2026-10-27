@@ -41,17 +41,16 @@ export const ProductBanner = ({ product, tastingHref }) => {
                             <Text className="mt-8 md:mt-12 2xl:mt-16">
                                 {product.descricao}
                             </Text>
-                            <div className="mt-6 md:mt-8 flex flex-wrap gap-3 2xl:mt-10">
-                                <LinkButton
-                                    // href="/acomodacoes"
-                                >
+                            <div className="mt-6 md:mt-8 flex flex-wrap gap-1.5 2xl:mt-10">
+                                <LinkButton href={route("Contato.index")}>
                                     Onde encontrar
                                 </LinkButton>
 
                                 <a
                                     href={product.link_loja}
-                                    className="button-secondary"
+                                    className="button-secondary group"
                                 >
+                                    <div className="h-px w-8 md:w-10 bg-white group-hover:bg-black" />
                                     Agendar degustação
                                 </a>
                             </div>
