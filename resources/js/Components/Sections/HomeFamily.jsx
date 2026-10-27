@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useSwapAnimation } from "@/hooks/useSwapAnimation";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
@@ -9,6 +10,9 @@ export const HomeFamily = ({ content }) => {
         : content.findIndex(Boolean);
     const selected = content[selectedIndex];
 
+    const contentRef = useRef(null);
+    useSwapAnimation(contentRef, selectedIndex);
+
     return (
         <section className="relative overflow-visible pt-5 md:pt-10 2xl:pt-16 pb-20 xl:pb-36 2xl:pb-96">
             <Backgrounds />
@@ -18,6 +22,7 @@ export const HomeFamily = ({ content }) => {
                     <div
                         role="group"
                         aria-label="Regiões da vinícola"
+                        data-fade
                         className="winery-options"
                     >
                         {content.map(
@@ -37,27 +42,46 @@ export const HomeFamily = ({ content }) => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 items-end gap-8 md:grid-cols-2 md:gap-24 2xl:gap-16">
-                    <img
-                        src={selected.imagem}
-                        alt=""
-                        className="md:aspect-[70/80] 2xl:aspect-[78/110] w-full border-custom object-cover"
-                    />
+                <div
+                    ref={contentRef}
+                    className="grid grid-cols-1 items-end gap-8 md:grid-cols-2 md:gap-24 2xl:gap-16"
+                >
+                    <div
+                        data-reveal="up"
+                        data-drift="100"
+                        className="md:aspect-[70/80] 2xl:aspect-[78/110] w-full overflow-hidden border-custom"
+                    >
+                        <img
+                            src={selected.imagem}
+                            alt=""
+                            data-swap-media
+                            className="size-full object-cover"
+                        />
+                    </div>
 
                     <div>
-                        <img
-                            src={selected.imagem_mobile}
-                            alt=""
-                            className="aspect-[72/55] w-full border-custom object-cover"
-                        />
-                        <div className="ml-auto md:max-w-[534px]">
-                            <Title
-                                tag="h2"
-                                variant="h2"
-                                html={selected.titulo}
-                                className="text-center md:text-start pt-2 md:pt-0 2xl:mr-0 mt-10 2xl:mt-20"
+                        <div
+                            data-reveal="down"
+                            data-drift="35"
+                            className="aspect-[72/55] w-full overflow-hidden border-custom"
+                        >
+                            <img
+                                src={selected.imagem_mobile}
+                                alt=""
+                                data-swap-media
+                                className="size-full object-cover"
                             />
-                            <Text className="mt-10">{selected.texto}</Text>
+                        </div>
+                        <div data-fade className="ml-auto md:max-w-[534px]">
+                            <div data-swap>
+                                <Title
+                                    tag="h2"
+                                    variant="h2"
+                                    html={selected.titulo}
+                                    className="text-center md:text-start pt-2 md:pt-0 2xl:mr-0 mt-10 2xl:mt-20"
+                                />
+                                <Text className="mt-10">{selected.texto}</Text>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,7 +100,8 @@ const Backgrounds = () => {
                 <img
                     src="/site/backgrounds/e86e071f45674b1f92edd625da4a22d3.jpg"
                     alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
+                    data-parallax="8"
+                    className="absolute inset-0 h-full w-full scale-125 object-cover"
                 />
                 <div className="absolute inset-0 bg-black/70" />
                 <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-black/80 via-black/30 to-transparent md:h-64 2xl:h-80" />
@@ -90,6 +115,7 @@ const Backgrounds = () => {
                 <img
                     src="/site/backgrounds/7f8392a21dce45a283290e735d3157f3.png"
                     alt=""
+                    data-parallax="15"
                     className="absolute right-[47%] top-0 h-full w-auto max-w-none object-contain opacity-30"
                 />
             </div>
