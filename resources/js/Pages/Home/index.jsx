@@ -23,9 +23,12 @@ const Page = () => {
                 images={imagensGaleria[6]}
             />
             <HomeExpressions content={conteudos[2]} />
-            <HomeFamily content={[conteudos[13], conteudos[3], conteudos[14]]} />
+            <HomeFamily
+                content={[conteudos[13], conteudos[3], conteudos[14]]}
+            />
             <HomeTerroir content={conteudos[7]} />
             <HomeWinery content={[conteudos[10], conteudos[9], conteudos[8]]} />
+            {/* <HomeNews content={conteudos[15]} news={imagensGaleria[6]}/> */}
             <BrandSignature content={conteudos[11]}>
                 <HomeNewsletter content={conteudos[12]} />
             </BrandSignature>

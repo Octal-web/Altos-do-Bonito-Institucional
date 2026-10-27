@@ -16,7 +16,7 @@ export const HomeLabels = ({ content, images }) => {
             />
 
             <div className="container section-content max-w-medium text-center">
-                <HomeWine content={content}/>
+                <HomeWine content={content} />
                 <Title
                     tag="h3"
                     variant="subtitle"
@@ -35,7 +35,7 @@ export const HomeLabels = ({ content, images }) => {
                 </Text>
 
                 <LinkButton
-                    // href="/acomodacoes"
+                    href={route("Produtos.index") }
                     className="mx-auto"
                 >
                     Ver catálogo
@@ -105,32 +105,30 @@ const Carousel = ({ images }) => {
 
 const HomeWine = ({ content }) => {
     return (
-            <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-10 2xl:gap-20 text-start pb-32 md:pb-44 2xl:pb-64">
-                <div>
-                    <Title
-                        tag="h3"
-                        variant="h3"
-                        html={content[1].titulo}
-                        className="md:max-w-[550px]"
-                    />
-                    <Text className="py-5 md:py-10 md:max-w-[490px]">
-                        {content[1].texto}
-                    </Text>
+        <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-10 2xl:gap-20 text-start pb-32 md:pb-44 2xl:pb-64">
+            <div>
+                <Title
+                    tag="h3"
+                    variant="h3"
+                    html={content[1].titulo}
+                    className="md:max-w-[550px]"
+                />
+                <Text className="py-5 md:py-10 md:max-w-[490px]">
+                    {content[1].texto}
+                </Text>
 
-                    <LinkButton
-                    // href="/acomodacoes"
-                    >
-                        Nossa história
-                    </LinkButton>
-                </div>
-
-                <div className="aspect-[193/175]">
-                    <img
-                        src={content[1].imagem}
-                        alt={content[1].titulo || ""}
-                        className="size-full border-custom object-cover"
-                    />
-                </div>
+                <LinkButton href={route("Institucional.index")}>
+                    Nossa história
+                </LinkButton>
             </div>
+
+            <div className="aspect-[193/175]">
+                <img
+                    src={content[1].imagem}
+                    alt={content[1].titulo || ""}
+                    className="size-full border-custom object-cover"
+                />
+            </div>
+        </div>
     );
 };

@@ -13,9 +13,7 @@ export const HomeWinery = ({ content }) => {
 
     return (
         <section className="section-overflow py-32 md:pt-52 md:pb-80 2xl:pt-64 2xl:pb-72">
-            <SectionBackground
-                className="section-background left-0 top-0 md:top-16 h-full md:w-[70vw] opacity-35 md:opacity-55"
-            />
+            <SectionBackground className="section-background left-0 top-0 md:top-16 h-full md:w-[70vw] opacity-35 md:opacity-55" />
             <div className="container mx-auto max-w-medium section-content">
                 <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-16 2xl:gap-26">
                     <img
@@ -68,9 +66,7 @@ export const HomeWinery = ({ content }) => {
                             </div>
 
                             <div className="mt-6 md:mt-16 flex flex-wrap gap-1.5">
-                                <LinkButton
-                                // href="/acomodacoes"
-                                >
+                                <LinkButton href={route("Contato.index")}>
                                     Agendar visita
                                 </LinkButton>
                                 <LinkButton
