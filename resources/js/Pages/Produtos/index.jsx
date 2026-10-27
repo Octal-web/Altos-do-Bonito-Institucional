@@ -1,10 +1,9 @@
 import { usePage } from "@inertiajs/react";
 
-import DefaultLayout from "@/Layouts/DefaultLayout";
 import { BrandSignature } from "@/Components/Sections/BrandSignature";
 import { ProductsBanner } from "@/Components/Sections/ProductsBanner";
 import { ProductsCatalog } from "@/Components/Sections/ProductsCatalog";
-import { ProductsFooter } from "@/Components/Sections/ProductsFooter";
+import DefaultLayout from "@/Layouts/DefaultLayout";
 
 const Page = () => {
     const { conteudos, categoria, categoriasMenu } = usePage().props;
@@ -15,6 +14,7 @@ const Page = () => {
                 categoria={categoria}
                 categoriasMenu={categoriasMenu}
             />
+            {/* <ProductsKnowledge content={conteudos[2]}/> */}
             <BrandSignature content={conteudos[0]}/>
         </DefaultLayout>
     );
