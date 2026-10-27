@@ -88,6 +88,17 @@ Route::prefix('/manager')->group(function () {
         Route::get('/slides/baixar-video/{id}/{video}', [ManagerSlidesController::class, 'baixarVideo'])->name('Manager.Slides.baixarVideo');
 
 
+        Route::post('/valores/ordenar', [ManagerValoresController::class, 'ordenar'])->name('Manager.Valores.ordenar');
+        Route::post('/valores/visibilidade/{id}', [ManagerValoresController::class, 'visibilidade'])->name('Manager.Valores.visibilidade');
+        Route::post('/valores/excluir/{id}', [ManagerValoresController::class, 'excluir'])->name('Manager.Valores.excluir');
+
+        Route::get('/valores/adicionar/{tipo}', [ManagerValoresController::class, 'adicionar'])->name('Manager.Valores.adicionar');
+        Route::post('/valores/adicionar/{tipo}', [ManagerValoresController::class, 'novo'])->name('Manager.Valores.novo');
+        Route::get('/valores/editar/{id}', [ManagerValoresController::class, 'editar'])->name('Manager.Valores.editar');
+        Route::post('/valores/editar/{id}', [ManagerValoresController::class, 'atualizar'])->name('Manager.Valores.atualizar');
+        Route::get('/valores/baixar-video/{id}/{video}', [ManagerValoresController::class, 'baixarVideo'])->name('Manager.Valores.baixarVideo');
+
+
         Route::get('/institucional', [ManagerInstitucionalController::class, 'index'])->name('Manager.Institucional.index');
 
         Route::get('/institucional/historia', [ManagerInstitucionalController::class, 'historia'])->name('Manager.Institucional.historia');
