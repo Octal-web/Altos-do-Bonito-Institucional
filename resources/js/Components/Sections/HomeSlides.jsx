@@ -1,3 +1,5 @@
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
 import React, { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
@@ -12,6 +14,7 @@ import { gsap } from "@/lib/gsap";
 import { useGsap } from "@/hooks/useGsap";
 
 export const HomeSlides = ({ slides = [] }) => {
+    const lang = useLang();
     const sectionRef = useRef(null);
     const swiperRef = useRef(null);
     const prevButtonRef = useRef(null);
@@ -78,7 +81,7 @@ export const HomeSlides = ({ slides = [] }) => {
         <section
             ref={sectionRef}
             className="relative z-40 overflow-hidden"
-            aria-label="Destaques da Pizzato"
+            aria-label={lang("destaques")}
         >
             <div data-hero-stage>
             <Swiper
@@ -105,14 +108,14 @@ export const HomeSlides = ({ slides = [] }) => {
                 onSlideChange={(swiper) => {
                     setActiveIndex(swiper.realIndex);
                 }}
-                modules={[Navigation, Pagination, Autoplay, EffectFade, A11y]}
+                modules={[Navigation, Autoplay, EffectFade, A11y]}
                 a11y={{
                     enabled: true,
-                    prevSlideMessage: "Slide anterior",
-                    nextSlideMessage: "Próximo slide",
-                    firstSlideMessage: "Este é o primeiro slide",
-                    lastSlideMessage: "Este é o último slide",
-                    paginationBulletMessage: "Ir para o slide {{index}}",
+                    prevSlideMessage: lang("slideAnterior"),
+                    nextSlideMessage: lang("proximoSlide"),
+                    firstSlideMessage: lang("primeiroSlide"),
+                    lastSlideMessage: lang("ultimoSlide"),
+                    paginationBulletMessage: lang("irSlide"),
                 }}
             >
                 {slides.map((slide, index) => (
@@ -131,7 +134,7 @@ export const HomeSlides = ({ slides = [] }) => {
                                         src={
                                             slide.imagem_mobile || slide.imagem
                                         }
-                                        alt={slide.titulo}
+                                        alt={accessibleText(slide.titulo)}
                                         loading={index === 0 ? "eager" : "lazy"}
                                         decoding={
                                             index === 0 ? "sync" : "async"
@@ -256,8 +259,8 @@ export const HomeSlides = ({ slides = [] }) => {
                                     className="mb-3 h-16 w-px bg-white"
                                 />
 
-                                <span className="text-[10px] font-medium tracking-[5px] text-white">
-                                    SCROLL
+                                <span className="text-[10px] font-medium tracking-[5px] text-white uppercase">
+                                    {lang("rolar")}
                                 </span>
                             </div>
                         </article>

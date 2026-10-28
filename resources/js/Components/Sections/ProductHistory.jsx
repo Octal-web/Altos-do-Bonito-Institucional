@@ -1,3 +1,4 @@
+import { accessibleText } from "@/lib/accessibleText";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
@@ -36,7 +37,7 @@ const History1 = ({ product }) => (
         <div className="aspect-[36/33] 2xl:aspect-[36/43]">
             <img
                 src={product.imagem_primaria}
-                alt={product.historia_titulo || ""}
+                alt={accessibleText(product.historia_titulo || "")}
                 className="size-full border-custom object-cover"
             />
         </div>
@@ -48,7 +49,7 @@ const History2 = ({ product }) => (
         <div className="aspect-[36/10] md:aspect-[36/18]">
             <img
                 src={product.imagem_primaria}
-                alt={product.origem_titulo || ""}
+                alt={accessibleText(product.origem_titulo || "")}
                 className="size-full border-custom !border-black object-cover object-center"
             />
         </div>

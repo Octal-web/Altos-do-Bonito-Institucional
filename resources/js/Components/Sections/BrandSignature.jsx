@@ -1,7 +1,9 @@
+import { useLang } from "@/hooks/useLang";
 import { Title } from "../UI/Title";
 import { SectionBackground } from "../UI/SectionBackground";
 
 export const BrandSignature = ({ content, children, bgClassName = "" }) => {
+    const lang = useLang();
     return (
         <section className="relative z-20 overflow-visible py-40 md:py-32 2xl:pt-80 2xl:pb-52">
             <div className="pointer-events-none absolute inset-0 -z-20 overflow-visible" aria-hidden="true">
@@ -32,7 +34,7 @@ export const BrandSignature = ({ content, children, bgClassName = "" }) => {
                 >
                     <img
                         src={content.imagem}
-                        alt="Altos do Bonito"
+                        alt={lang("marca")}
                         loading="lazy"
                         data-wipe
                         className="mx-auto aspect-[823/58]"

@@ -1,14 +1,15 @@
+import { useLang } from "@/hooks/useLang";
 import { Link, usePage } from "@inertiajs/react";
 
 const linkClassName =
     "transition-colors hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-primary";
 
 export const Footer = ({ links = {} }) => {
+    const lang = useLang();
     const { dadosGerais = {} } = usePage().props;
-    const email = dadosGerais.email || "contato@altosdobonito.com.br";
-    const address =
-        dadosGerais.endereco || "Pinheiro Machado — RS Campanha Gaúcha";
-    const whatsapp = dadosGerais.whatsapp || "+55 53 0000-0000";
+    const email = dadosGerais.email;
+    const address = dadosGerais.endereco;
+    const whatsapp = dadosGerais.whatsapp;
     const whatsappNumber = String(whatsapp || "").replace(/\D/g, "");
 
     const privacyHref = route("Politicas.privacidade");
@@ -19,7 +20,7 @@ export const Footer = ({ links = {} }) => {
                 <div className="mx-auto grid max-w-[780px] grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-[1.4fr_1fr_1fr] md:gap-16">
                     <div className="col-span-2 md:col-span-1">
                         <h2 className="mb-4 text-xs font-normal text-primary/80 md:text-sm">
-                            Contato
+                            {lang("contato")}
                         </h2>
                         <address className="space-y-1.5 not-italic">
                             <a
@@ -43,30 +44,42 @@ export const Footer = ({ links = {} }) => {
                                     rel="noopener noreferrer"
                                     className={`${linkClassName} block`}
                                 >
-                                    WhatsApp · {whatsapp}
+                                    {lang("whatsapp")} · {whatsapp}
                                 </a>
                             )}
                         </address>
                     </div>
 
                     <FooterNav
-                        title="Navegar"
+                        title={lang("navegar")}
                         items={[
                             {
-                                label: "Nossa História",
+                                label: lang("nossaHistoria"),
                                 href: route("Institucional.index"),
                             },
-                            { label: "Vinhos", href: route("Produtos.index") },
-                            { label: "Terroir", href: route("Produtos.index") },
+                            {
+                                label: lang("vinhos"),
+                                href: route("Produtos.index"),
+                            },
+                            {
+                                label: lang("terroir"),
+                                href: route("Produtos.index"),
+                            },
                         ]}
                     />
                     <FooterNav
-                        title="Visite"
+                        title={lang("visite")}
                         items={[
-                            { label: "Experiências", href: links.experiencias },
-                            { label: "Hospedagem", href: links.hospedagem },
                             {
-                                label: "Política de privacidade",
+                                label: lang("experiencias"),
+                                href: links.experiencias,
+                            },
+                            {
+                                label: lang("hospedagem"),
+                                href: links.hospedagem,
+                            },
+                            {
+                                label: lang("privacidadeTitulo"),
                                 href: privacyHref,
                             },
                         ]}
@@ -76,19 +89,21 @@ export const Footer = ({ links = {} }) => {
 
             <div className="border-t border-white/10">
                 <div className="container mx-auto flex max-w-medium flex-col items-center justify-between gap-5 py-6 text-center text-[10px] md:flex-row md:gap-8 md:text-left 2xl:text-xs">
-                    <span>© {new Date().getFullYear()} Altos do Bonito</span>
+                    <span>
+                        © {new Date().getFullYear()} {lang("marca")}
+                    </span>
                     <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
                         <Link href={privacyHref} className={linkClassName}>
-                            Política de Privacidade (LGPD)
+                            {lang("privacidadeLgpd")}
                         </Link>
                         <span aria-hidden="true" className="text-white/25">
                             |
                         </span>
-                        <span>Beba com moderação</span>
+                        <span>{lang("moderacao")}</span>
                     </div>
                     <div className="flex items-center justify-center md:justify-end gap-4">
                         <span className="text-white opacity-50">
-                            Desenvolvido por:
+                            {lang("desenvolvidoPor")}
                         </span>
 
                         <a
@@ -99,7 +114,7 @@ export const Footer = ({ links = {} }) => {
                             <img
                                 src="/site/img/logo-octal.png"
                                 className="w-16 opacity-60"
-                                alt="Octal Web"
+                                alt={lang("agencia")}
                             />
                         </a>
                     </div>

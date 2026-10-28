@@ -1,3 +1,4 @@
+import { useLang } from "@/hooks/useLang";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@inertiajs/react";
@@ -10,6 +11,7 @@ export const Header = ({
     whatsappHref,
     links = {},
 }) => {
+    const lang = useLang();
     const dialogRef = useRef(null);
 
     useEffect(() => {
@@ -30,11 +32,11 @@ export const Header = ({
     }, [isOpen]);
 
     const items = [
-        { label: "Nossa História", href: route("Institucional.index") },
-        { label: "Vinhos", href: route("Produtos.index") },
-        { label: "Experiências", href: links.experiencias },
-        { label: "Hospedagem", href: links.hospedagem },
-        { label: "Visite", href: route("Contato.index") },
+        { label: lang("nossaHistoria"), href: route("Institucional.index"), current: route().current("Institucional.*") },
+        { label: lang("vinhos"), href: route("Produtos.index"), current: route().current("Produtos.*") },
+        { label: lang("experiencias"), href: links.experiencias },
+        { label: lang("hospedagem"), href: links.hospedagem },
+        { label: lang("visite"), href: route("Contato.index"), current: route().current("Contato.*") },
     ];
 
     const isHome = route().current("Home.index");
@@ -49,13 +51,13 @@ export const Header = ({
                 <button
                     type="button"
                     onClick={opened ? onClose : onToggle}
-                    aria-label={opened ? "Fechar menu" : "Abrir menu"}
+                    aria-label={opened ? lang("fecharMenu") : lang("abrirMenu")}
                     aria-expanded={opened}
                     aria-controls="header-menu"
                     className={`button-secondary !border-white justify-self-start ${opened ? "!px-3" : ""}`}
                 >
                     <FontAwesomeIcon icon={opened ? faXmark : faBars} />
-                    {!opened && <span>Menu</span>}
+                    {!opened && <span>{lang("menu")}</span>}
                 </button>
 
                 {!isHome && (
@@ -66,7 +68,7 @@ export const Header = ({
                         >
                             <img
                                 src="/site/img/logo.png"
-                                alt="Logo"
+                                alt={lang("marca")}
                                 className="block w-80"
                             />
                         </Link>
@@ -83,7 +85,7 @@ export const Header = ({
                         aria-hidden="true"
                         className="hidden h-px w-5 bg-current sm:block"
                     />
-                    WhatsApp
+                    {lang("whatsapp")}
                 </a>
             </div>
         </div>
@@ -98,7 +100,7 @@ export const Header = ({
             <dialog
                 id="header-menu"
                 ref={dialogRef}
-                aria-label="Menu principal"
+                aria-label={lang("menuPrincipal")}
                 onCancel={(event) => {
                     event.preventDefault();
                     onClose();
@@ -108,11 +110,11 @@ export const Header = ({
             >
                 {bar(true)}
                 <nav
-                    aria-label="Navegação principal"
+                    aria-label={lang("navegacaoPrincipal")}
                     className="container pb-16 pt-4 md:pt-6"
                 >
                     <ul className="flex flex-col items-center gap-5 text-center md:gap-6 2xl:gap-8">
-                        {items.map(({ label, href }) => (
+                        {items.map(({ label, href, current }) => (
                             <li
                                 key={label}
                                 className="font-primary text-3xl font-normal leading-tight md:text-4xl 2xl:text-5xl section-content"
@@ -120,6 +122,7 @@ export const Header = ({
                                 {href ? (
                                     <Link
                                         href={href}
+                                        aria-current={current ? "page" : undefined}
                                         onClick={onClose}
                                         className="transition-colors hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-primary"
                                     >

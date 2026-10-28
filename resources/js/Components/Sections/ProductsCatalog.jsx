@@ -1,3 +1,5 @@
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
 import { Link, router } from "@inertiajs/react";
 import { useEffect, useId, useRef, useState } from "react";
 import ReactPaginate from "react-paginate";
@@ -13,6 +15,7 @@ const normalize = (value) =>
         .trim();
 
 export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
+    const lang = useLang();
     const searchId = useId();
     const [search, setSearch] = useState("");
     const [query, setQuery] = useState("");
@@ -56,13 +59,13 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
         <section
             ref={catalogRef}
             className="py-12 md:py-20 2xl:py-28"
-            aria-label="Catálogo de vinhos"
+            aria-label={lang("catalogoVinhos")}
         >
             <div className="container mx-auto max-w-medium">
                 <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-center lg:gap-12">
                     <div
                         role="group"
-                        aria-label="Categorias de vinhos"
+                        aria-label={lang("categoriasVinhos")}
                         className="flex max-w-full flex-wrap self-start rounded-3xl bg-white/20 p-0.5"
                     >
                         {categoriasMenu.map((item) => (
@@ -90,7 +93,7 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                         }}
                     >
                         <label htmlFor={searchId} className="sr-only">
-                            Buscar rótulo
+                            {lang("buscarRotulo")}
                         </label>
                         <input
                             id={searchId}
@@ -100,14 +103,14 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                                 setSearch(event.target.value);
                                 if (!event.target.value) setQuery("");
                             }}
-                            placeholder="Buscar rótulo"
+                            placeholder={lang("buscarRotulo")}
                             className="min-w-0 flex-1 rounded-full border border-secondary bg-white px-5 py-2.5 font-admin text-sm text-black placeholder:text-neutral-400 focus:border-primary focus:ring-primary"
                         />
                         <button
                             type="submit"
                             className="rounded-full bg-primary px-6 py-2.5 font-admin text-sm text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:px-10"
                         >
-                            Buscar
+                            {lang("buscar")}
                         </button>
                     </form>
                 </div>
@@ -122,12 +125,12 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                                 href={route("Produtos.produto", {
                                     slug: product.slug,
                                 })}
-                                aria-label={`Ver vinho ${product.nome || ""}`}
+                                aria-label={lang("verVinhoNome", product.nome || "")}
                                 className="group flex aspect-[233/250] 2xl:aspect-[233/300] items-center justify-center overflow-hidden rounded-xl border border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary p-5"
                             >
                                 <img
                                     src={product.imagem}
-                                    alt={product.nome || ""}
+                                    alt={accessibleText(product.nome || "")}
                                     loading="lazy"
                                     className="h-full w-full object-contain hover-group"
                                 />
@@ -143,7 +146,7 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                                 })}
                                 className="mt-4 inline-block font-admin text-xs text-white/80 underline underline-offset-4 transition hover:text-primary md:text-sm"
                             >
-                                Ver vinho <span aria-hidden="true">→</span>
+                                {lang("verVinho")} <span aria-hidden="true">→</span>
                             </Link>
                         </article>
                     ))}
@@ -154,13 +157,13 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                         className="py-12 text-center font-admin text-white/60"
                     >
                         {query
-                            ? "Nenhum vinho encontrado para essa busca."
-                            : "Nenhum vinho disponível nesta categoria."}
+                            ? lang("nenhumVinhoBusca")
+                            : lang("nenhumVinhoCategoria")}
                     </p>
                 )}
                 {pageCount > 1 && (
                     <nav
-                        aria-label="Paginação dos vinhos"
+                        aria-label={lang("paginacaoVinhos")}
                         className="mt-12 md:mt-16"
                     >
                         <ReactPaginate
@@ -186,10 +189,10 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                             nextClassName="hidden"
                             breakLabel="…"
                             breakAriaLabels={{
-                                forward: "Avançar páginas",
-                                backward: "Voltar páginas",
+                                forward: lang("avancarPaginas"),
+                                backward: lang("voltarPaginas"),
                             }}
-                            ariaLabelBuilder={(number) => `Página ${number}`}
+                            ariaLabelBuilder={(number) => lang("numeroPagina", number)}
                             containerClassName="flex items-center justify-center gap-2"
                             pageLinkClassName={pageLinkClass}
                             breakLinkClassName={pageLinkClass}

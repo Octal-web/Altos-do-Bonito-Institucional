@@ -1,8 +1,10 @@
+import { useLang } from "@/hooks/useLang";
 import { useId } from "react";
 import { useForm } from "@inertiajs/react";
 import { Title } from "../UI/Title";
 
 export const HomeNewsletter = ({ content }) => {
+    const lang = useLang();
     const emailId = useId();
     const {
         data,
@@ -33,19 +35,20 @@ export const HomeNewsletter = ({ content }) => {
             </Title>
 
             <form
+                aria-busy={processing}
                 onSubmit={handleSubmit}
                 className="mx-auto mt-8 max-w-[720px] md:mt-10"
             >
                 <div className="flex flex-col gap-3 sm:flex-row">
                     <label htmlFor={emailId} className="sr-only">
-                        Seu e-mail
+                        {lang("seuEmail")}
                     </label>
                     <input
                         id={emailId}
                         type="email"
                         name="email"
                         autoComplete="email"
-                        placeholder="seu@email.com"
+                        placeholder={lang("emailExemplo")}
                         required
                         value={data.email}
                         onChange={(event) =>
@@ -62,7 +65,7 @@ export const HomeNewsletter = ({ content }) => {
                         disabled={processing}
                         className="rounded-full bg-primary px-8 py-3 font-admin text-sm text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60 md:px-10 md:py-4 w-fit max-sm:mx-auto"
                     >
-                        {processing ? "Enviando…" : "Quero receber"}
+                        {processing ? lang("enviandoNewsletter") : lang("queroReceber")}
                     </button>
                 </div>
                 {errors.email && (
@@ -76,7 +79,7 @@ export const HomeNewsletter = ({ content }) => {
                 )}
                 {recentlySuccessful && (
                     <p role="status" className="mt-3 text-sm text-primary">
-                        Inscrição realizada com sucesso!
+                        {lang("newsletterSucesso")}
                     </p>
                 )}
             </form>

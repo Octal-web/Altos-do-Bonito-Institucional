@@ -1,8 +1,10 @@
+import { useLang } from "@/hooks/useLang";
 import { LinkButton } from "../UI/LinkButton";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
 export const AboutVisit = ({ content }) => {
+    const lang = useLang();
     return (
         <div className="text-center text-white">
             <Title tag="p" variant="subtitle">
@@ -24,7 +26,7 @@ export const AboutVisit = ({ content }) => {
                 // href="/acomodacoes"
                 className="mx-auto"
             >
-                Consultar visita
+                {lang("consultarVisita")}
             </LinkButton>
         </div>
     );
