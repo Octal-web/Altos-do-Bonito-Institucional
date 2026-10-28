@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
     faChevronDown,
     faChevronUp,
-    faSave
+    faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -36,10 +36,12 @@ export const GeneralData = () => {
             {
                 titulo: "Endereço",
                 name: "endereco",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto_longo",
                 max: 128,
             },
+        ],
+        [
             {
                 titulo: "CEP",
                 name: "cep",
@@ -47,27 +49,50 @@ export const GeneralData = () => {
                 tipo: "texto",
                 max: 12,
             },
-
             {
-                titulo: "Instagram",
-                name: "instagram",
+                titulo: "Latitude",
+                name: "latitude",
                 tamanho: "col-span-12 lg:col-span-2",
                 tipo: "texto",
-                max: 16,
+                max: 12,
+            },
+            {
+                titulo: "Longitude",
+                name: "longitude",
+                tamanho: "col-span-12 lg:col-span-2",
+                tipo: "texto",
+                max: 12,
+            },
+            {
+                titulo: "Link Google Maps",
+                name: "link_mapa",
+                tamanho: "col-span-12 lg:col-span-2",
+                tipo: "texto",
+                max: 200,
             },
         ],
         [
             {
                 titulo: "Telefone",
                 name: "telefone",
-                tamanho: "col-span-12 lg:col-span-2",
+                tamanho: "col-span-12 lg:col-span-4",
                 tipo: "texto",
                 max: 16,
             },
             {
                 titulo: "Whatsapp",
                 name: "whatsapp",
-                tamanho: "col-span-12 lg:col-span-2",
+                tamanho: "col-span-14 lg:col-span-4",
+                tipo: "texto",
+                max: 16,
+            },
+        ],
+
+        [
+            {
+                titulo: "Instagram",
+                name: "instagram",
+                tamanho: "col-span-12 lg:col-span-4",
                 tipo: "texto",
                 max: 16,
             },
@@ -99,16 +124,9 @@ export const GeneralData = () => {
 
         [
             {
-                titulo: "Link Google Maps",
-                name: "link_mapa",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 200,
-            },
-            {
                 titulo: "Link da Loja",
                 name: "link_loja",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto",
                 max: 128,
             },
