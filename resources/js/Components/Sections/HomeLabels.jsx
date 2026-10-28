@@ -17,7 +17,7 @@ export const HomeLabels = ({ content, images }) => {
             />
 
             <div className="container section-content max-w-medium text-center">
-                <HomeWine content={content}/>
+                <HomeWine content={content} />
                 <Title
                     tag="h3"
                     variant="subtitle"
@@ -44,7 +44,7 @@ export const HomeLabels = ({ content, images }) => {
 
                 <div data-fade data-delay="0.3">
                     <LinkButton
-                        // href="/acomodacoes"
+                        href={route("Produtos.index") }
                         className="mx-auto"
                     >
                         Ver catálogo
@@ -135,7 +135,7 @@ const HomeWine = ({ content }) => {
 
                     <div data-fade data-delay="0.35">
                         <LinkButton
-                        // href="/acomodacoes"
+                        href={route("Institucional.index")}
                         >
                             Nossa história
                         </LinkButton>

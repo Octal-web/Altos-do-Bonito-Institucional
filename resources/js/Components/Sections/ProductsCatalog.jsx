@@ -129,7 +129,7 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                                     src={product.imagem}
                                     alt={product.nome || ""}
                                     loading="lazy"
-                                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none"
+                                    className="h-full w-full object-contain hover-group"
                                 />
                             </Link>
 

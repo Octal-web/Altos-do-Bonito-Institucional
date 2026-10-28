@@ -1,17 +1,24 @@
-import React from 'react';
+import React from "react";
+import { Label } from "./Label";
 
-export const InputNumber = ({ title, name, value, idioma, onChange, min, max }) => {
+export const InputNumber = ({
+    title,
+    name,
+    value,
+    idioma,
+    onChange,
+    min,
+    max,
+}) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         onChange(name, value);
     };
-    
+
     return (
         <div className="mb-6">
-            <div className="flex items-center mb-2">
-                <img src={`/admin/img/flags/${idioma}.png`} className="w-5 mr-1" alt={`${idioma} flag`} />
-                <label className="block font-bold text-gray-500">{title}</label>
-            </div>
+            <Label title={title} idioma={idioma} />
+
             <input
                 type="number"
                 name={name}

@@ -91,9 +91,7 @@ export const HomeWinery = ({ content }) => {
                             </div>
 
                             <div className="mt-6 md:mt-16 flex flex-wrap gap-1.5">
-                                <LinkButton
-                                // href="/acomodacoes"
-                                >
+                                <LinkButton href={route("Contato.index")}>
                                     Agendar visita
                                 </LinkButton>
                                 <LinkButton

@@ -1,0 +1,268 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Inertia\Inertia;
+
+use Illuminate\Support\Facades\App;
+
+use App\Models\Pagina;
+use App\Models\Conteudo;
+use App\Models\DadosGerais;
+use App\Models\Idioma;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Illuminate\Http\Request;
+
+use Closure;
+use Illuminate\Support\Facades\Cache;
+
+class ShareInertiaData
+{
+    public function handle(Request $request, Closure $next)
+    {
+        if ($request->isMethod('get') && $request->path() !== 'sitemap.xml') {
+            $routeArray = $request->route()->getAction();
+            $controllerAction = class_basename($routeArray['controller']);
+            list($controller, $action) = explode('Controller@', $controllerAction);
+
+            if ($request->route()->getPrefix() == '/manager') {
+                $idioma = request('lang', -1);
+
+                $idiomas = Idioma::all();
+
+                $idioma = Idioma::query()
+                    ->where(function ($query) use ($idioma) {
+                        $query->orWhere([
+                            'padrao' => true
+                        ])
+                            ->orWhere([
+                                'codigo' => $idioma
+                            ]);
+                    })
+                    ->orderBy('padrao', 'ASC')
+                    ->orderBy('id', 'DESC')
+                    ->first();
+
+                $pagina = Pagina::query()
+                    ->where([
+                        'controladora' => $controller,
+                        'acao' => $action
+                    ])
+                    ->with([
+                        'paginasIdiomas' => function ($q) use ($idioma) {
+                            $q->whereHas('idiomas', function ($r) use ($idioma) {
+                                $r->where([
+                                    'id' => $idioma->id,
+                                ]);
+                            })
+                                ->with('idiomas');
+                        },
+                    ])
+                    ->first();
+
+                $conteudos = Conteudo::query()
+                    ->where([
+                        'controladora' => $controller,
+                        'acao' => $action
+                    ])
+                    ->with([
+                        'conteudosIdiomas' => function ($q) use ($idioma) {
+                            $q->whereHas('idiomas', function ($r) use ($idioma) {
+                                $r->where([
+                                    'id' => $idioma->id,
+                                ]);
+                            })
+                                ->with('idiomas');
+                        },
+                        'parametro'
+                    ])
+                    ->get()
+                    ->map(function ($conteudo) {
+                        return [
+                            'id' => $conteudo->id,
+                            'bloco' => $conteudo->parametro->descricao,
+                            'titulo' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->titulo : null,
+                            'habilitar_titulo' => $conteudo->parametro->habilitar_titulo ? true : false,
+                            'subtitulo' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->subtitulo : null,
+                            'habilitar_subtitulo' => $conteudo->parametro->habilitar_subtitulo ? true : false,
+                            'texto' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->texto : null,
+                            'habilitar_texto' => $conteudo->parametro->habilitar_texto ? true : false,
+                            'texto_formatado' => $conteudo->parametro->texto_formatado ? true : false,
+                            'titulo_formatado' => $conteudo->parametro->titulo_formatado ? true : false,
+                            'imagem' => rafator('content/display/' . $conteudo->imagem),
+                            'habilitar_img' => $conteudo->parametro->habilitar_img ? true : false,
+                            'largura_img' => $conteudo->parametro->largura_img,
+                            'altura_img' => $conteudo->parametro->altura_img,
+                            'recortar_img' => $conteudo->parametro->recortar_img ? true : false,
+                            'imagem_mobile' => rafator('content/display/' . $conteudo->imagem_mobile),
+                            'habilitar_img_mobile' => $conteudo->parametro->habilitar_img_mobile ? true : false,
+                            'largura_img_mobile' => $conteudo->parametro->largura_img_mobile,
+                            'altura_img_mobile' => $conteudo->parametro->altura_img_mobile,
+                            'recortar_img_mobile' => $conteudo->parametro->recortar_img_mobile ? true : false,
+                            'habilitar_arq' => $conteudo->parametro->habilitar_arq ? true : false,
+                            'arquivo' => count($conteudo->conteudosIdiomas) ? rafator('content/files/' . $conteudo->conteudosIdiomas[0]->arquivo) : null,
+                            'link' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->link : null,
+                            'habilitar_link' => $conteudo->parametro->habilitar_link ? true : false,
+                            'nova_aba' => count($conteudo->conteudosIdiomas) && $conteudo->conteudosIdiomas[0]->nova_aba ? true : false,
+                            'minimizavel' => $conteudo->parametro->minimizavel ? true : false,
+                            'galeria' => $conteudo->parametro->galeria ? true : false,
+                        ];
+                    });
+
+                if ($pagina) {
+                    $pagina = [
+                        'id' => $pagina->id,
+                        'titulo' => count($pagina->paginasIdiomas) ? $pagina->paginasIdiomas[0]->titulo : null,
+                        'descricao' => count($pagina->paginasIdiomas) ? $pagina->paginasIdiomas[0]->descricao : null,
+                        'titulo_compartilhamento' => count($pagina->paginasIdiomas) ? $pagina->paginasIdiomas[0]->titulo_compartilhamento : null,
+                        'descricao_compartilhamento' => count($pagina->paginasIdiomas) ? $pagina->paginasIdiomas[0]->descricao_compartilhamento : null,
+                        'imagem' => rafator('/content/pages/' . $pagina->imagem),
+                    ];
+                }
+
+                $idiomas = Idioma::all()->map(function ($linguagem) {
+                    return [
+                        'nome' => $linguagem->nome,
+                        'codigo' => $linguagem->codigo,
+                        'padrao' => $linguagem->padrao ? true : false,
+                    ];
+                });
+
+                $dados_gerais = DadosGerais::first();
+
+                Inertia::share([
+                    'pagina' => $pagina,
+                    'conteudos' => $conteudos,
+                    'idioma' => $idioma,
+                    'idiomas' => $idiomas,
+                    'controller' => $controller,
+                    'action' => $action,
+                    'dadosGerais' => $dados_gerais
+                ]);
+            } else {
+                $idiomas = Idioma::query()
+                    ->orderBy('padrao', 'DESC')
+                    ->orderBy('id', 'DESC')
+                    ->get()
+                    ->map(function ($idioma) {
+                        $idioma->url = LaravelLocalization::getLocalizedURL($idioma->codigo, null, [], true);
+                        return $idioma;
+                    });
+
+                $idioma = App::getLocale();
+
+                $conteudos = Conteudo::query()
+                    ->where([
+                        'excluido' => NULL,
+                        'controladora' => $controller,
+                        'acao' => $action
+                    ])
+                    ->with([
+                        'conteudosIdiomas' => function ($q) use ($idioma) {
+                            $q->whereHas('idiomas', function ($r) use ($idioma) {
+                                $r->where('codigo', $idioma)
+                                    ->orWhere('padrao', true);
+                            })
+                                ->orderBy('idioma_id', 'DESC');
+                        },
+                    ])
+                    ->get()
+                    ->map(function ($conteudo) {
+                        return [
+                            'id' => $conteudo->id,
+                            'titulo' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->titulo : null,
+                            'subtitulo' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->subtitulo : null,
+                            'texto' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->texto : null,
+                            'imagem' => rafator('content/display/' . $conteudo->imagem),
+                            'imagem_mobile' => rafator('content/display/' . $conteudo->imagem_mobile),
+                            'arquivo' => count($conteudo->conteudosIdiomas) ? rafator('content/files/' . $conteudo->conteudosIdiomas[0]->arquivo) : null,
+                            'link' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->link : null,
+                            'nova_aba' => count($conteudo->conteudosIdiomas) ? $conteudo->conteudosIdiomas[0]->nova_aba : false,
+                        ];
+                    });
+
+                $pagina = Pagina::query()
+                    ->where([
+                        'controladora' => $controller,
+                        'acao' => $action
+                    ])
+                    ->with([
+                        'paginasIdiomas' => function ($q) use ($idioma) {
+                            $q->whereHas('idiomas', function ($r) use ($idioma) {
+                                $r->where('codigo', $idioma)
+                                    ->orWhere('padrao', true);
+                            })
+                                ->orderBy('idioma_id', 'DESC');
+                        },
+                    ])
+                    ->first();
+
+                $dados_gerais = DadosGerais::first();
+
+                $notifyCookie = array_key_exists('notify-cookies', $_COOKIE) ? true : false;
+
+                if ($pagina) {
+                    list($width, $height, $type, $attr) = getimagesize(public_path('content/pages/' . $pagina->imagem));
+                }
+
+                Inertia::share([
+                    'pagina' => [
+                        'titulo' => $pagina->paginasIdiomas[0]->titulo,
+                        'descricao' => $pagina->paginasIdiomas[0]->descricao,
+                        'tituloCompartilhamento' => $pagina->paginasIdiomas[0]->titulo_compartilhamento,
+                        'descricaoCompartilhamento' => $pagina->paginasIdiomas[0]->descricao_compartilhamento,
+                        'imagem' => [
+                            'endereco' => '/content/pages/' . $pagina->imagem,
+                            'tipo' => image_type_to_mime_type($type),
+                            'largura' => $width,
+                            'altura' => $height,
+                        ],
+                    ],
+                    'dadosGerais' => $dados_gerais,
+                    'notifyCookie' => $notifyCookie,
+                    'controller' => $controller,
+                    'action' => $action,
+                    'conteudos' => $conteudos,
+                    'idiomas' => $idiomas,
+                    'idioma' => $idioma,
+                    // 'lojas' => fn() => Cache::remember(
+                    //     'lojas',
+                    //     345600,
+                    //     function () {
+                    //         return Loja::query()
+                    //             ->where([
+                    //                 'segmento' => 'EXCLUSIVO',
+                    //                 'PDV' => 'S',
+                    //                 'marca' => 'casabrasileira',
+                    //             ])
+                    //             ->whereNotIn('estab_id', [
+                    //                 '234817',
+                    //                 '242551',
+                    //                 '231357',
+                    //                 '147735',
+                    //                 '226263',
+                    //                 '226264',
+                    //                 '242753'
+                    //             ])
+                    //             ->get()
+                    //             ->map(function ($loja) {
+                    //                 return [
+                    //                     'id' => str()->slug($loja->cidade),
+                    //                     'cidade' => $this->formatarNome($loja->cidade),
+                    //                     'estado' => strtoupper($loja->uf),
+                    //                     'nome' => $this->formatarNome($loja->fantasia),
+                    //                     'endereco' => $this->formatarNome($loja->endereco . ' - ' . $loja->bairro),
+                    //                     'telefone' => $this->formatTelefone($loja->telefone),
+                    //                     'email' => $loja->email,
+                    //                     'instagram' => $loja->instagram,
+                    //                     'whatsapp' => $loja->whatsapp,
+                    //                 ];
+                    //             });
+                    //     }
+                    // ),
+                ]);
+            }
+        }
+        return $next($request);
+    }
+}

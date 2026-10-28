@@ -14,7 +14,7 @@ export const ProductsFooter = ({ content }) => {
                 html={content.titulo}/>
 
             <LinkButton
-                // href="/acomodacoes"
+                href={route("Contato.index") }
                 className="mx-auto mt-5 md:mt-10"
             >
                 Conversar agora

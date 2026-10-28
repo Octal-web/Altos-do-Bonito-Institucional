@@ -1,9 +1,19 @@
-import React from 'react';
+import React from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLink } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { Label } from "./Label";
 
-export const InputLink = ({ title, name, value, idioma, onChange, onCheck, max, novaAba }) => {
+export const InputLink = ({
+    title,
+    name,
+    value,
+    idioma,
+    onChange,
+    onCheck,
+    max,
+    novaAba,
+}) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         onChange(name, value);
@@ -17,40 +27,49 @@ export const InputLink = ({ title, name, value, idioma, onChange, onCheck, max, 
     return (
         <div className="flex gap-x-8 mb-6">
             <div className="w-full">
-                <div className="mb-2">
-                    <label className="block font-bold text-gray-500">{title}</label>
-                </div>
+                <Label title={title} idioma={idioma} />
+
                 <div className="flex">
-                    <FontAwesomeIcon icon={faLink} className="rounded-l-lg px-3 py-4 h-100 bg-gray-200" />
+                    <FontAwesomeIcon
+                        icon={faLink}
+                        className="px-3 py-4 h-100 bg-gray-200"
+                    />
                     <input
                         type="text"
                         name={name}
                         value={value}
-                        className="w-full rounded-r-lg border-gray-300 bg-transparent p-3 font-normal text-sm text-black outline-none transition focus:border-secondary focus:ring-0 active:border-secondary disabled:cursor-default disabled:bg-whiter"
+                        className="w-full border-gray-300 bg-transparent p-3 font-normal text-sm text-black outline-none transition focus:border-black focus:ring-0 active:border-black disabled:cursor-default disabled:bg-whiter"
                         onChange={handleChange}
                         maxLength={max ? max : null}
                     />
                 </div>
             </div>
 
-            {novaAba !== undefined &&
+            {novaAba !== undefined && (
                 <div className="w-3/5">
                     <div className="mb-2">
-                        <label className="block font-bold text-gray-500">Abrir link em nova aba?</label>
+                        <label className="block font-bold text-gray-500">
+                            Abrir link em nova aba?
+                        </label>
                     </div>
                     <div className="flex items-center mt-5">
-                        <input 
-                            type="checkbox" 
-                            id="nova_aba" 
-                            name="nova_aba" 
-                            className="h-4 w-4 text-secondary focus:ring-0" 
-                            checked={novaAba} 
-                            onChange={handleCheckboxChange} 
+                        <input
+                            type="checkbox"
+                            id="nova_aba"
+                            name="nova_aba"
+                            className="h-4 w-4 text-secondary focus:ring-0"
+                            checked={novaAba}
+                            onChange={handleCheckboxChange}
                         />
-                        <label htmlFor="nova_aba" className="ml-2 block text-sm sm:text-base">Sim</label>
+                        <label
+                            htmlFor="nova_aba"
+                            className="ml-2 block text-sm sm:text-base text-secondary"
+                        >
+                            Sim
+                        </label>
                     </div>
                 </div>
-            }
+            )}
         </div>
     );
 };

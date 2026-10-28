@@ -28,7 +28,7 @@ export const SectionBackground = ({
     if (!hasChildren) return image;
 
     return (
-        <div className={`relative isolate bg-black ${wrapperClassName}`}>
+        <div className={`relative ${wrapperClassName}`}>
             <div
                 aria-hidden="true"
                 className={`pointer-events-none absolute z-0 overflow-hidden ${backgroundClassName}`}

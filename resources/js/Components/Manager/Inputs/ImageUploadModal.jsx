@@ -54,7 +54,7 @@ export const ImageUploadModal = ({ onImageSelect, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2100]">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="animate-fade-in-down [animation-duration:_0.1s] rounded-sm border border-stroke bg-white w-full max-w-lg p-6 shadow-md relative">
                 <h3 className="text-lg font-medium mb-4">Inserir Imagem</h3>
                 

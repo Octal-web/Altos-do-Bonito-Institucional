@@ -1,0 +1,1 @@
+import{r as i,j as s,L as c}from"./app-Dg5biSZ4.js";const x=i.forwardRef(({children:a,href:t,icon:m,iconClassName:p="",className:o="",isButtonCA:r=!0,...e},n)=>s.jsxs(c,{ref:n,href:t,className:`${r?"button-primary":"button-secondary"} group w-fit ${o}`,...e,children:[s.jsx("div",{className:`h-px w-8 md:w-10 bg-white ${r?"":"group-hover:bg-black"}`}),a]}));export{x as L};

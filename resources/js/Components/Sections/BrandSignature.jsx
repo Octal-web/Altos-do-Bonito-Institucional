@@ -1,14 +1,14 @@
 import { Title } from "../UI/Title";
 import { SectionBackground } from "../UI/SectionBackground";
 
-export const BrandSignature = ({ content, children }) => {
+export const BrandSignature = ({ content, children, bgClassName = "" }) => {
     return (
-        <section className="relative isolate z-20 overflow-visible py-20 md:py-32 2xl:pt-80 2xl:pb-52">
-            <div className="pointer-events-none absolute inset-0 -z-20 overflow-hidden" aria-hidden="true">
+        <section className="relative z-20 overflow-visible py-40 md:py-32 2xl:pt-80 2xl:pb-52">
+            <div className="pointer-events-none absolute inset-0 -z-20 overflow-visible" aria-hidden="true">
                 <SectionBackground
                     parallax="8"
                     direction="right"
-                    className="inset-0 opacity-45 md:opacity-70 max-sm:h-full md:left-96 md:top-40"
+                    className={`inset-0 opacity-45 md:opacity-70 max-sm:h-full md:left-96 md:top-40 ${bgClassName}`}
                 />
             </div>
             <img
