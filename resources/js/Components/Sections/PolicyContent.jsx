@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Title } from "../Ui/Title";
+import { Title } from "../UI/Title";
 
 function slideUp(element, duration = 200) {
     element.style.height = element.offsetHeight + "px";
