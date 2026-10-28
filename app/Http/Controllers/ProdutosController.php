@@ -95,6 +95,7 @@ class ProdutosController extends Controller
                                         'id' => $produto->id,
                                         'slug' => $produto->slug,
                                         'imagem' => rafator('content/products/items/' . $produto->imagem),
+                                        'imagem_alternativa' => rafator('content/products/items/' . $produto->imagem_alternativa),
                                         'nome' => $produto->produtosIdiomas->isNotEmpty() ? $produto->produtosIdiomas[0]->nome : null,
                                     ];
                                 }),
@@ -256,12 +257,17 @@ class ProdutosController extends Controller
             'processo_descricao' => $produto->produtosIdiomas[0]->processo_descricao,
             'ficha_tecnica' => $produto->produtosIdiomas[0]->ficha_tecnica,
 
-            'galeria' => $produto->produtosImagens->map(function ($item) {
+            'galeria' => $produto->produtosImagens->isNotEmpty() ? $produto->produtosImagens->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'imagem' => rafator('content/products/gallery/' . $item->imagem),
                 ];
-            }),
+            }) : collect([
+                [
+                    'id' => null,
+                    'imagem' => rafator('content/products/highlight/' . $produto->imagem_destaque),
+                ],
+            ]),
         ];
 
         return Inertia::render('Produtos/produto', [
