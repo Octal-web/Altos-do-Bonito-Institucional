@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import { usePage } from "@inertiajs/react";
 
 import DefaultLayout from "@/Layouts/DefaultLayout";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 import { AboutBanner } from "@/Components/Sections/AboutBanner";
 import { AboutOrigin } from "@/Components/Sections/AboutOrigin";
@@ -16,37 +18,45 @@ import { AboutTerroirRegion } from "@/Components/Sections/AboutTerroirRegion";
 const Page = () => {
     const { conteudos, acontecimentos, valores, profissionais } =
         usePage().props;
+    const pageRef = useRef(null);
+
+    useScrollReveal(pageRef);
+
     return (
         <DefaultLayout>
-            <AboutBanner content={conteudos[0]} />
-            <SectionBackground
-                className="object-left opacity-55"
-                backgroundClassName="inset-y-0 left-0 right-0 md:right-[50%] bottom-[90%] md:bottom-[60%]"
-                overlayClassName="bg-[linear-gradient(to_right,transparent,transparent,black),linear-gradient(to_top_right,transparent,transparent,black)]"
-            >
-                <AboutTradition content={conteudos[1]} />
-                <AboutOrigin content={[conteudos[2], conteudos[3]]} />
-            </SectionBackground>
+            <div ref={pageRef}>
+                <AboutBanner content={conteudos[0]} />
+                <SectionBackground
+                    parallax="8"
+                    className="object-left opacity-55"
+                    backgroundClassName="inset-y-0 left-0 right-0 md:right-[50%] bottom-[90%] md:bottom-[60%]"
+                    overlayClassName="bg-[linear-gradient(to_bottom,black_0%,transparent_45%,transparent_65%,black_100%),linear-gradient(to_right,transparent,transparent,black),linear-gradient(to_top_right,transparent,transparent,black)]"
+                >
+                    <AboutTradition content={conteudos[1]} />
+                    <AboutOrigin content={[conteudos[2], conteudos[3]]} />
+                </SectionBackground>
 
-            <AboutValues content={conteudos[6]} values={valores} />
+                <AboutValues content={conteudos[6]} values={valores} />
 
-            <AboutTerroirRegion content={[conteudos[9], conteudos[10]]}/>
+                <AboutTerroirRegion content={[conteudos[9], conteudos[10]]}/>
 
-            <SectionBackground
-                className="object-left opacity-45"
-                backgroundClassName="inset-y-0 left-0 right-0 top-[30%] hidden md:block bottom-[20%] scale-y-[-1]"
-                overlayClassName="bg-[linear-gradient(to_right,transparent,transparent,black),linear-gradient(to_top_right,transparent,transparent,black)]"
-            >
-                <AboutProfessionals
-                    content={conteudos[7]}
-                    professionals={profissionais}
-                />
-                <AboutTimeline content={conteudos[8]} events={acontecimentos} />
-            </SectionBackground>
+                <SectionBackground
+                    parallax="8"
+                    className="object-left opacity-45"
+                    backgroundClassName="inset-y-0 left-0 right-0 top-[30%] hidden md:block bottom-[20%] scale-y-[-1]"
+                    overlayClassName="bg-[linear-gradient(to_right,transparent,transparent,black),linear-gradient(to_top_right,transparent,transparent,black)]"
+                >
+                    <AboutProfessionals
+                        content={conteudos[7]}
+                        professionals={profissionais}
+                    />
+                    <AboutTimeline content={conteudos[8]} events={acontecimentos} />
+                </SectionBackground>
 
-            <BrandSignature content={conteudos[5]}>
-                <AboutVisit content={conteudos[4]} />
-            </BrandSignature>
+                <BrandSignature content={conteudos[5]}>
+                    <AboutVisit content={conteudos[4]} />
+                </BrandSignature>
+            </div>
         </DefaultLayout>
     );
 };
