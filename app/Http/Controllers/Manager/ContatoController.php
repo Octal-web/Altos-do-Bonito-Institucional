@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Contato;
 use App\Models\Newsletter;
-use App\Models\Departamento;
-use App\Models\Parceiro;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,7 +19,8 @@ class ContatoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index()
+    {
         $idioma = inertia()->getShared('idioma');
 
         $contatos = Contato::query()
@@ -31,7 +30,7 @@ class ContatoController extends Controller
             ->orderBy('criado', 'ASC')
             ->orderBy('id', 'DESC')
             ->get()
-            ->map(function($contato) {
+            ->map(function ($contato) {
                 return [
                     'id' => $contato->id,
                     'nome' => $contato->nome,
@@ -46,7 +45,7 @@ class ContatoController extends Controller
             ->orderBy('criado', 'ASC')
             ->orderBy('id', 'DESC')
             ->get()
-            ->map(function($newsletter) {
+            ->map(function ($newsletter) {
                 return [
                     'id' => $newsletter->id,
                     'nome' => $newsletter->email,
@@ -60,11 +59,12 @@ class ContatoController extends Controller
         ]);
     }
 
-    public function visualizar($id) {
+    public function visualizar($id)
+    {
         if (!$id) {
             return Inertia::location(route('Manager.Contato.index'));
         }
-        
+
         $idioma = inertia()->getShared('idioma');
 
         $contato = Contato::query()
@@ -74,7 +74,7 @@ class ContatoController extends Controller
             ])
             ->first();
 
-        if(!$contato) {
+        if (!$contato) {
             return Inertia::location(route('Manager.Contato.index'));
         }
 
@@ -83,7 +83,7 @@ class ContatoController extends Controller
             'nome' => $contato->nome,
             'email' => $contato->email,
             'telefone' => $contato->telefone,
-            'area' => $contato->area,
+            'assunto' => $contato->assunto,
             'mensagem' => $contato->mensagem,
             'data' => $contato->criado->format('d/m/Y H:i')
         ];
@@ -100,8 +100,9 @@ class ContatoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function excluir(Request $request, $id) {
-        if ($request->ajax()){
+    public function excluir(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return $request->header('referer');
             }

@@ -11,22 +11,22 @@ use App\Models\Idioma;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Requests\Manager\PostTimelineRequest;
-
+use App\Http\Requests\Manager\PostEventRequest;
+use App\Services\ImageCompressor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
 
 use DeepCopy\DeepCopy;
 
 class AcontecimentosController extends Controller
-{    
+{
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function adicionar() {
+    public function adicionar()
+    {
         return Inertia::render('Manager/Acontecimentos/adicionar');
     }
 
@@ -36,15 +36,29 @@ class AcontecimentosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function novo(PostTimelineRequest $request) {
-        if($request->ajax()){
-            $idioma = inertia()->getShared('idioma');
-            
+    public function novo(PostEventRequest $request, ImageCompressor $compressor)
+    {
+        if ($request->ajax()) {
+            $idioma = Idioma::query()
+                ->when(
+                    $request->filled('lang'),
+                    fn($query) => $query->where('codigo', $request->input('lang')),
+                    fn($query) => $query->where('padrao', true)
+                )
+                ->orderByDesc('id')
+                ->first();
+
+            if (!$idioma) {
+                return back()->withInput()->with('message', [
+                    'type' => 'error',
+                    'msg' => 'Não foi possível identificar o idioma. Verifique o idioma selecionado e o cadastro do idioma padrão.',
+                ]);
+            }
+
             $acontecimento = new Acontecimento;
             $acontecimento_idioma = new AcontecimentoIdioma;
 
             $acontecimento->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img')->extension());
-
             $acontecimento->ano = $request->ano;
 
             $response = $acontecimento->save();
@@ -58,9 +72,9 @@ class AcontecimentosController extends Controller
             $response = $acontecimento_idioma->save();
 
             if ($response) {
-                $image = $request->file('img')->move(public_path('content/timeline/'), $acontecimento->imagem);
+                $compressor->compressOrFallback($request->file('img')->getRealPath(), public_path('content/timeline/' . $acontecimento->imagem));
 
-                return to_route('Manager.Institucional.historia')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
+                return to_route('Manager.Institucional.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
             }
         }
     }
@@ -71,11 +85,12 @@ class AcontecimentosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function editar($id) {
+    public function editar($id)
+    {
         if (!$id) {
-            return Inertia::location(route('Manager.Institucional.historia'));
+            return Inertia::location(route('Manager.Institucional.index'));
         }
-        
+
         $idiomas = Idioma::query()
             ->orderBy('padrao', 'DESC')
             ->orderBy('id', 'DESC')
@@ -90,22 +105,22 @@ class AcontecimentosController extends Controller
             ])
             ->with([
                 'acontecimentosIdiomas' => function ($q) use ($idioma) {
-                    $q->when($idioma, function ($r) use($idioma) {
-                        $r->whereHas('idiomas', function($query) use($idioma) {
+                    $q->when($idioma, function ($r) use ($idioma) {
+                        $r->whereHas('idiomas', function ($query) use ($idioma) {
                             $query->where('codigo', $idioma);
                         });
                     })
-                    ->when(!$idioma, function ($r) {
-                        $r->whereHas('idiomas', function($query) {
-                            $query->where('padrao', true);
+                        ->when(!$idioma, function ($r) {
+                            $r->whereHas('idiomas', function ($query) {
+                                $query->where('padrao', true);
+                            });
                         });
-                    });
                 }
             ])
             ->first();
 
-        if(!$acontecimento) {
-            return Inertia::location(route('Manager.Institucional.historia'));
+        if (!$acontecimento) {
+            return Inertia::location(route('Manager.Institucional.index'));
         }
 
         $idioma = inertia()->getShared('idioma');
@@ -117,7 +132,7 @@ class AcontecimentosController extends Controller
             'titulo' => count($acontecimento->acontecimentosIdiomas) ? $acontecimento->acontecimentosIdiomas[0]->titulo : null,
             'descricao' => count($acontecimento->acontecimentosIdiomas) ? $acontecimento->acontecimentosIdiomas[0]->descricao : null,
         ];
-        
+
         return Inertia::render('Manager/Acontecimentos/editar', [
             'idiomas' => $idiomas,
             'idioma' => $idioma,
@@ -132,8 +147,9 @@ class AcontecimentosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function atualizar(PostTimelineRequest $request, $id) {
-        if($request->ajax()){
+    public function atualizar(PostEventRequest $request, $id, ImageCompressor $compressor)
+    {
+        if ($request->ajax()) {
             $acontecimento = Acontecimento::query()
                 ->where([
                     'excluido' => null,
@@ -148,29 +164,29 @@ class AcontecimentosController extends Controller
                     'excluido' => null,
                     'acontecimento_id' => $acontecimento->id
                 ])
-                ->when($idioma, function ($q) use($idioma) {
-                    $q->whereHas('idiomas', function($query) use($idioma) {
+                ->when($idioma, function ($q) use ($idioma) {
+                    $q->whereHas('idiomas', function ($query) use ($idioma) {
                         $query->where('codigo', $idioma);
                     });
                 })
                 ->when(!$idioma, function ($q) {
-                    $q->whereHas('idiomas', function($query) {
+                    $q->whereHas('idiomas', function ($query) {
                         $query->where('padrao', true);
                     });
                 })
                 ->first();
 
             if (!$acontecimento) {
-                return to_route('Manager.Institucional.historia')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
+                return to_route('Manager.Institucional.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
             }
 
             $idioma = $this->getLanguages($acontecimento, 'acontecimentosIdiomas', $idioma);
 
             if (!$idioma) {
                 if ($request->ajax()) {
-                    return to_route('Manager.Institucional.historia')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
+                    return to_route('Manager.Institucional.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
                 }
-                return Inertia::location(route('Manager.Institucional.historia'));
+                return Inertia::location(route('Manager.Institucional.index'));
             }
 
             if (!$acontecimento_idioma) {
@@ -183,8 +199,6 @@ class AcontecimentosController extends Controller
                 $acontecimentoOriginal = $copier->copy($acontecimento);
             }
 
-            
-            $acontecimento->ano = $request->ano;
 
             if ($request->file('img') && $request->file('img')->getError() == 0) {
                 $acontecimento->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img')->extension());
@@ -192,6 +206,8 @@ class AcontecimentosController extends Controller
 
             $acontecimento_idioma->titulo = $request->titulo;
             $acontecimento_idioma->descricao = $request->descricao;
+
+            $acontecimento->ano = $request->ano;
 
             $response = $acontecimento->save();
             $response = $acontecimento_idioma->save();
@@ -201,15 +217,15 @@ class AcontecimentosController extends Controller
                     if ($acontecimento->imagem && isset($acontecimentoOriginal) && File::exists('content/timeline/' . $acontecimentoOriginal->imagem)) {
                         File::delete('content/timeline/' . $acontecimentoOriginal->imagem);
                     }
-                    
-                    $image = $request->file('img')->move(public_path('content/timeline/'), $acontecimento->imagem);
+
+                    $compressor->compressOrFallback($request->file('img')->getRealPath(), public_path('content/timeline/' . $acontecimento->imagem));
                 }
 
-                return to_route('Manager.Institucional.historia')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
+                return to_route('Manager.Institucional.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
             }
         }
 
-        return to_route('Manager.Institucional.historia')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
+        return to_route('Manager.Institucional.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
     }
 
     /**
@@ -219,8 +235,9 @@ class AcontecimentosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function excluir(Request $request, $id) {
-        if ($request->ajax()){
+    public function excluir(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return $request->header('referer');
             }
@@ -249,8 +266,9 @@ class AcontecimentosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function visibilidade(Request $request, $id) {
-        if ($request->ajax()){
+    public function visibilidade(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return redirect()->back()->with(['type' => 'error', 'message' => 'Registro não encontrado!']);
             }
@@ -265,14 +283,13 @@ class AcontecimentosController extends Controller
             if (!$response) {
                 return redirect()->back()->with('message', ['type' => 'error', 'msg' => 'Registro não encontrado!']);
             }
-    
+
             $response->visivel = 1 - $response->visivel;
             $response->save();
-    
+
             if ($response) {
                 return redirect()->back()->with('message', ['type' => 'success', 'msg' => 'Visibilidade alterada com sucesso!']);
-            }
-            else {
+            } else {
                 return redirect()->back()->with('message', ['type' => 'error', 'msg' => 'Visibilidade não alterada!']);
             }
         }
@@ -287,8 +304,9 @@ class AcontecimentosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function ordenar(Request $request) {
-        if ($request->ajax()){
+    public function ordenar(Request $request)
+    {
+        if ($request->ajax()) {
             $erros = [];
 
             if ($request->odr && is_array($request->odr)) {

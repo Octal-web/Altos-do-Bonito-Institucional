@@ -7,22 +7,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Produto;
 use App\Models\ProdutoIdioma;
 
-use App\Models\Volume;
 use App\Models\Categoria;
-use App\Models\Linha;
 use App\Models\Arquivo;
-use App\Models\ArquivoIdioma;
 
 use App\Models\Idioma;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\Manager\PostProductRequest;
-
+use App\Services\ImageCompressor;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Response;
 
 use DeepCopy\DeepCopy;
 
@@ -33,7 +29,8 @@ class ProdutosController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index()
+    {
         $idioma = inertia()->getShared('idioma');
 
         $produtos = Produto::query()
@@ -44,73 +41,58 @@ class ProdutosController extends Controller
                 'produtosIdiomas' => function ($q) use ($idioma) {
                     $q->whereHas('idiomas', function ($r) use ($idioma) {
                         $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
+                            ->orWhere('padrao', true);
                     })
-                    ->orderBy('idioma_id', 'DESC');
+                        ->orderBy('idioma_id', 'DESC');
                 }
             ])
             ->get()
-            ->map(function($produto) {
+            ->map(function ($produto) {
                 return [
                     'id' => $produto->id,
                     'visivel' => $produto->visivel,
-                    'imagem' => rafator('content/products/full/' . $produto->imagem_infinito),
+                    'imagem' => rafator('content/products/items/' . $produto->imagem),
                     'nome' => $produto->produtosIdiomas->isNotEmpty() ? $produto->produtosIdiomas[0]->nome : null,
                 ];
             });
 
+        $categorias = Categoria::query()
+            ->where([
+                'excluido' => NULL
+            ])
+            ->with([
+                'categoriasIdiomas' => function ($q) use ($idioma) {
+                    $q->whereHas('idiomas', function ($r) use ($idioma) {
+                        $r->where('codigo', $idioma)
+                            ->orWhere('padrao', true);
+                    })
+                        ->orderBy('idioma_id', 'DESC');
+                }
+            ])
+            ->get()
+            ->map(function ($produto) {
+                return [
+                    'id' => $produto->id,
+                    'visivel' => $produto->visivel,
+                    'nome' => $produto->categoriasIdiomas->isNotEmpty() ? $produto->categoriasIdiomas[0]->nome : null,
+                ];
+            });
+
         return Inertia::render('Manager/Produtos/index', [
-            'produtos' => $produtos
+            'produtos' => $produtos,
+            'categorias' => $categorias
         ]);
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function adicionar() {
-        $idiomas = Idioma::query()
-            ->orderBy('padrao', 'DESC')
-            ->orderBy('id', 'DESC')
-            ->get();
+    public function adicionar()
+    {
 
         $idioma = request('lang');
-        
-        $volumes = Volume::query()
-            ->where([
-                'excluido' => NULL,
-                'visivel' => true
-            ])
-            ->get()
-            ->map(function($volume) {
-                return [
-                    'value' => $volume->id,
-                    'label' => $volume->volume
-                ];
-            });
-
-        $linhas = Linha::query()
-            ->where([
-                'excluido' => NULL,
-                'visivel' => true
-            ])
-            ->with([
-                'linhasIdiomas' => function ($q) use ($idioma) {
-                    $q->whereHas('idiomas', function ($r) use ($idioma) {
-                        $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
-                    })
-                    ->orderBy('idioma_id', 'DESC');
-                }
-            ])
-            ->get()
-            ->map(function($linha) {
-                return [
-                    'value' => $linha->id,
-                    'label' => $linha->linhasIdiomas->isNotEmpty() ? $linha->linhasIdiomas[0]->nome : null,
-                ];
-            });
 
         $categorias = Categoria::query()
             ->where([
@@ -121,22 +103,20 @@ class ProdutosController extends Controller
                 'categoriasIdiomas' => function ($q) use ($idioma) {
                     $q->whereHas('idiomas', function ($r) use ($idioma) {
                         $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
+                            ->orWhere('padrao', true);
                     })
-                    ->orderBy('idioma_id', 'DESC');
+                        ->orderBy('idioma_id', 'DESC');
                 }
             ])
             ->get()
-            ->map(function($categoria) {
+            ->map(function ($categoria) {
                 return [
                     'value' => $categoria->id,
-                    'label' => $categoria->categoriasIdiomas->isNotEmpty() ? ($categoria->categoriasIdiomas[0]->tipo ? $categoria->categoriasIdiomas[0]->tipo . ' ' . $categoria->categoriasIdiomas[0]->nome : $categoria->categoriasIdiomas[0]->nome) : null,
+                    'label' => $categoria->categoriasIdiomas->isNotEmpty() ? $categoria->categoriasIdiomas[0]->nome : null,
                 ];
             });
 
         return Inertia::render('Manager/Produtos/adicionar', [
-            'volumes' => $volumes,
-            'linhas' => $linhas,
             'categorias' => $categorias
         ]);
     }
@@ -147,10 +127,25 @@ class ProdutosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function novo(PostProductRequest $request) {
-        if($request->ajax()){
-            $idioma = inertia()->getShared('idioma');
-            
+    public function novo(PostProductRequest $request, ImageCompressor $compressor)
+    {
+        if ($request->ajax()) {
+            $idioma = Idioma::query()
+                ->when(
+                    $request->filled('lang'),
+                    fn($query) => $query->where('codigo', $request->input('lang')),
+                    fn($query) => $query->where('padrao', true)
+                )
+                ->orderByDesc('id')
+                ->first();
+
+            if (!$idioma) {
+                return back()->withInput()->with('message', [
+                    'type' => 'error',
+                    'msg' => 'Não foi possível identificar o idioma do slide. Verifique o idioma selecionado e o cadastro do idioma padrão.',
+                ]);
+            }
+
             $produto = new Produto;
             $produto_idioma = new ProdutoIdioma;
 
@@ -165,29 +160,35 @@ class ProdutosController extends Controller
             }
 
             $produto->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img')->extension());
-            $produto->imagem_fundo = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_bg')->extension());
-            $produto->imagem_infinito = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_full')->extension());
-            
-            if ($request->file('arq') && $request->file('arq')->getError() == 0) {
-                $produto->ficha_tecnica = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('arq')->extension());
-            }
-            
+            $produto->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_alternativa')->extension());
+            $produto->imagem_destaque = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_destaque')->extension());
+
+            $produto->imagem_primaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_primaria')->extension());
+            $produto->imagem_secundaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_secundaria')->extension());
+            $produto->imagem_terciaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_terciaria')->extension());
+
             $produto->slug = $slug;
-            $produto->colheitas = $request->colheitas;
             $produto->link_loja = $request->link_loja;
-            $produto->destaque = $request->destaque ? true : false;
-            $produto->linha_id = $request->linha_id;
             $produto->categoria_id = $request->categoria_id;
 
-            $response = $produto->save(); 
-            
-            if ($request->filled('produtos_volumes')) {
-                $produto->volumes()->sync($request->input('produtos_volumes'));
-            }
+            $response = $produto->save();
 
             $produto_idioma->nome = $request->nome;
+            $produto_idioma->subtitulo = $request->subtitulo;
             $produto_idioma->descricao = $request->descricao;
-            $produto_idioma->destaques = $request->destaques;
+
+            $produto_idioma->historia_subtitulo = $request->historia_subtitulo;
+            $produto_idioma->historia_titulo = $request->historia_titulo;
+            $produto_idioma->historia_descricao = $request->historia_descricao;
+
+            $produto_idioma->origem_titulo = $request->origem_titulo;
+            $produto_idioma->origem_descricao = $request->origem_descricao;
+
+            $produto_idioma->processo_titulo = $request->processo_titulo;
+            $produto_idioma->processo_descricao = $request->processo_descricao;
+
+            $produto_idioma->ficha_tecnica = $request->ficha_tecnica;
+
             $produto_idioma->titulo_pagina = $request->titulo_pagina;
             $produto_idioma->descricao_pagina = $request->descricao_pagina;
 
@@ -197,13 +198,13 @@ class ProdutosController extends Controller
             $response = $produto_idioma->save();
 
             if ($response) {
-                $image = $request->file('img')->move(public_path('content/products/thumbs/'), $produto->imagem);
-                $image = $request->file('img_bg')->move(public_path('content/products/bg/'), $produto->imagem_fundo);
-                $image = $request->file('img_full')->move(public_path('content/products/full/'), $produto->imagem_infinito);
-                
-                if ($request->file('arq') && $request->file('arq')->getError() == 0) {
-                    $file = $request->file('arq')->move(public_path('content/products/files/'), $produto->ficha_tecnica);
-                }
+                $compressor->compressOrFallback($request->file('img')->getRealPath(), public_path('content/products/items/' . $produto->imagem));
+                $compressor->compressOrFallback($request->file('alternativa')->getRealPath(), public_path('content/products/items/' . $produto->imagem_alternativa));
+                $compressor->compressOrFallback($request->file('img_destaque')->getRealPath(), public_path('content/products/highlight/' . $produto->imagem_destaque));
+
+                $compressor->compressOrFallback($request->file('img_primaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_primaria));
+                $compressor->compressOrFallback($request->file('img_secundaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_secundaria));
+                $compressor->compressOrFallback($request->file('img_terciaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_terciaria));
 
                 return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
             }
@@ -216,11 +217,12 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function editar($id) {
+    public function editar($id)
+    {
         if (!$id) {
             return Inertia::location(route('Manager.Produtos.index'));
         }
-        
+
         $idiomas = Idioma::query()
             ->orderBy('padrao', 'DESC')
             ->orderBy('id', 'DESC')
@@ -235,83 +237,32 @@ class ProdutosController extends Controller
             ])
             ->with([
                 'produtosIdiomas' => function ($q) use ($idioma) {
-                    $q->when($idioma, function ($r) use($idioma) {
-                        $r->whereHas('idiomas', function($query) use($idioma) {
+                    $q->when($idioma, function ($r) use ($idioma) {
+                        $r->whereHas('idiomas', function ($query) use ($idioma) {
                             $query->where('codigo', $idioma);
                         });
                     })
-                    ->when(!$idioma, function ($r) {
-                        $r->whereHas('idiomas', function($query) {
-                            $query->where('padrao', true);
+                        ->when(!$idioma, function ($r) {
+                            $r->whereHas('idiomas', function ($query) {
+                                $query->where('padrao', true);
+                            });
                         });
-                    });
                 },
                 'categoria' => function ($q) {
                     $q->where([
                         'excluido' => null,
                         'visivel' => true
                     ])
-                    ->orderBy('ordem', 'DESC')
-                    ->orderBy('id', 'DESC');
+                        ->orderBy('ordem', 'DESC')
+                        ->orderBy('id', 'DESC');
                 },
-                'arquivos' => function ($q) use ($idioma) {
-                    $q->where('excluido', null)
-                    ->orderBy('ordem', 'ASC')
-                    ->orderBy('id', 'ASC')
-                    ->with(['arquivosIdiomas' => function ($query) use ($idioma) {
-                        $query->when($idioma, function ($r) use($idioma) {
-                            $r->whereHas('idiomas', function($q) use($idioma) {
-                                $q->where('codigo', $idioma);
-                            });
-                        })
-                        ->when(!$idioma, function ($r) {
-                            $r->whereHas('idiomas', function($q) {
-                                $q->where('padrao', true);
-                            });
-                        });
-                    }]);
-                }
+
             ])
             ->first();
 
-        if(!$produto) {
+        if (!$produto) {
             return Inertia::location(route('Manager.Produtos.index'));
         }
-    
-        $volumes = Volume::query()
-            ->where([
-                'excluido' => NULL,
-                'visivel' => true
-            ])
-            ->get()
-            ->map(function($volume) {
-                return [
-                    'value' => $volume->id,
-                    'label' => $volume->volume
-                ];
-            });
-
-        $linhas = Linha::query()
-            ->where([
-                'excluido' => NULL,
-                'visivel' => true
-            ])
-            ->with([
-                'linhasIdiomas' => function ($q) use ($idioma) {
-                    $q->whereHas('idiomas', function ($r) use ($idioma) {
-                        $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
-                    })
-                    ->orderBy('idioma_id', 'DESC');
-                }
-            ])
-            ->get()
-            ->map(function($linha) {
-                return [
-                    'value' => $linha->id,
-                    'label' => $linha->linhasIdiomas->isNotEmpty() ? $linha->linhasIdiomas[0]->nome : null,
-                ];
-            });
 
         $categorias = Categoria::query()
             ->where([
@@ -322,52 +273,57 @@ class ProdutosController extends Controller
                 'categoriasIdiomas' => function ($q) use ($idioma) {
                     $q->whereHas('idiomas', function ($r) use ($idioma) {
                         $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
+                            ->orWhere('padrao', true);
                     })
-                    ->orderBy('idioma_id', 'DESC');
+                        ->orderBy('idioma_id', 'DESC');
                 }
             ])
             ->get()
-            ->map(function($categoria) {
+            ->map(function ($categoria) {
                 return [
                     'value' => $categoria->id,
-                    'label' => $categoria->categoriasIdiomas->isNotEmpty() ? ($categoria->categoriasIdiomas[0]->tipo ? $categoria->categoriasIdiomas[0]->tipo . ' ' . $categoria->categoriasIdiomas[0]->nome : $categoria->categoriasIdiomas[0]->nome) : null,
+                    'label' => $categoria->categoriasIdiomas->isNotEmpty() ? $categoria->categoriasIdiomas[0]->nome : null,
                 ];
             });
 
         $idioma = inertia()->getShared('idioma');
-        
+
         $produtoData = [
             'id' => $produto->id,
-            'imagem' => rafator('content/products/thumbs/' . $produto->imagem),
-            'imagem_infinito' => rafator('content/products/full/' . $produto->imagem_infinito),
-            'imagem_fundo' => rafator('content/products/bg/' . $produto->imagem_fundo),
-            'colheitas' => $produto->colheitas,
+            'imagem' => rafator('content/products/items/' . $produto->imagem),
+            'imagem_alternativa' => rafator('content/products/items/' . $produto->imagem_alternativa),
+            'imagem_primaria' => rafator('content/products/thumbs/' . $produto->imagem_primaria),
+            'imagem_secundaria' => rafator('content/products/thumbs/' . $produto->imagem_secundaria),
+            'imagem_terciaria' => rafator('content/products/thumbs/' . $produto->imagem_terciaria),
+            'imagem_destaque' => rafator('content/products/highlight/' . $produto->imagem_destaque),
             'link_loja' => $produto->link_loja,
-            'destaque' => $produto->destaque ? true : false,
-            'produtos_volumes' => $produto->volumes->pluck('id'),
-            'linha_id' => $produto->linha_id,
             'categoria_id' => $produto->categoria_id,
-            'ficha_tecnica' => $produto->ficha_tecnica ? true : false,
+
+            'subtitulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->subtitulo : null,
             'nome' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->nome : null,
             'descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->descricao : null,
-            'destaques' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->destaques : null,
+
+            'historia_subtitulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->historia_subtitulo : null,
+            'historia_titulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->historia_titulo : null,
+            'historia_descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->historia_descricao : null,
+
+            'origem_titulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->origem_titulo : null,
+            'origem_descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->origem_descricao : null,
+
+
+            'processo_titulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->processo_titulo : null,
+            'processo_descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->processo_descricao : null,
+
+            'ficha_tecnica' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->ficha_tecnica : null,
+
             'titulo_pagina' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->titulo_pagina : null,
             'descricao_pagina' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->descricao_pagina : null,
-            'arquivos' => $produto->arquivos->map(function($arquivo) {
-                return [
-                    'id' => $arquivo->id,
-                    'titulo' => count($arquivo->arquivosIdiomas) ? $arquivo->arquivosIdiomas[0]->titulo : '',
-                ];
-            })->toArray(),
         ];
 
         return Inertia::render('Manager/Produtos/editar', [
             'idiomas' => $idiomas,
             'idioma' => $idioma,
             'produto' => $produtoData,
-            'volumes' => $volumes,
-            'linhas' => $linhas,
             'categorias' => $categorias
         ]);
     }
@@ -379,8 +335,9 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function atualizar(PostProductRequest $request, $id) {
-        if($request->ajax()){
+    public function atualizar(PostProductRequest $request, $id, ImageCompressor $compressor)
+    {
+        if ($request->ajax()) {
             $produto = Produto::query()
                 ->where([
                     'excluido' => null,
@@ -395,13 +352,13 @@ class ProdutosController extends Controller
                     'excluido' => null,
                     'produto_id' => $produto->id
                 ])
-                ->when($idioma, function ($q) use($idioma) {
-                    $q->whereHas('idiomas', function($query) use($idioma) {
+                ->when($idioma, function ($q) use ($idioma) {
+                    $q->whereHas('idiomas', function ($query) use ($idioma) {
                         $query->where('codigo', $idioma);
                     });
                 })
                 ->when(!$idioma, function ($q) {
-                    $q->whereHas('idiomas', function($query) {
+                    $q->whereHas('idiomas', function ($query) {
                         $query->where('padrao', true);
                     });
                 })
@@ -446,149 +403,102 @@ class ProdutosController extends Controller
             }
 
             $produto->slug = $slug;
-            $produto->colheitas = $request->colheitas;
             $produto->link_loja = $request->link_loja;
-            $produto->destaque = $request->destaque ? true : false;
-            $produto->linha_id = $request->linha_id;
             $produto->categoria_id = $request->categoria_id;
 
             if ($request->file('img') && $request->file('img')->getError() == 0) {
                 $produto->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img')->extension());
             }
 
-            if ($request->file('img_bg') && $request->file('img_bg')->getError() == 0) {
-                $produto->imagem_fundo = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_bg')->extension());
+            if ($request->file('img_alternativa') && $request->file('img_alternativa')->getError() == 0) {
+                $produto->imagem_alternativa = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_alternativa')->extension());
             }
 
-            if ($request->file('img_full') && $request->file('img_full')->getError() == 0) {
-                $produto->imagem_infinito = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_full')->extension());
+            if ($request->file('img_destaque') && $request->file('img_destaque')->getError() == 0) {
+                $produto->imagem_destaque = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_destaque')->extension());
+            }
+
+            if ($request->file('img_primaria') && $request->file('img_primaria')->getError() == 0) {
+                $produto->imagem_primaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_primaria')->extension());
+            }
+
+            if ($request->file('img_secundaria') && $request->file('img_secundaria')->getError() == 0) {
+                $produto->imagem_secundaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_secundaria')->extension());
+            }
+
+            if ($request->file('img_terciaria') && $request->file('img_terciaria')->getError() == 0) {
+                $produto->imagem_terciaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_terciaria')->extension());
             }
 
             $produto_idioma->nome = $request->nome;
+            $produto_idioma->subtitulo = $request->subtitulo;
             $produto_idioma->descricao = $request->descricao;
-            $produto_idioma->destaques = $request->destaques;
+
+            $produto_idioma->historia_subtitulo = $request->historia_subtitulo;
+            $produto_idioma->historia_titulo = $request->historia_titulo;
+            $produto_idioma->historia_descricao = $request->historia_descricao;
+
+            $produto_idioma->origem_titulo = $request->origem_titulo;
+            $produto_idioma->origem_descricao = $request->origem_descricao;
+
+            $produto_idioma->processo_titulo = $request->processo_titulo;
+            $produto_idioma->processo_descricao = $request->processo_descricao;
+
+            $produto_idioma->ficha_tecnica = $request->ficha_tecnica;
+
             $produto_idioma->titulo_pagina = $request->titulo_pagina;
             $produto_idioma->descricao_pagina = $request->descricao_pagina;
 
             $response = $produto->save();
             $response = $produto_idioma->save();
 
-            $produto->volumes()->sync($request->input('produtos_volumes', []));
 
             if ($response) {
                 if ($request->file('img') && $request->file('img')->getError() == 0) {
-                    if ($produto->imagem && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem)) {
-                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem);
+                    if ($produto->imagem && isset($produtoOriginal) && File::exists('content/products/items/' . $produtoOriginal->imagem)) {
+                        File::delete('content/products/items/' . $produtoOriginal->imagem);
                     }
-                    
-                    $image = $request->file('img')->move(public_path('content/products/thumbs/'), $produto->imagem);
-                }
-                
-                if ($request->file('img_bg') && $request->file('img_bg')->getError() == 0) {
-                    if ($produto->imagem_fundo && isset($produtoOriginal) && File::exists('content/products/bg/' . $produtoOriginal->imagem_fundo)) {
-                        File::delete('content/products/bg/' . $produtoOriginal->imagem_fundo);
-                    }               
 
-                    $image = $request->file('img_bg')->move(public_path('content/products/bg/'), $produto->imagem_fundo);
-                }
-                
-                if ($request->file('img_full') && $request->file('img_full')->getError() == 0) {
-                    if ($produto->imagem_infinito && isset($produtoOriginal) && File::exists('content/products/full/' . $produtoOriginal->imagem_infinito)) {
-                        File::delete('content/products/full/' . $produtoOriginal->imagem_infinito);
-                    }               
-
-                    $image = $request->file('img_full')->move(public_path('content/products/full/'), $produto->imagem_infinito);
+                    $compressor->compressOrFallback($request->file('img')->getRealPath(), public_path('content/products/items/' . $produto->imagem));
                 }
 
-                $arquivosData = $request->input('arq', []);
-                $idsArquivosRecebidos = [];
-                
-                if (is_array($arquivosData) && count($arquivosData) > 0) {
-                    foreach ($arquivosData as $index => $arquivoData) {
-                        if (isset($arquivoData['_deleted']) && $arquivoData['_deleted']) {
-                            continue;
-                        }
-                        
-                        $arquivoId = $arquivoData['id'] ?? null;
-                        $titulo = $arquivoData['titulo'] ?? '';
-                        
-                        $arquivoFile = $request->file("arq.{$index}.arquivo");
-                        
-                        if ($arquivoId) {
-                            $arquivo = Arquivo::query()
-                                ->where([
-                                    'id' => $arquivoId,
-                                    'produto_id' => $produto->id,
-                                    'excluido' => null
-                                ])
-                                ->first();
-                            
-                            if ($arquivo) {
-                                if ($arquivoFile && $arquivoFile->getError() == 0) {
-                                    $arquivoOriginal = $arquivo->arquivo;
-                                    $novoNomeArquivo = md5(uniqid((string) rand(), true)) . '.' . strtolower($arquivoFile->extension());
-                                    
-                                    $arquivoFile->move(public_path('content/products/files/'), $novoNomeArquivo);
-                                    
-                                    if ($arquivoOriginal && File::exists('content/products/files/' . $arquivoOriginal)) {
-                                        File::delete('content/products/files/' . $arquivoOriginal);
-                                    }
-                                    
-                                    $arquivo->arquivo = $novoNomeArquivo;
-                                }
-                                
-                                $arquivo->ordem = $index + 1;
-                                $arquivo->save();
-                                
-                                $arquivoIdioma = ArquivoIdioma::query()
-                                    ->where([
-                                        'arquivo_id' => $arquivo->id,
-                                        'idioma_id' => $idioma,
-                                        'excluido' => null
-                                    ])
-                                    ->first();
-                                
-                                if ($arquivoIdioma) {
-                                    $arquivoIdioma->titulo = $titulo;
-                                    $arquivoIdioma->save();
-                                } else {
-                                    $arquivoIdioma = new ArquivoIdioma();
-                                    $arquivoIdioma->arquivo_id = $arquivo->id;
-                                    $arquivoIdioma->idioma_id = $idioma;
-                                    $arquivoIdioma->titulo = $titulo;
-                                    $arquivoIdioma->save();
-                                }
-                                
-                                $idsArquivosRecebidos[] = $arquivo->id;
-                            }
-                        } else {
-                            if ($arquivoFile && $arquivoFile->getError() == 0) {
-                                $nomeArquivo = md5(uniqid((string) rand(), true)) . '.' . strtolower($arquivoFile->extension());
-                                
-                                $arquivoFile->move(public_path('content/products/files/'), $nomeArquivo);
-                                
-                                $novoArquivo = new Arquivo();
-                                $novoArquivo->produto_id = $produto->id;
-                                $novoArquivo->arquivo = $nomeArquivo;
-                                $novoArquivo->ordem = $index + 1;
-                                $novoArquivo->save();
-                                
-                                $arquivoIdioma = new ArquivoIdioma();
-                                $arquivoIdioma->arquivo_id = $novoArquivo->id;
-                                $arquivoIdioma->idioma_id = $idioma;
-                                $arquivoIdioma->titulo = $titulo;
-                                $arquivoIdioma->save();
-                                
-                                $idsArquivosRecebidos[] = $novoArquivo->id;
-                            }
-                        }
+                if ($request->file('img_alternativa') && $request->file('img_alternativa')->getError() == 0) {
+                    if ($produto->imagem_alternativa && isset($produtoOriginal) && File::exists('content/products/items/' . $produtoOriginal->imagem_alternativa)) {
+                        File::delete('content/products/items/' . $produtoOriginal->imagem_alternativa);
                     }
-                    
-                    Arquivo::query()
-                        ->where('produto_id', $produto->id)
-                        ->whereNotIn('id', $idsArquivosRecebidos)
-                        ->where('excluido', null)
-                        ->update(['excluido' => now()]);
+
+                    $compressor->compressOrFallback($request->file('img_alternativa')->getRealPath(), public_path('content/products/items/' . $produto->imagem_alternativa));
+                }
+
+                if ($request->file('img_destaque') && $request->file('img_destaque')->getError() == 0) {
+                    if ($produto->imagem_destaque && isset($produtoOriginal) && File::exists('content/products/highlight/' . $produtoOriginal->imagem_destaque)) {
+                        File::delete('content/products/highlight/' . $produtoOriginal->imagem_destaque);
+                    }
+
+                    $compressor->compressOrFallback($request->file('img_destaque')->getRealPath(), public_path('content/products/highlight/' . $produto->imagem_destaque));
+                }
+
+                if ($request->file('img_primaria') && $request->file('img_primaria')->getError() == 0) {
+                    if ($produto->imagem_primaria && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem_primaria)) {
+                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem_primaria);
+                    }
+                    $compressor->compressOrFallback($request->file('img_primaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_primaria));
+                }
+
+                if ($request->file('img_secundaria') && $request->file('img_secundaria')->getError() == 0) {
+                    if ($produto->imagem_secundaria && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem_secundaria)) {
+                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem_secundaria);
+                    }
+
+                    $compressor->compressOrFallback($request->file('img_secundaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_secundaria));
+                }
+
+                if ($request->file('img_terciaria') && $request->file('img_terciaria')->getError() == 0) {
+                    if ($produto->imagem_terciaria && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem_terciaria)) {
+                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem_terciaria);
+                    }
+
+                    $compressor->compressOrFallback($request->file('img_terciaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_terciaria));
                 }
 
                 return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
@@ -605,8 +515,9 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function excluir(Request $request, $id) {
-        if ($request->ajax()){
+    public function excluir(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return $request->header('referer');
             }
@@ -635,8 +546,9 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function visibilidade(Request $request, $id) {
-        if ($request->ajax()){
+    public function visibilidade(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return redirect()->back()->with(['type' => 'error', 'message' => 'Registro não encontrado!']);
             }
@@ -651,14 +563,13 @@ class ProdutosController extends Controller
             if (!$response) {
                 return redirect()->back()->with('message', ['type' => 'error', 'msg' => 'Registro não encontrado!']);
             }
-    
+
             $response->visivel = 1 - $response->visivel;
             $response->save();
-    
+
             if ($response) {
                 return redirect()->back()->with('message', ['type' => 'success', 'msg' => 'Visibilidade alterada com sucesso!']);
-            }
-            else {
+            } else {
                 return redirect()->back()->with('message', ['type' => 'error', 'msg' => 'Visibilidade não alterada!']);
             }
         }
@@ -673,8 +584,9 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function ordenar(Request $request) {
-        if ($request->ajax()){
+    public function ordenar(Request $request)
+    {
+        if ($request->ajax()) {
             $erros = [];
 
             if ($request->odr && is_array($request->odr)) {
@@ -701,7 +613,7 @@ class ProdutosController extends Controller
 
         return redirect()->back();
     }
-    
+
     /**
      * Download the file of the specified resource.
      *
@@ -709,11 +621,12 @@ class ProdutosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function baixarArquivo($produto, $id) {
+    public function baixarArquivo($produto, $id)
+    {
         if (!$produto || !$id) {
             return redirect()->route('Manager.Produtos.index');
         }
-    
+
         $idioma = inertia()->getShared('idioma');
 
         $arquivo = Arquivo::query()
@@ -728,9 +641,9 @@ class ProdutosController extends Controller
                 'arquivosIdiomas' => function ($q) use ($idioma) {
                     $q->whereHas('idiomas', function ($r) use ($idioma) {
                         $r->where('codigo', $idioma)
-                          ->orWhere('padrao', true);
+                            ->orWhere('padrao', true);
                     })
-                    ->orderBy('idioma_id', 'DESC');
+                        ->orderBy('idioma_id', 'DESC');
                 }
             ])
             ->first();

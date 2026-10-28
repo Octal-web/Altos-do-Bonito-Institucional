@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
+use App\Models\Acontecimento;
+use App\Models\Profissional;
 use App\Models\Valor;
 use Inertia\Inertia;
-
-
-use Carbon\Carbon;
 
 class InstitucionalController extends Controller
 {
@@ -18,8 +17,6 @@ class InstitucionalController extends Controller
      */
     public function index()
     {
-        $idioma = inertia()->getShared('idioma');
-
         $valores = Valor::query()
             ->where([
                 'excluido' => NULL
@@ -44,8 +41,57 @@ class InstitucionalController extends Controller
                 ];
             });
 
+        $profissionais = Profissional::query()
+            ->where([
+                'excluido' => NULL
+            ])
+            ->with([
+                'profissionaisIdiomas' => function ($q) {
+                    $q->whereHas('idiomas', function ($r) {
+                        $r->Where('padrao', true);
+                    })
+                        ->orderBy('idioma_id', 'DESC');
+                }
+            ])
+            ->orderBy('ordem', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'visivel' => $item->visivel,
+                    'nome' => $item->profissionaisIdiomas[0]->nome,
+                    'imagem' => rafator('content/professionals/' . $item->imagem),
+                ];
+            });
+
+        $acontecimentos = Acontecimento::query()
+            ->where([
+                'excluido' => NULL
+            ])
+            ->with([
+                'acontecimentosIdiomas' => function ($q) {
+                    $q->whereHas('idiomas', function ($r) {
+                        $r->Where('padrao', true);
+                    })
+                        ->orderBy('idioma_id', 'DESC');
+                }
+            ])
+            ->orderBy('ordem', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'visivel' => $item->visivel,
+                    'titulo' => $item->acontecimentosIdiomas[0]->titulo . ' - ' . $item->ano
+                ];
+            });
+
         return Inertia::render('Manager/Institucional/index', [
-            'valores' => $valores
+            'valores' => $valores,
+            'profissionais' => $profissionais,
+            'acontecimentos' => $acontecimentos
         ]);
     }
 };
