@@ -133,7 +133,7 @@ export const Header = ({
         { label: "Vinhos", href: route("Produtos.index") },
         { label: "Experiências", href: links.experiencias },
         { label: "Hospedagem", href: links.hospedagem },
-        { label: "Visite", href: links.visite || route("Contato.index") },
+        { label: "Visite", href: route("Contato.index") },
     ];
 
     const isHome = route().current("Home.index");
@@ -190,7 +190,7 @@ export const Header = ({
 
     return (
         <>
-            <header className="header absolute inset-x-0 top-0 z-20 text-white">
+            <header className="header absolute inset-x-0 top-0 z-50 text-white">
                 {bar(false)}
             </header>
 

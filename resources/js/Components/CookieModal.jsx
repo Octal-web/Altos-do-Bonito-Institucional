@@ -44,9 +44,9 @@ export const CookieModal = ({ acceptCookies, visible }) => {
     return (
         <>
             {showModal && visible ? (
-                <div className={`fixed bottom-0 left-0 right-0 z-[999] ${isFadingOut ? 'animate-fade-out-down' : ''}`}>
+                <div className={`fixed bottom-0 left-0 right-0 z-[999]  ${isFadingOut ? 'animate-fade-out-down' : ''}`}>
                     <div className="container max-w-large">
-                        <div className="bg-white px-6 md:px-8 py-6 shadow-md mb-10">
+                        <div className="bg-neutral-900 text-white px-6 md:px-8 py-6 shadow-md mb-10">
                             <div className="font-secondary tracking-tight sm:tracking-normal text-sm sm:text-base">
                                 <p>
                                 Utilizamos cookies para oferecer uma melhor experiência, melhorar o desempenho, analisar como você interage em nosso site e personalizar conteúdo. Para mais informações acesse nossa{' '} 
@@ -55,7 +55,7 @@ export const CookieModal = ({ acceptCookies, visible }) => {
                             </div>
                             <button
                                 onClick={handleAcceptCookies}
-                                className="font-secondary w-full sm:w-fit bg-primary text-sm sm:text-base text-white md:ml-auto px-6 mt-6 whitespace-nowrap block text-center h-10 sm:h-12 2xl:h-14 flex items-center justify-center tracking-wide uppercase transition-all hover:bg-opacity-75"
+                                className="font-secondary w-full sm:w-fit bg-primary text-sm sm:text-base text-white md:ml-auto px-6 mt-6 whitespace-nowrap block text-center h-10 sm:h-12 2xl:h-14 items-center justify-center tracking-wide uppercase transition-all hover:bg-opacity-75"
                             >
                             Aceitar todos os cookies
                           </button>

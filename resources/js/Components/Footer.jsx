@@ -14,7 +14,7 @@ export const Footer = ({ links = {} }) => {
     const privacyHref = route("Politicas.privacidade");
 
     return (
-        <footer className="relative z-10 border-t border-white/10 bg-black font-admin text-xs font-light leading-relaxed text-white/50 md:text-sm">
+        <footer className="relative z-30 border-t border-white/10 font-admin text-xs font-light leading-relaxed text-white/50 md:text-sm">
             <div className="container mx-auto max-w-medium py-12 md:py-20 2xl:py-24">
                 <div className="mx-auto grid max-w-[780px] grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-[1.4fr_1fr_1fr] md:gap-16">
                     <div className="col-span-2 md:col-span-1">
@@ -28,7 +28,14 @@ export const Footer = ({ links = {} }) => {
                             >
                                 {email}
                             </a>
-                            <p>{address}</p>
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={links.link_mapa}
+                                className={`${linkClassName} block break-words`}
+                            >
+                                {address}
+                            </a>
                             {whatsappNumber && (
                                 <a
                                     href={`https://wa.me/${whatsappNumber.startsWith("55") ? whatsappNumber : `55${whatsappNumber}`}`}
@@ -79,8 +86,22 @@ export const Footer = ({ links = {} }) => {
                         </span>
                         <span>Beba com moderação</span>
                     </div>
-                    <div className="flex items-center gap-2 text-white/35">
-                        <span>Desenvolvido por</span>
+                    <div className="flex items-center justify-center md:justify-end gap-4">
+                        <span className="text-white opacity-50">
+                            Desenvolvido por:
+                        </span>
+
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://www.8poroito.com.br/"
+                        >
+                            <img
+                                src="/site/img/logo-octal.png"
+                                className="w-16 opacity-60"
+                                alt="Octal Web"
+                            />
+                        </a>
                     </div>
                 </div>
             </div>

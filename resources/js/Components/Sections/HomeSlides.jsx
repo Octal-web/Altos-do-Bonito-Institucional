@@ -77,7 +77,7 @@ export const HomeSlides = ({ slides = [] }) => {
     return (
         <section
             ref={sectionRef}
-            className="relative overflow-hidden z-[11]"
+            className="relative z-40 overflow-hidden"
             aria-label="Destaques da Pizzato"
         >
             <div data-hero-stage>

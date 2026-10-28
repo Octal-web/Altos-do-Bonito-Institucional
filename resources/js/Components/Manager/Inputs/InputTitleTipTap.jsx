@@ -1,12 +1,14 @@
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { useState } from "react";
+import { Label } from "./Label";
 
 export const InputTitleTipTap = ({
     title,
     name,
     value,
     onChange,
+    idioma,
     max = null,
 }) => {
     const [contentLength, setContentLength] = useState(0);
@@ -38,9 +40,7 @@ export const InputTitleTipTap = ({
 
     return (
         <div className="mb-6">
-            <div className="flex items-center mb-2">
-                <label className="block font-bold text-gray-500">{title}</label>
-            </div>
+            <Label title={title} idioma={idioma} />
 
             <div className="border">
                 <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b">
@@ -131,10 +131,10 @@ export const InputTitleTipTap = ({
                     </div>
                 </div>
 
-                <div className="p-3 h-10 overflow-hidden">
+                <div className="p-3 h-13 overflow-y-auto">
                     <EditorContent
                         editor={editor}
-                        className="[&_.ProseMirror]:min-h-30 [&_p]:text-sm [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_h4]:text-xl [&_h5]:text-base [&_th]:border [&_td]:border [&_ul]:list-inside [&_ul_li]:list-disc [&_ul>li>p]:inline [&_ul>li>p]:my-0 [&_ol]:list-inside [&_ol_li]:list-decimal [&_ol>li>p]:inline [&_ol>li>p]:my-0 [&_a]:underline [&_a]:text-blue-500 [&_.ProseMirror-focused]:outline-none"
+                        className="[&_p]:text-sm [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_h4]:text-xl [&_h5]:text-base [&_th]:border [&_td]:border [&_ul]:list-inside [&_ul_li]:list-disc [&_ul>li>p]:inline [&_ul>li>p]:my-0 [&_ol]:list-inside [&_ol_li]:list-decimal [&_ol>li>p]:inline [&_ol>li>p]:my-0 [&_a]:underline [&_a]:text-blue-500 [&_.ProseMirror-focused]:outline-none"
                     />
                 </div>
             </div>

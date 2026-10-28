@@ -94,7 +94,7 @@ export const SectionBackground = ({
     if (!hasChildren) return background;
 
     return (
-        <div className={`relative isolate bg-black ${wrapperClassName}`}>
+        <div className={`relative ${wrapperClassName}`}>
             <div
                 ref={backgroundRef}
                 aria-hidden="true"

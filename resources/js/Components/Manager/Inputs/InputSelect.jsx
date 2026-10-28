@@ -1,7 +1,15 @@
-import React from 'react';
-import Select from 'react-select';
+import Select from "react-select";
+import { Label } from "./Label";
 
-export const InputSelect = ({ title, name, value, idioma, onChange, options, isMulti = false }) => {
+export const InputSelect = ({
+    title,
+    name,
+    value,
+    idioma,
+    onChange,
+    options,
+    isMulti = false,
+}) => {
     const flattenOptions = (groupedOptions) =>
         groupedOptions.reduce((acc, group) => {
             if (group.options) {
@@ -14,7 +22,9 @@ export const InputSelect = ({ title, name, value, idioma, onChange, options, isM
 
     const handleChange = (selectedOption) => {
         if (isMulti) {
-            const values = selectedOption ? selectedOption.map(opt => opt.value) : [];
+            const values = selectedOption
+                ? selectedOption.map((opt) => opt.value)
+                : [];
             onChange(name, values);
         } else {
             onChange(name, selectedOption ? selectedOption.value : null);
@@ -27,19 +37,16 @@ export const InputSelect = ({ title, name, value, idioma, onChange, options, isM
 
     return (
         <div className="mb-6 [&_.admin-select\:__control]:p-3">
-            <div className="flex items-center mb-2">
-                <img src={`/admin/img/flags/${idioma}.png`} className="w-5 mr-1" alt={`${idioma} flag`} />
-                <label className="block font-bold text-gray-500">{title}</label>
-            </div>
+            <Label title={title} idioma={idioma} />
+
             <Select
                 options={options}
                 value={selectedOption}
                 onChange={handleChange}
                 placeholder="Selecione uma opção..."
-                isSearchable={false}
+                isSearchable={allOptions.length > 10}
                 isMulti={isMulti}
                 classNamePrefix="admin-select"
-                noOptionsMessage={() => "Nenhuma opção disponível"}
             />
         </div>
     );

@@ -137,6 +137,10 @@
         @apply rounded-xl border border-secondary;
     }
 
+    .hover-group {
+        @apply transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none
+    }
+
     .hover {
         @apply hover:brightness-110 transition duration-300;
     }

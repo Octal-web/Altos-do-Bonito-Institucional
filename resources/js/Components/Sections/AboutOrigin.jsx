@@ -3,7 +3,7 @@ import { Title } from "../UI/Title";
 
 export const AboutOrigin = ({ content }) => {
     return (
-        <section className="py-16 2xl:pt-24">
+        <section className="py-20 2xl:pt-24">
             <div className="container mx-auto max-w-medium section-content">
                 {content.map((item, index) => {
                     const reverse = index % 2 !== 0;

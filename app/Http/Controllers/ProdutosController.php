@@ -185,7 +185,7 @@ class ProdutosController extends Controller
             ->first();
 
         if (!$produto) {
-            return Inertia::location(route('Produtos.index'));
+            return redirect()->route('Produtos.index', [], 301);
         }
 
         $pagina = new Pagina();
@@ -203,6 +203,38 @@ class ProdutosController extends Controller
             'largura' => $width,
             'altura' => $height,
         ];
+
+
+        $sugestoes = Produto::query()
+            ->where([
+                'excluido' => NULL,
+                'visivel' => true,
+                'categoria_id' => $produto->categoria_id
+            ])
+            ->where('id', '!=', $produto->id)
+            ->with([
+                'produtosIdiomas' => function ($q) use ($idioma) {
+                    $q->whereHas('idiomas', function ($r) use ($idioma) {
+                        $r->where('codigo', $idioma)
+                            ->orWhere('padrao', true);
+                    })
+                        ->orderBy('idioma_id', 'DESC');
+                },
+            ])
+            ->inRandomOrder()
+            ->limit(3)
+            ->get()
+            ->map(function ($item) {
+                $idiomaProduto = $item->produtosIdiomas->first();
+
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'subtitulo' => $idiomaProduto?->subtitulo,
+                    'nome' => $idiomaProduto?->nome,
+                    'imagem' => $item->imagem_destaque ? rafator('content/products/highlight/' . $item->imagem_destaque) : rafator('content/products/thumbs/' .  $item->imagem_primaria),
+                ];
+            });
 
         $produto = [
             'id' => $produto->id,
@@ -235,7 +267,8 @@ class ProdutosController extends Controller
 
         return Inertia::render('Produtos/produto', [
             'pagina' => $pagina,
-            'produto' => $produto
+            'produto' => $produto,
+            'sugestoes' => $sugestoes
         ]);
     }
 };
