@@ -14,7 +14,6 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Illuminate\Http\Request;
 
 use Closure;
-use Illuminate\Support\Facades\Cache;
 
 class ShareInertiaData
 {
@@ -225,41 +224,6 @@ class ShareInertiaData
                     'conteudos' => $conteudos,
                     'idiomas' => $idiomas,
                     'idioma' => $idioma,
-                    // 'lojas' => fn() => Cache::remember(
-                    //     'lojas',
-                    //     345600,
-                    //     function () {
-                    //         return Loja::query()
-                    //             ->where([
-                    //                 'segmento' => 'EXCLUSIVO',
-                    //                 'PDV' => 'S',
-                    //                 'marca' => 'casabrasileira',
-                    //             ])
-                    //             ->whereNotIn('estab_id', [
-                    //                 '234817',
-                    //                 '242551',
-                    //                 '231357',
-                    //                 '147735',
-                    //                 '226263',
-                    //                 '226264',
-                    //                 '242753'
-                    //             ])
-                    //             ->get()
-                    //             ->map(function ($loja) {
-                    //                 return [
-                    //                     'id' => str()->slug($loja->cidade),
-                    //                     'cidade' => $this->formatarNome($loja->cidade),
-                    //                     'estado' => strtoupper($loja->uf),
-                    //                     'nome' => $this->formatarNome($loja->fantasia),
-                    //                     'endereco' => $this->formatarNome($loja->endereco . ' - ' . $loja->bairro),
-                    //                     'telefone' => $this->formatTelefone($loja->telefone),
-                    //                     'email' => $loja->email,
-                    //                     'instagram' => $loja->instagram,
-                    //                     'whatsapp' => $loja->whatsapp,
-                    //                 ];
-                    //             });
-                    //     }
-                    // ),
                 ]);
             }
         }
