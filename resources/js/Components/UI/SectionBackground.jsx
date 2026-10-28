@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import { gsap, MOTION_OK } from "@/lib/gsap";
+
 const directions = {
     left: "",
     right: "rotate-180",
@@ -13,27 +16,91 @@ export const SectionBackground = ({
     overlayClassName = "",
     parallax,
 }) => {
+    const videoRef = useRef(null);
+    const backgroundRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [useStaticFallback, setUseStaticFallback] = useState(false);
+
+    useEffect(() => {
+        const video = videoRef.current;
+        const media = gsap.matchMedia();
+
+        media.add(MOTION_OK, () => {
+            // O vídeo começa a carregar já na montagem; até tocar de fato fica a imagem.
+            // Se o autoplay for bloqueado (iPhone em modo de pouca energia), fica a imagem estática
+            video.muted = true;
+            video.play().catch(() => {
+                setUseStaticFallback(true);
+                setIsPlaying(false);
+            });
+
+            return () => {
+                video.pause();
+                setIsPlaying(false);
+            };
+        });
+
+        media.add("(prefers-reduced-motion: reduce)", () => {
+            setUseStaticFallback(true);
+        });
+
+        return () => media.revert();
+    }, []);
+
     const hasChildren = children !== undefined && children !== null;
-    const image = (
+    // Com parallax a imagem precisa sobrar acima e abaixo, senão as bordas aparecem ao deslocar
+    const fill = parallax
+        ? "inset-x-0 -top-[10%] h-[120%] w-full"
+        : "inset-0 size-full";
+    const mediaClassName = `pointer-events-none absolute object-fill ${hasChildren ? fill : ""} ${directions[direction] || ""} ${className}`;
+    const background = (
+        <>
         <img
-            src="/site/backgrounds/5a0f2c3685fc45149e409e30a5b7a7c4.jpg"
+            src={useStaticFallback
+                ? "/site/backgrounds/5a0f2c3685fc45149e409e30a5b7a7c4.webp"
+                : "/site/backgrounds/e86e071f45674b1f92edd625da4a22d3.webp"}
             alt=""
             aria-hidden="true"
-            loading="lazy"
             data-parallax={parallax}
-            className={`pointer-events-none absolute object-fill ${hasChildren ? "inset-0 size-full" : ""} ${directions[direction] || ""} ${className}`}
+            className={`${mediaClassName} transition-opacity duration-700`}
+            style={{ opacity: isPlaying ? 0 : 1 }}
         />
+        <video
+            ref={videoRef}
+            src="/site/backgrounds/b3a0244d176544cf516531806db9a701.mp4"
+            poster="/site/backgrounds/e86e071f45674b1f92edd625da4a22d3.webp"
+            aria-hidden="true"
+            muted
+            playsInline
+            preload="auto"
+            onPlaying={() => setIsPlaying(true)}
+            onError={() => {
+                setUseStaticFallback(true);
+                setIsPlaying(false);
+            }}
+            onPause={(event) => {
+                if (!event.currentTarget.ended) {
+                    setUseStaticFallback(true);
+                    setIsPlaying(false);
+                }
+            }}
+            data-parallax={parallax}
+            className={`${mediaClassName} transition-opacity duration-700`}
+            style={{ opacity: isPlaying ? 1 : 0 }}
+        />
+        </>
     );
 
-    if (!hasChildren) return image;
+    if (!hasChildren) return background;
 
     return (
         <div className={`relative ${wrapperClassName}`}>
             <div
+                ref={backgroundRef}
                 aria-hidden="true"
                 className={`pointer-events-none absolute z-0 overflow-hidden ${backgroundClassName}`}
             >
-                {image}
+                {background}
                 {overlayClassName && <div className={`absolute inset-0 ${overlayClassName}`} />}
             </div>
             <div className="relative z-10 [&>section]:bg-transparent">
@@ -42,3 +109,4 @@ export const SectionBackground = ({
         </div>
     );
 };
+

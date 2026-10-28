@@ -67,6 +67,7 @@ export default {
                 "slide-in-bottom": "slide-in-bottom 300ms ease-out",
                 "fade-in-down": "fade-in-down 200ms linear",
                 "fade-out-down": "fade-out-down 200ms linear",
+                "spin-slow": "spin 60s linear infinite",
             },
         },
     },

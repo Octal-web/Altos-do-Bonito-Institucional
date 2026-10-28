@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useSwapAnimation } from "@/hooks/useSwapAnimation";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
+import { BrandSeal } from "../UI/BrandSeal";
 
 export const HomeFamily = ({ content }) => {
     const [activeIndex, setActiveIndex] = useState(1);
@@ -98,7 +99,7 @@ const Backgrounds = () => {
                 className="pointer-events-none absolute inset-x-0 -top-48 -bottom-48 z-10 overflow-hidden md:-top-64 md:-bottom-[50vh] 2xl:-top-80 2xl:-bottom-[40vh]"
             >
                 <img
-                    src="/site/backgrounds/e86e071f45674b1f92edd625da4a22d3.jpg"
+                    src="/site/backgrounds/e86e071f45674b1f92edd625da4a22d3.webp"
                     alt=""
                     data-parallax="8"
                     className="absolute inset-0 h-full w-full scale-125 object-cover"
@@ -110,14 +111,18 @@ const Backgrounds = () => {
 
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-60 -bottom-48 z-10 overflow-hidden md:-bottom-64 2xl:-bottom-80 hidden md:block aspect-[1/0.7]"
+                className="pointer-events-none absolute inset-x-0 top-60 -bottom-48 z-10 md:-bottom-64 2xl:-bottom-80 hidden md:block aspect-[1/0.7]"
             >
-                <img
-                    src="/site/backgrounds/7f8392a21dce45a283290e735d3157f3.png"
-                    alt=""
+                <div
                     data-parallax="15"
-                    className="absolute right-[47%] top-0 h-full w-auto max-w-none object-contain opacity-30"
-                />
+                    className="absolute right-[47%] top-0 h-full opacity-30"
+                >
+                    <BrandSeal
+                        spin
+                        className="relative h-full"
+                        imgClassName="h-full w-auto max-w-none object-contain"
+                    />
+                </div>
             </div>
         </>
     );

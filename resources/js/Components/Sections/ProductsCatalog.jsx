@@ -123,14 +123,24 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                                     slug: product.slug,
                                 })}
                                 aria-label={`Ver vinho ${product.nome || ""}`}
-                                className="group flex aspect-[233/250] 2xl:aspect-[233/300] items-center justify-center overflow-hidden rounded-xl border border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary p-5"
+                                className="group relative flex aspect-[233/250] 2xl:aspect-[233/300] items-center justify-center overflow-hidden rounded-xl border border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                             >
                                 <img
                                     src={product.imagem}
                                     alt={product.nome || ""}
                                     loading="lazy"
-                                    className="h-full w-full object-contain hover-group"
+                                    className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-0"
                                 />
+                                
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                    <img
+                                        src={product.imagem_alt}
+                                        alt={product.nome || ""}
+                                        loading="lazy"
+                                        aria-hidden="true"
+                                        className="h-full w-full object-cover"
+                                    />
+                                </div>
                             </Link>
 
                             <p className="mt-5 font-admin text-xs text-white/80 md:text-sm">
