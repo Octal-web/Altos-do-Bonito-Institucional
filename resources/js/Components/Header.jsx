@@ -1,7 +1,9 @@
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { useEffect, useRef } from "react";
+import { gsap, MOTION_OK } from "@/lib/gsap";
+import { BrandSeal } from "./UI/BrandSeal";
 
 export const Header = ({
     isOpen,
@@ -11,21 +13,118 @@ export const Header = ({
     links = {},
 }) => {
     const dialogRef = useRef(null);
+    const timelineRef = useRef(null);
+
+    useEffect(() => () => timelineRef.current?.kill(), []);
+
+    // Ao navegar (inclusive para a mesma página) o menu fecha sem animação:
+    // a transição de página já está cobrindo a tela nesse momento
+    useEffect(
+        () =>
+            router.on("navigate", () => {
+                timelineRef.current?.kill();
+                dialogRef.current?.close();
+                onClose();
+            }),
+        [onClose],
+    );
 
     useEffect(() => {
         const dialog = dialogRef.current;
+        const q = gsap.utils.selector(dialog);
+        const animate = window.matchMedia(MOTION_OK).matches;
+
+        timelineRef.current?.kill();
+
         if (!isOpen) {
-            if (dialog.open) dialog.close();
+            if (!dialog.open) return;
+            if (!animate) {
+                dialog.close();
+                return;
+            }
+
+            // Saída: os itens sobem para dentro das máscaras e a cortina recolhe para cima
+            timelineRef.current = gsap
+                .timeline({ onComplete: () => dialog.close() })
+                .to(q("[data-menu-item]"), {
+                    yPercent: -110,
+                    duration: 0.45,
+                    ease: "power3.in",
+                    stagger: 0.04,
+                })
+                .to(
+                    q("[data-menu-inner]"),
+                    { yPercent: -20, duration: 0.8, ease: "expo.inOut" },
+                    0.2,
+                )
+                .to(
+                    dialog,
+                    {
+                        clipPath: "inset(0% 0% 100% 0%)",
+                        duration: 0.8,
+                        ease: "expo.inOut",
+                    },
+                    0.2,
+                );
             return;
         }
 
         const previousOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
-        dialog.showModal();
+        if (!dialog.open) dialog.showModal();
+
+        // Entrada: a cortina desce, o conteúdo vem atrás mais devagar e o selo
+        // da marca numa camada mais rápida (profundidade); por fim os itens sobem das máscaras
+        if (animate) {
+            timelineRef.current = gsap
+                .timeline()
+                .fromTo(
+                    dialog,
+                    { clipPath: "inset(0% 0% 100% 0%)" },
+                    {
+                        clipPath: "inset(0% 0% 0% 0%)",
+                        duration: 1.1,
+                        ease: "expo.inOut",
+                    },
+                )
+                .fromTo(
+                    q("[data-menu-inner]"),
+                    { yPercent: -30 },
+                    { yPercent: 0, duration: 1.1, ease: "expo.inOut" },
+                    0,
+                )
+                .fromTo(
+                    q("[data-menu-deco]"),
+                    { yPercent: -60, autoAlpha: 0 },
+                    {
+                        yPercent: 0,
+                        autoAlpha: 1,
+                        duration: 1.8,
+                        ease: "expo.out",
+                    },
+                    0.2,
+                )
+                .fromTo(
+                    q("[data-menu-bar]"),
+                    { autoAlpha: 0 },
+                    { autoAlpha: 1, duration: 0.6, ease: "power2.out" },
+                    0.6,
+                )
+                .fromTo(
+                    q("[data-menu-item]"),
+                    { yPercent: 110 },
+                    {
+                        yPercent: 0,
+                        duration: 1.2,
+                        ease: "expo.out",
+                        stagger: 0.07,
+                    },
+                    0.5,
+                );
+        }
 
         return () => {
             document.body.style.overflow = previousOverflow;
-            if (dialog.open) dialog.close();
         };
     }, [isOpen]);
 
@@ -103,35 +202,49 @@ export const Header = ({
                     event.preventDefault();
                     onClose();
                 }}
-                className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto border-0 bg-[#4b4b49] p-0 text-white backdrop:bg-[#4b4b49] "
+                className="fixed inset-0 m-0 h-screen max-h-screen w-full max-w-none overflow-y-auto md:overflow-y-hidden overflow-x-hidden border-0 bg-[#4b4b49] p-0 text-white backdrop:bg-transparent"
                 data-lenis-prevent
             >
-                {bar(true)}
-                <nav
-                    aria-label="Navegação principal"
-                    className="container pb-16 pt-4 md:pt-6"
-                >
-                    <ul className="flex flex-col items-center gap-5 text-center md:gap-6 2xl:gap-8">
-                        {items.map(({ label, href }) => (
-                            <li
-                                key={label}
-                                className="font-primary text-3xl font-normal leading-tight md:text-4xl 2xl:text-5xl section-content"
-                            >
-                                {href ? (
-                                    <Link
-                                        href={href}
-                                        onClick={onClose}
-                                        className="transition-colors hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-primary"
-                                    >
-                                        {label}
-                                    </Link>
-                                ) : (
-                                    <span aria-disabled="true">{label}</span>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
+                <BrandSeal
+                    spin
+                    aria-hidden="true"
+                    data-menu-deco
+                    className="pointer-events-none absolute -right-40 -bottom-40 w-[480px] opacity-10 md:w-[640px] 2xl:w-[800px]"
+                />
+                <div data-menu-inner className="relative z-10">
+                    <div data-menu-bar>{bar(true)}</div>
+                    <nav
+                        aria-label="Navegação principal"
+                        className="container pb-16 pt-4 md:pt-6"
+                    >
+                        <ul className="flex flex-col items-center gap-[calc(1.25rem_-_0.15em)] text-center text-3xl md:gap-[calc(1.5rem_-_0.15em)] md:text-4xl 2xl:gap-[calc(2rem_-_0.15em)] 2xl:text-5xl">
+                            {items.map(({ label, href }) => (
+                                <li
+                                    key={label}
+                                    className="overflow-hidden font-primary font-normal leading-[1.4] section-content"
+                                >
+                                    {href ? (
+                                        <Link
+                                            href={href}
+                                            data-menu-item
+                                            className="inline-block py-[0.1em] transition-colors hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                                        >
+                                            {label}
+                                        </Link>
+                                    ) : (
+                                        <span
+                                            aria-disabled="true"
+                                            data-menu-item
+                                            className="inline-block py-[0.1em]"
+                                        >
+                                            {label}
+                                        </span>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
             </dialog>
         </>
     );

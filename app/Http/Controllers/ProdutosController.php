@@ -95,6 +95,7 @@ class ProdutosController extends Controller
                                         'id' => $produto->id,
                                         'slug' => $produto->slug,
                                         'imagem' => rafator('content/products/items/' . $produto->imagem),
+                                        'imagem_alt' => rafator('content/products/items/alt/' . $produto->imagem_alternativa),
                                         'nome' => $produto->produtosIdiomas->isNotEmpty() ? $produto->produtosIdiomas[0]->nome : null,
                                     ];
                                 }),
