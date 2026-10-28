@@ -175,3 +175,134 @@
         @apply text-white relative;
     }
 }
+
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container {
+    @apply w-full;
+}
+
+.react-datepicker-wrapper input {
+    @apply !outline-none !ring-0 !shadow-none;
+}
+
+.react-datepicker-wrapper input:focus {
+    @apply !outline-none !ring-0 !shadow-none;
+}
+.reserve-datepicker-popper.react-datepicker-popper {
+    @apply z-40 pt-2;
+}
+
+.reserve-datepicker-popper .react-datepicker__triangle {
+    @apply hidden;
+}
+
+.reserve-datepicker.react-datepicker {
+    @apply overflow-hidden rounded-none border border-neutral-200 bg-white font-sans text-zinc-700 shadow-xl;
+}
+
+.reserve-datepicker .react-datepicker__header {
+    @apply border-b border-neutral-200 bg-white pt-4;
+}
+
+.reserve-datepicker .react-datepicker__current-month {
+    @apply font-sans text-base font-bold text-zinc-800;
+}
+
+.reserve-datepicker .react-datepicker__day-name,
+.reserve-datepicker .react-datepicker__day {
+    @apply m-0.5 size-9 font-sans leading-9;
+}
+
+.reserve-datepicker .react-datepicker__day-name {
+    @apply text-xs font-bold uppercase text-zinc-400;
+}
+
+.reserve-datepicker .react-datepicker__day {
+    @apply !rounded-none text-sm text-zinc-700 transition-colors duration-200 hover:bg-primary/20;
+}
+
+.reserve-datepicker .react-datepicker__day--outside-month {
+    @apply text-zinc-300;
+}
+
+.reserve-datepicker .react-datepicker__day--in-range,
+.reserve-datepicker .react-datepicker__day--in-selecting-range {
+    @apply bg-primary/25 text-zinc-800;
+}
+
+.reserve-datepicker .react-datepicker__day--selected,
+.reserve-datepicker .react-datepicker__day--range-start,
+.reserve-datepicker .react-datepicker__day--range-end,
+.reserve-datepicker .react-datepicker__day--keyboard-selected {
+    @apply bg-primary text-white hover:bg-primary;
+}
+.reserve-datepicker .react-datepicker__day--selected:hover {
+    @apply hover:bg-primary/80 hover:rounded-none;
+}
+
+.reserve-datepicker .react-datepicker__day--disabled {
+    @apply cursor-not-allowed bg-transparent text-zinc-300 hover:bg-transparent;
+}
+
+.reserve-datepicker .react-datepicker__day:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-primary;
+}
+
+.reserve-datepicker .react-datepicker__month {
+    @apply mx-3 mb-4 mt-2;
+}
+
+.reserve-datepicker
+    .react-datepicker__month-container
+    + .react-datepicker__month-container {
+    @apply border-l border-neutral-200;
+}
+
+.reserve-datepicker .react-datepicker__navigation {
+    @apply top-3.5;
+}
+
+.reserve-datepicker .react-datepicker__navigation-icon::before {
+    @apply border-zinc-600;
+    border-width: 2px 2px 0 0;
+}
+
+.reserve-datepicker
+    .react-datepicker__navigation:hover
+    .react-datepicker__navigation-icon::before {
+    @apply border-primary;
+}
+
+table .sortable-fallback {
+    @apply table bg-slate-50;
+}
+
+.sortable-ghost {
+    @apply relative;
+}
+.sortable-ghost::after {
+    @apply bg-white content-[''] absolute inset-0 border border-2 border-slate-600 border-dashed z-10;
+}
+
+.sortable-fallback {
+    background: #fff;
+}
+
+form .admin-select__control {
+    @apply rounded-none !border-gray-300 border-opacity-100 bg-transparent p-1 font-normal text-sm text-black outline-none transition hover:ring-0 !shadow-none disabled:cursor-default;
+}
+form .admin-select__input {
+    @apply focus:ring-0;
+}
+form .admin-select__control--is-focused,
+form .admin-select__hidden__control--is-focused {
+    @apply !border-primary focus:border-primary;
+}
+form .admin-select__indicator-separator,
+form .admin-select__hidden__indicator-separator {
+    @apply hidden;
+}
+form .admin-select__option {
+    @apply text-sm;
+}
