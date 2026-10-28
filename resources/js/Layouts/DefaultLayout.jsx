@@ -1,3 +1,4 @@
+import { useLang } from "@/hooks/useLang";
 import React, { useState, useEffect, useRef } from "react";
 import { usePage, Head } from "@inertiajs/react";
 
@@ -10,6 +11,7 @@ import { Header } from "../Components/Header";
 import { AgeGate, hasAgeConfirmation } from "../Components/AgeGate";
 
 const DefaultLayout = ({ children }) => {
+    const lang = useLang();
     const {
         controller,
         action,
@@ -113,43 +115,74 @@ const DefaultLayout = ({ children }) => {
 
     const currentPath =
         typeof window !== "undefined" ? window.location.pathname : "";
-    // const canonicalUrl = `${dadosGerais?.siteUrl ?? ''}${currentPath}`;
+    const canonicalUrl = `${dadosGerais?.siteUrl ?? ""}${currentPath}`;
 
-    // const organizationSchema = dadosGerais?.organization ? {
-    //     "@context": "https://schema.org",
-    //     "@type": "Winery",
-    //     "name": dadosGerais.name,
-    //     "url": dadosGerais.siteUrl,
-    //     "telephone": dadosGerais.organization.telefone,
-    //     "image": pagina?.imagem?.endereco,
-    //     "address": {
-    //         "@type": "PostalAddress",
-    //         "streetAddress": dadosGerais.endereco,
-    //         "addressLocality": dadosGerais.cidade,
-    //         "addressRegion": dadosGerais.estado,
-    //         "postalCode": dadosGerais.cep,
-    //         "addressCountry": "Brazil",
-    //     },
-    //     ...(dadosGerais.geo ? {
-    //         "geo": {
-    //             "@type": "GeoCoordinates",
-    //             "latitude": dadosGerais.lat,
-    //             "longitude": dadosGerais.lng,
-    //         }
-    //     } : {}),
-    //     "sameAs": [
-    //         dadosGerais.instagram,
-    //         dadosGerais.facebook,
-    //         dadosGerais.youtube,
-    //         dadosGerais.linkedin,
-    //         dadosGerais.tiktok,
-    //     ].filter(Boolean),
-    // } : null;
+    const organizationSchema = dadosGerais
+        ? {
+              "@context": "https://schema.org",
+              "@type": "Winery",
+              name: dadosGerais.name,
+              url: dadosGerais.siteUrl,
+              image: pagina?.imagem?.endereco,
+
+              ...(dadosGerais.telefone && {
+                  telephone: dadosGerais.telefone,
+              }),
+
+              ...(dadosGerais.email && {
+                  email: dadosGerais.email,
+              }),
+
+              address: {
+                  "@type": "PostalAddress",
+                  streetAddress: dadosGerais.endereco,
+                  postalCode: dadosGerais.cep,
+                  addressCountry: "BR",
+              },
+
+              ...(dadosGerais.link_mapa && {
+                  hasMap: dadosGerais.link_mapa,
+              }),
+
+              ...(dadosGerais.como_chegar && {
+                  description: dadosGerais.como_chegar,
+              }),
+
+              ...(dadosGerais.horario_atendimento && {
+                  openingHours: dadosGerais.horario_atendimento,
+              }),
+
+              ...(dadosGerais.latitude && dadosGerais.longitude
+                  ? {
+                        geo: {
+                            "@type": "GeoCoordinates",
+                            latitude: dadosGerais.latitude,
+                            longitude: dadosGerais.longitude,
+                        },
+                    }
+                  : {}),
+
+              sameAs: [dadosGerais.instagram].filter(Boolean),
+
+              contactPoint: [
+                  ...(dadosGerais.whatsapp
+                      ? [
+                            {
+                                "@type": "ContactPoint",
+                                telephone: dadosGerais.whatsapp,
+                                contactType: "customer service",
+                            },
+                        ]
+                      : []),
+              ],
+          }
+        : null;
+
+    console.log(organizationSchema);
 
     const pageSchemas = pagina?.schemas ?? [];
 
-    //dadosGerais.whatsapp ||
-    const whatsapp = "+55 53 0000-0000";
+    const whatsapp = dadosGerais.whatsapp;
     const whatsappNumber = String(whatsapp || "").replace(/\D/g, "");
 
     return (
@@ -158,13 +191,15 @@ const DefaultLayout = ({ children }) => {
                 <title>{pagina.titulo}</title>
                 <meta name="description" content={pagina.descricao} />
 
-                {/* <link rel="canonical" href={canonicalUrl} /> */}
+                <link rel="canonical" href={canonicalUrl} />
 
-                {/* {idiomas?.map((locale) => (
+                {idiomas?.map((locale) => (
                     <link
                         key={locale.codigo}
                         rel="alternate"
-                        hreflang={locale.codigo === 'pt' ? 'pt-BR' : locale.codigo}
+                        hreflang={
+                            locale.codigo === "pt" ? "pt-BR" : locale.codigo
+                        }
                         href={locale.url}
                     />
                 ))}
@@ -172,13 +207,16 @@ const DefaultLayout = ({ children }) => {
                     <link
                         rel="alternate"
                         hreflang="x-default"
-                        href={idiomas.find(l => l.codigo === idioma)?.url ?? canonicalUrl}
+                        href={
+                            idiomas.find((l) => l.codigo === idioma)?.url ??
+                            canonicalUrl
+                        }
                     />
                 )}
 
-                <meta property="og:url" content={canonicalUrl} /> */}
+                <meta property="og:url" content={canonicalUrl} />
                 <meta property="og:type" content="website" />
-                {/* <meta property="og:site_name" content={dadosGerais.name} /> */}
+                <meta property="og:site_name" content={dadosGerais.name} />
                 <meta
                     property="og:locale"
                     content={idioma === "pt" ? "pt_BR" : idioma}
@@ -214,7 +252,7 @@ const DefaultLayout = ({ children }) => {
                 <meta name="twitter:image" content={pagina.imagem.endereco} />
 
                 <meta name="robots" content="index, follow" />
-                <meta name="author" content="Octal Web" />
+                <meta name="author" content={lang("agencia")} />
 
                 <link rel="icon" href={`/favicon.ico`} type="image/x-icon" />
 
@@ -241,31 +279,39 @@ const DefaultLayout = ({ children }) => {
                 />
             ) : (
                 <>
-            <Header
-                isOpen={isMenuOpen}
-                onToggle={toggleMenu}
-                onClose={() => setIsMenuOpen(false)}
-                whatsappHref={`https://wa.me/${whatsappNumber.startsWith("55") ? whatsappNumber : `55${whatsappNumber}`}`}
-            />
+                    <a
+                        href="#main-content"
+                        onClick={() => mainRef.current?.focus()}
+                        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:rounded focus:bg-white focus:px-5 focus:py-3 focus:text-black focus:outline focus:outline-2 focus:outline-primary"
+                    >
+                        {lang("pularConteudo")}
+                    </a>
+                    <Header
+                        isOpen={isMenuOpen}
+                        onToggle={toggleMenu}
+                        onClose={() => setIsMenuOpen(false)}
+                        whatsappHref={`https://wa.me/${whatsappNumber.startsWith("55") ? whatsappNumber : `55${whatsappNumber}`}`}
+                    />
 
-            <main
-                ref={mainRef}
-                tabIndex={-1}
-                className={`overflow-x-clip overflow-y-visible bg-black ${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
-            >
-                {children}
-            </main>
+                    <main
+                        id="main-content"
+                        ref={mainRef}
+                        tabIndex={-1}
+                        className={`overflow-x-clip overflow-y-visible bg-black ${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
+                    >
+                        {children}
+                    </main>
 
-            <div className="bg-black">
-                <Footer />
-            </div>
+                    <div className="bg-black">
+                        <Footer />
+                    </div>
 
-            {notifyCookie || !rejectCookie ? (
-                <CookieModal
-                    acceptCookies={acceptCookies}
-                    visible={notifyCookie ? false : true}
-                />
-            ) : null}
+                    {notifyCookie || !rejectCookie ? (
+                        <CookieModal
+                            acceptCookies={acceptCookies}
+                            visible={notifyCookie ? false : true}
+                        />
+                    ) : null}
                 </>
             )}
         </>
