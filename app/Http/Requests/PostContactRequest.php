@@ -45,15 +45,17 @@ class PostContactRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nome.required' => 'Por favor, informe seu nome.',
-            'email.required' => 'Por favor, informe seu e-mail.',
-            'email.email' => 'Por favor, informe um e-mail válido.',
-            'telefone.required' => 'Por favor, informe seu telefone.',
-            'telefone.celular_com_ddd' => 'Por favor, informe um telefone válido.',
-            'assunto.required' => 'Por favor, informe o assunto da mensagem.',
-            'mensagem.required' => 'Por favor, informe o texto da mensagem.',
+            'nome.required' => __('default.nome_required'),
+            'email.required' => __('default.email_required'),
+            'email.email' => __('default.email_email'),
+            'telefone.required' => __('default.telefone_required'),
+            'telefone.celular_com_ddd' => __('default.telefone_invalido'),
+            'assunto.required' => __('default.assunto_required'),
+            'mensagem.required' => __('default.mensagem_required'),
             'politica.required' => __('default.politica_required'),
             'politica.accepted' => __('default.politica_accepted'),
+            'string' => __('default.campo_texto'),
+            'max' => __('default.campo_maximo'),
         ];
     }
 
