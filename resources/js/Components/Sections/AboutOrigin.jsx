@@ -1,3 +1,4 @@
+import { accessibleText } from "@/lib/accessibleText";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
@@ -50,7 +51,7 @@ export const AboutOrigin = ({ content }) => {
                                 <img
                                     data-reveal={reverse ? "right" : "left"}
                                     src={item?.imagem}
-                                    alt={item?.titulo || ""}
+                                    alt={accessibleText(item?.titulo || "")}
                                     className="aspect-[36/43] border-custom object-cover"
                                 />
                             </div>

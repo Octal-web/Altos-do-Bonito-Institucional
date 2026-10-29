@@ -1,10 +1,14 @@
-import { useRef, useState } from "react";
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
+import { useId, useRef, useState } from "react";
 import { useSwapAnimation } from "@/hooks/useSwapAnimation";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 import { BrandSeal } from "../UI/BrandSeal";
 
 export const HomeFamily = ({ content }) => {
+    const lang = useLang();
+    const panelId = useId();
     const [activeIndex, setActiveIndex] = useState(1);
     const selectedIndex = content[activeIndex]
         ? activeIndex
@@ -22,7 +26,7 @@ export const HomeFamily = ({ content }) => {
                 <div className="flex flex-col items-center pb-20 md:pb-32 2xl:pb-40">
                     <div
                         role="group"
-                        aria-label="Regiões da vinícola"
+                        aria-label={lang("historiaFamilia")}
                         data-fade
                         className="winery-options"
                     >
@@ -32,6 +36,7 @@ export const HomeFamily = ({ content }) => {
                                     <button
                                         key={item.id ?? index}
                                         type="button"
+                                        aria-controls={panelId}
                                         aria-pressed={selectedIndex === index}
                                         onClick={() => setActiveIndex(index)}
                                         className="winery-option mb-4 md:mb-0"
@@ -54,7 +59,7 @@ export const HomeFamily = ({ content }) => {
                     >
                         <img
                             src={selected.imagem}
-                            alt=""
+                            alt={accessibleText(selected.imagem_alt || selected.subtitulo)}
                             data-swap-media
                             className="size-full object-cover"
                         />
@@ -68,13 +73,13 @@ export const HomeFamily = ({ content }) => {
                         >
                             <img
                                 src={selected.imagem_mobile}
-                                alt=""
+                                alt={accessibleText(selected.imagem_alt || selected.subtitulo)}
                                 data-swap-media
                                 className="size-full object-cover"
                             />
                         </div>
                         <div data-fade className="ml-auto md:max-w-[534px]">
-                            <div data-swap>
+                            <div data-swap id={panelId} aria-live="polite" aria-atomic="true">
                                 <Title
                                     tag="h2"
                                     variant="h2"

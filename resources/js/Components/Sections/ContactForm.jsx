@@ -1,3 +1,4 @@
+import { useLang } from "@/hooks/useLang";
 import { useForm } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -12,13 +13,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const assuntos = [
-    "Informações gerais",
-    "Vinhos",
-    "Visitas e experiências",
-    "Comercial",
-    "Outros",
-].map((assunto) => ({ value: assunto, label: assunto }));
+const subjectOptions = [
+    { value: "Informações gerais", key: "informacoesGerais" },
+    { value: "Vinhos", key: "vinhos" },
+    { value: "Visitas e experiências", key: "visitasExperiencias" },
+    { value: "Comercial", key: "comercial" },
+    { value: "Outros", key: "outros" },
+];
 
 const ContactMenuList = (props) => (
     <components.MenuList
@@ -42,6 +43,8 @@ const selectClassNames = {
 };
 
 export const ContactForm = () => {
+    const lang = useLang();
+    const assuntos = subjectOptions.map(({ value, key }) => ({ value, label: lang(key) }));
     const sectionRef = useRef(null);
     const formWrapperRef = useRef(null);
 
@@ -200,7 +203,7 @@ export const ContactForm = () => {
         >
             <div ref={formWrapperRef}>
                 <Title tag="p" variant="subtitle" className="mb-3">
-                    Formulário
+                    {lang("formulario")}
                 </Title>
                 <Title
                     tag="h2"
@@ -208,25 +211,25 @@ export const ContactForm = () => {
                     id="contact-form-title"
                     className="mb-7 md:mb-9"
                 >
-                    Fale com a gente
+                    {lang("faleConosco")}
                 </Title>
 
                 <form
                     onSubmit={handleSubmit}
                     noValidate
                     className="section-content"
-                    aria-label="Formulário de contato"
+                    aria-label={lang("formularioContato")}
                     aria-busy={processing}
                 >
                     <div className="space-y-2.5">
                         <div>
                             <label htmlFor="nome" className="sr-only">
-                                Nome
+                                {lang("nome")}
                             </label>
                             <input
                                 {...fieldProps("nome")}
                                 type="text"
-                                placeholder="Nome"
+                                placeholder={lang("nome")}
                                 autoComplete="name"
                                 maxLength={255}
                             />
@@ -234,12 +237,12 @@ export const ContactForm = () => {
                         </div>
                         <div>
                             <label htmlFor="email" className="sr-only">
-                                E-mail
+                                {lang("email")}
                             </label>
                             <input
                                 {...fieldProps("email")}
                                 type="email"
-                                placeholder="E-mail"
+                                placeholder={lang("email")}
                                 autoComplete="email"
                                 maxLength={255}
                             />
@@ -247,21 +250,21 @@ export const ContactForm = () => {
                         </div>
                         <div>
                             <label htmlFor="telefone" className="sr-only">
-                                Telefone
+                                {lang("telefone")}
                             </label>
                             <InputMask
                                 {...fieldProps("telefone")}
                                 type="tel"
                                 mask={phoneMask}
                                 replacement={{ _: /\d/ }}
-                                placeholder="Telefone"
+                                placeholder={lang("telefone")}
                                 autoComplete="tel"
                             />
                             <ErrorMessage field="telefone" />
                         </div>
                         <div>
                             <label htmlFor="assunto" className="sr-only">
-                                Assunto
+                                {lang("assunto")}
                             </label>
                             <Select
                                 inputId="assunto"
@@ -276,7 +279,9 @@ export const ContactForm = () => {
                                 }}
                                 isDisabled={processing}
                                 isSearchable={false}
-                                placeholder="Assunto"
+                                noOptionsMessage={() => lang("nenhumaOpcao")}
+                                loadingMessage={() => lang("carregando")}
+                                placeholder={lang("assunto")}
                                 aria-required="true"
                                 aria-invalid={Boolean(errors.assunto)}
                                 aria-describedby={errors.assunto ? "assunto-error" : undefined}
@@ -289,11 +294,11 @@ export const ContactForm = () => {
                         </div>
                         <div>
                             <label htmlFor="mensagem" className="sr-only">
-                                Mensagem
+                                {lang("mensagem")}
                             </label>
                             <textarea
                                 {...fieldProps("mensagem")}
-                                placeholder="Mensagem"
+                                placeholder={lang("mensagem")}
                                 rows={5}
                                 maxLength={1200}
                                 className={`${inputClassName} min-h-[144px] resize-y`}
@@ -306,6 +311,7 @@ export const ContactForm = () => {
                         <div className="flex items-start gap-2.5 font-admin text-xs font-light leading-5 text-white/50">
                             <input
                                 id="politica"
+                                aria-label={lang("aceitoPoliticaCompleta")}
                                 name="politica"
                                 type="checkbox"
                                 checked={data.politica}
@@ -324,7 +330,7 @@ export const ContactForm = () => {
                                     htmlFor="politica"
                                     className="cursor-pointer"
                                 >
-                                    Aceito a{" "}
+                                    {lang("aceitoPolitica")}{" "}
                                 </label>
                                 <a
                                     href={route("Politicas.privacidade")}
@@ -332,9 +338,9 @@ export const ContactForm = () => {
                                     rel="noopener noreferrer"
                                     className="underline-offset-4 transition-colors hover:text-primary hover:underline focus-visible:outline-primary"
                                 >
-                                    política de privacidade
+                                    {lang("privacidade")}
                                 </a>{" "}
-                                (LGPD)
+                                {lang("lgpd")}
                             </span>
                         </div>
                         <ErrorMessage field="politica" />
@@ -349,7 +355,7 @@ export const ContactForm = () => {
                             aria-hidden="true"
                             className="h-px w-9 bg-current"
                         />
-                        {processing ? "Enviando..." : "Enviar mensagem"}
+                        {processing ? lang("enviando") : lang("enviarMensagem")}
                     </button>
 
                     {showSuccessMessage && (
@@ -359,8 +365,7 @@ export const ContactForm = () => {
                             variant="p"
                             className={`mt-5 rounded-lg border border-primary/30 p-4 transition-opacity duration-300 ${successVisible ? "opacity-100" : "opacity-0"}`}
                         >
-                            Seus dados foram enviados com sucesso. Nossa equipe
-                            entrará em contato.
+                            {lang("contatoSucesso")}
                         </Text>
                     )}
                 </form>

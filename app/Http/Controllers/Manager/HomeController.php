@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Requests\Manager\PostGeneralDataRequest;
 use App\Models\DadosGerais;
-// use App\Models\DadosGerais;
 use App\Models\Slide;
 
 class HomeController extends Controller
@@ -76,6 +74,8 @@ class HomeController extends Controller
             $dados_gerais->horario_atendimento = $request->horario_atendimento;
             $dados_gerais->link_mapa = $request->link_mapa;
             $dados_gerais->link_loja = $request->link_loja;
+            $dados_gerais->latitude = $request->latitude;
+            $dados_gerais->longitude = $request->longitude;
 
             $response = $dados_gerais->save();
 

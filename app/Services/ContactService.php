@@ -11,7 +11,7 @@ class ContactService
     {
         return DB::transaction(function () use ($data) {
             $contactData = collect($data)
-                ->except(['politica'])
+                ->except(['politica', 'pacote', 'origem', 'campanha', 'grupo', 'anuncio'])
                 ->toArray();
 
             $contact = Contato::create($contactData);

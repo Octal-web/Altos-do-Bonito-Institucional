@@ -1,3 +1,5 @@
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/styles.css";
 
@@ -15,6 +17,7 @@ import { Title } from "../UI/Title";
 import { LinkButton } from "../UI/LinkButton";
 
 export const ProductBanner = ({ product, tastingHref }) => {
+    const lang = useLang();
     return (
         <SectionBackground
             className="object-left opacity-55"
@@ -43,7 +46,7 @@ export const ProductBanner = ({ product, tastingHref }) => {
                             </Text>
                             <div className="mt-6 md:mt-8 flex flex-wrap gap-1.5 2xl:mt-10">
                                 <LinkButton href={route("Contato.index")}>
-                                    Onde encontrar
+                                    {lang("ondeEncontrar")}
                                 </LinkButton>
 
                                 <a
@@ -51,7 +54,7 @@ export const ProductBanner = ({ product, tastingHref }) => {
                                     className="button-secondary group"
                                 >
                                     <div className="h-px w-8 md:w-10 bg-white group-hover:bg-black" />
-                                    Agendar degustação
+                                    {lang("agendarDegustacao")}
                                 </a>
                             </div>
                         </div>
@@ -63,13 +66,14 @@ export const ProductBanner = ({ product, tastingHref }) => {
 };
 
 const ProductGallery = ({ product }) => {
+    const lang = useLang();
     const [index, setIndex] = useState(0);
     const [open, setOpen] = useState(false);
     const slides = (product.galeria ?? [])
         .filter((item) => item.imagem)
         .map((item, position) => ({
             src: item.imagem,
-            alt: `Foto ${position + 1} do vinho`,
+            alt: lang("fotoVinho", position + 1, accessibleText(product.nome)),
         }));
 
     if (!slides.length) return <div className="aspect-[7/6] border-custom" />;
@@ -84,12 +88,12 @@ const ProductGallery = ({ product }) => {
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
-                    aria-label="Ampliar imagem do vinho"
+                    aria-label={lang("ampliarVinho")}
                     className="block aspect-[7/4] md:aspect-[7/6] w-full cursor-zoom-in overflow-hidden border-custom focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                     <img
                         src={slides[selected].src}
-                        alt={slides[selected].alt}
+                        alt={accessibleText(slides[selected].alt)}
                         className="size-full object-cover"
                     />
                 </button>
@@ -102,8 +106,8 @@ const ProductGallery = ({ product }) => {
                             onClick={() => navigate(step)}
                             aria-label={
                                 step === -1
-                                    ? "Imagem anterior"
-                                    : "Próxima imagem"
+                                    ? lang("imagemAnterior")
+                                    : lang("proximaImagem")
                             }
                             className={`absolute top-1/2 flex aspect-square w-[9%] -translate-y-1/2 items-center justify-center rounded-full transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary ${step === -1 ? "left-0 -translate-x-1/2 bg-white text-black" : "right-0 translate-x-1/2 bg-primary text-white"}`}
                         >
@@ -124,7 +128,7 @@ const ProductGallery = ({ product }) => {
             {slides.length > 1 && (
                 <div
                     role="group"
-                    aria-label="Fotos do vinho"
+                    aria-label={lang("fotosVinho")}
                     className="mt-3 flex gap-[2%] overflow-x-auto pb-2"
                 >
                     {slides.map((slide, position) => (
@@ -132,7 +136,7 @@ const ProductGallery = ({ product }) => {
                             key={`${slide.src}-${position}`}
                             type="button"
                             onClick={() => setIndex(position)}
-                            aria-label={`Selecionar foto ${position + 1}`}
+                            aria-label={lang("selecionarFoto", position + 1)}
                             aria-pressed={selected === position}
                             className={`aspect-[2/1] basis-[32%] shrink-0 overflow-hidden border-custom focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${selected === position ? "!border-primary" : "opacity-60 hover:opacity-100"}`}
                         >
@@ -155,11 +159,15 @@ const ProductGallery = ({ product }) => {
                 plugins={[Fullscreen, Thumbnails, Zoom]}
                 on={{ view: ({ index: nextIndex }) => setIndex(nextIndex) }}
                 labels={{
-                    Close: "Fechar",
-                    Next: "Próxima imagem",
-                    Previous: "Imagem anterior",
-                    "Zoom in": "Ampliar",
-                    "Zoom out": "Reduzir",
+                    Close: lang("fechar"),
+                    Next: lang("proximaImagem"),
+                    Previous: lang("imagemAnterior"),
+                    "Zoom in": lang("ampliar"),
+                    "Zoom out": lang("reduzir"),
+                    "Enter Fullscreen": lang("telaCheia"),
+                    "Exit Fullscreen": lang("sairTelaCheia"),
+                    "Show thumbnails": lang("mostrarMiniaturas"),
+                    "Hide thumbnails": lang("ocultarMiniaturas"),
                 }}
                 carousel={{ finite: slides.length === 1 }}
                 render={

@@ -257,12 +257,17 @@ class ProdutosController extends Controller
             'processo_descricao' => $produto->produtosIdiomas[0]->processo_descricao,
             'ficha_tecnica' => $produto->produtosIdiomas[0]->ficha_tecnica,
 
-            'galeria' => $produto->produtosImagens->map(function ($item) {
+            'galeria' => $produto->produtosImagens->isNotEmpty() ? $produto->produtosImagens->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'imagem' => rafator('content/products/gallery/' . $item->imagem),
                 ];
-            }),
+            }) : collect([
+                [
+                    'id' => null,
+                    'imagem' => rafator('content/products/highlight/' . $produto->imagem_destaque),
+                ],
+            ]),
         ];
 
         return Inertia::render('Produtos/produto', [

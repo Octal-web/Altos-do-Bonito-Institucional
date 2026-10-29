@@ -37,11 +37,8 @@ const menus = [
         id: 3,
         label: "Produtos",
         icon: faWineBottle,
-        controllers: ["Linhas", "Categorias", "Produtos"],
-        subMenu: [
-            { label: "Linhas", href: route("Manager.Linhas.index") },
-            { label: "Produtos", href: route("Manager.Produtos.index") },
-        ],
+        controllers: ["Categorias", "Produtos"],
+        href: route("Manager.Produtos.index"),
     },
     // { id: 4, label: 'Enoturismo', icon: faWineGlass, href: route('Manager.Enoturismo.index'), controllers: ['Enoturismo', 'Experiencias']},
     {

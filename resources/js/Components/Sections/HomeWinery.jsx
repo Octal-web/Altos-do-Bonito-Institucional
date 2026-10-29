@@ -1,4 +1,6 @@
-import { useRef, useState } from "react";
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
+import { useId, useRef, useState } from "react";
 import { useSwapAnimation } from "@/hooks/useSwapAnimation";
 import { SectionBackground } from "../UI/SectionBackground";
 import { LinkButton } from "../UI/LinkButton";
@@ -6,6 +8,8 @@ import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
 export const HomeWinery = ({ content }) => {
+    const lang = useLang();
+    const panelId = useId();
     const [activeIndex, setActiveIndex] = useState(2);
     const selectedIndex = content[activeIndex]
         ? activeIndex
@@ -32,17 +36,17 @@ export const HomeWinery = ({ content }) => {
                     >
                         <img
                             src={selected.imagem}
-                            alt=""
+                            alt={accessibleText(selected.imagem_alt || selected.subtitulo)}
                             loading="lazy"
                             data-swap-media
-                            className="size-full object-cover object-center"
+                            className="size-full object-cover object-left"
                         />
                     </div>
 
                     <div className="flex flex-col items-start">
                         <div
                             role="group"
-                            aria-label="Regiões da vinícola"
+                            aria-label={lang("regioesVinicola")}
                             data-fade
                             className="winery-options"
                         >
@@ -52,6 +56,7 @@ export const HomeWinery = ({ content }) => {
                                         <button
                                             key={item.id ?? index}
                                             type="button"
+                                            aria-controls={panelId}
                                             aria-pressed={
                                                 selectedIndex === index
                                             }
@@ -73,6 +78,7 @@ export const HomeWinery = ({ content }) => {
                         >
                             <div
                                 data-swap
+                                id={panelId}
                                 aria-live="polite"
                                 aria-atomic="true"
                             >
@@ -92,7 +98,7 @@ export const HomeWinery = ({ content }) => {
 
                             <div className="mt-6 md:mt-16 flex flex-wrap gap-1.5">
                                 <LinkButton href={route("Contato.index")}>
-                                    Agendar visita
+                                    {lang("agendarVisita")}
                                 </LinkButton>
                                 <LinkButton
                                     href={selected.link}
@@ -100,7 +106,7 @@ export const HomeWinery = ({ content }) => {
                                     rel="noopener noreferrer"
                                     isButtonCA={false}
                                 >
-                                    Consultar estadia
+                                    {lang("consultarEstadia")}
                                 </LinkButton>
                             </div>
                         </div>

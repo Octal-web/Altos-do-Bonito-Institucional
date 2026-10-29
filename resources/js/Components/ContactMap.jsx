@@ -1,8 +1,9 @@
+import { useLang } from "@/hooks/useLang";
 import { useEffect, useRef } from "react";
 
 const DEFAULT_POSITION = {
-    lat: -29.211323,
-    lng: -51.517239,
+    lat: -0,
+    lng: -0,
 };
 
 const GOOGLE_MAPS_SCRIPT_ID = "google-maps-javascript-api";
@@ -89,40 +90,18 @@ const loadGoogleMaps = (apiKey) => {
     return googleMapsPromise;
 };
 
-const createMarkerContent = () => {
-    const marker = document.createElement("div");
-    marker.className = "relative w-[25px]";
-
-    const icon = document.createElement("img");
-    icon.src = "/site/imgs/location-pin.png";
-    icon.alt = "";
-    icon.width = 25;
-    icon.className = "block h-auto w-[25px] object-contain";
-
-    const label = document.createElement("div");
-    label.className =
-        "pointer-events-none absolute left-[33px] top-1/2 flex -translate-y-1/2 flex-col whitespace-nowrap font-sans text-sm font-medium leading-5 text-[#9F0009]";
-
-    const firstLine = document.createElement("span");
-    firstLine.textContent = "Altos do Bonito";
-
-    const secondLine = document.createElement("span");
-    secondLine.textContent = "Vinícola";
-
-    label.append(firstLine, secondLine);
-    marker.append(icon, label);
-
-    return marker;
-};
-
 export const ContactMap = ({
     apiKey,
-    lat = DEFAULT_POSITION.lat,
-    lng = DEFAULT_POSITION.lng,
+    lat,
+    lng,
     zoom = 15,
     className = "h-96 w-full",
 }) => {
+    const lang = useLang();
     const mapRef = useRef(null);
+
+    const latitude = lat ?? DEFAULT_POSITION.lat;
+    const longitude = lng ?? DEFAULT_POSITION.lng;
 
     useEffect(() => {
         if (!apiKey || !mapRef.current) return;
@@ -138,9 +117,11 @@ export const ContactMap = ({
                 if (cancelled || !mapRef.current) return;
 
                 const { Map } = window.google.maps;
-                const { AdvancedMarkerElement } = window.google.maps.marker;
 
-                const position = { lat, lng };
+                const position = {
+                    lat: Number(latitude),
+                    lng: Number(longitude),
+                };
 
                 map = new Map(mapRef.current, {
                     center: position,
@@ -148,15 +129,6 @@ export const ContactMap = ({
                     mapId: "DEMO_MAP_ID",
                     mapTypeControl: false,
                     streetViewControl: true,
-                });
-
-                marker = new AdvancedMarkerElement({
-                    map,
-                    position,
-                    content: createMarkerContent(),
-                    anchorLeft: "-50%",
-                    anchorTop: "-100%",
-                    title: "Altos do Bonito",
                 });
             } catch (error) {
                 console.error("Erro ao inicializar o mapa:", error);
@@ -176,13 +148,13 @@ export const ContactMap = ({
                 window.google.maps.event.clearInstanceListeners(map);
             }
         };
-    }, [apiKey, lat, lng, zoom]);
+    }, [apiKey, latitude, longitude, zoom, lang]);
 
     return (
         <div
             ref={mapRef}
             role="region"
-            aria-label="Mapa com a localização da vinícola Altos do Bonito"
+            aria-label={lang("mapaVinicola")}
             className={className}
         />
     );

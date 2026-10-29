@@ -1,7 +1,9 @@
+import { useLang } from "@/hooks/useLang";
 import { LinkButton } from "../UI/LinkButton";
 import { Title } from "../UI/Title";
 
 export const ProductsFooter = ({ content }) => {
+    const lang = useLang();
     return (
         <div className="text-center text-white">
             <Title tag="p" variant="subtitle">
@@ -17,7 +19,7 @@ export const ProductsFooter = ({ content }) => {
                 href={route("Contato.index") }
                 className="mx-auto mt-5 md:mt-10"
             >
-                Conversar agora
+                {lang("conversarAgora")}
             </LinkButton>
         </div>
     );

@@ -27,11 +27,13 @@ class PostGeneralDataRequest extends FormRequest
             'email'  => 'required|email',
             'telefone' => 'required|max:46',
             'instagram' => 'nullable|url',
-            'whatsapp' => 'nullable|url',
+            'whatsapp' => 'nullable|max:46',
             'link_mapa' => 'required|url',
             'link_loja' => 'required|url',
             'como_chegar' => 'required|string|max:300',
             'horario_atendimento' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ];
     }
 
@@ -52,11 +54,11 @@ class PostGeneralDataRequest extends FormRequest
             'email.email' => 'Por favor, informe um e-mail válido.',
 
             'telefone.required' => 'Por favor, informe o telefone.',
-            'telefone.max' => 'O telefone deve ter no máximo 46 caracteres.',
+            'telefone.max' => 'O telefone deve ter no máximo :max caracteres.',
 
             'instagram.url' => 'Por favor, informe um link válido para o Instagram.',
 
-            'whatsapp.url' => 'Por favor, informe um link válido para o WhatsApp.',
+            'whatsapp.max' => 'O número do WhatsApp deve ter no máximo :max caracteres.',
 
             'link_mapa.required' => 'Por favor, informe o link do Google Maps.',
             'link_mapa.url' => 'Por favor, informe um link válido do Google Maps.',
@@ -66,11 +68,17 @@ class PostGeneralDataRequest extends FormRequest
 
             'como_chegar.required' => 'Por favor, informe como chegar ao local.',
             'como_chegar.string' => 'As instruções de como chegar devem ser um texto válido.',
-            'como_chegar.max' => 'As instruções de como chegar devem ter no máximo 300 caracteres.',
+            'como_chegar.max' => 'As instruções de como chegar devem ter no máximo :max caracteres.',
 
             'horario_atendimento.required' => 'Por favor, informe o horário de atendimento.',
             'horario_atendimento.string' => 'O horário de atendimento deve ser um texto válido.',
-            'horario_atendimento.max' => 'O horário de atendimento deve ter no máximo 255 caracteres.',
+            'horario_atendimento.max' => 'O horário de atendimento deve ter no máximo :max caracteres.',
+
+            'latitude.numeric' => 'A latitude deve ser um número válido.',
+            'latitude.between' => 'A latitude deve estar entre -90 e 90.',
+
+            'longitude.numeric' => 'A longitude deve ser um número válido.',
+            'longitude.between' => 'A longitude deve estar entre -180 e 180.',
         ];
     }
 }

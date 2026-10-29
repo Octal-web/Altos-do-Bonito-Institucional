@@ -1,3 +1,4 @@
+import { accessibleText } from "@/lib/accessibleText";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
@@ -73,7 +74,7 @@ export const ProductSpecifications = ({ product }) => {
                     <div className="aspect-[72/35]">
                         <img
                             src={product.imagem_terciaria}
-                            alt={product.processo_titulo || ""}
+                            alt={accessibleText(product.processo_titulo || "")}
                             className="size-full rounded-md object-cover"
                         />
                     </div>

@@ -1,3 +1,5 @@
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
 import "swiper/swiper-bundle.css";
 
 import { Autoplay } from "swiper/modules";
@@ -8,6 +10,7 @@ import { Text } from "../UI/Text";
 import { SectionBackground } from "../UI/SectionBackground";
 
 export const HomeLabels = ({ content, images }) => {
+    const lang = useLang();
     return (
         <section className="section-overflown pt-20 xl:pt-12 2xl:pt-20 isolate">
             <SectionBackground
@@ -47,7 +50,7 @@ export const HomeLabels = ({ content, images }) => {
                         href={route("Produtos.index") }
                         className="mx-auto"
                     >
-                        Ver catálogo
+                        {lang("verCatalogo")}
                     </LinkButton>
                 </div>
             </div>
@@ -115,6 +118,7 @@ const Carousel = ({ images }) => {
 };
 
 const HomeWine = ({ content }) => {
+    const lang = useLang();
     return (
             <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-5 md:gap-10 2xl:gap-20 text-start pb-32 md:pb-44 2xl:pb-64">
                 <div>
@@ -137,7 +141,7 @@ const HomeWine = ({ content }) => {
                         <LinkButton
                         href={route("Institucional.index")}
                         >
-                            Nossa história
+                            {lang("nossaHistoria")}
                         </LinkButton>
                     </div>
                 </div>
@@ -148,7 +152,7 @@ const HomeWine = ({ content }) => {
                 >
                     <img
                         src={content[1].imagem}
-                        alt={content[1].titulo || ""}
+                        alt={accessibleText(content[1].titulo || "")}
                         className="size-full object-cover"
                     />
                 </div>

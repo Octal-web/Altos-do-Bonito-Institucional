@@ -39,7 +39,7 @@ const Page = () => {
                         <p><b>Nome</b>: {contato.nome}</p>
                         <p><b>E-mail</b>: {contato.email}</p>
                         <p><b>Telefone</b>: {contato.telefone}</p>
-                        <p className="capitalize"><b>Área</b>: {contato.area}</p>
+                        <p className="capitalize"><b>Assunto</b>: {contato.assunto}</p>
                         <p><b>Mensagem</b>: {contato.mensagem}</p>
                         <p><b>Data</b>: {contato.data }</p>
                     </div>

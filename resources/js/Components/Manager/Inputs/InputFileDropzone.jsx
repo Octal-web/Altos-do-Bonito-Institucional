@@ -17,6 +17,7 @@ export const InputFileDropzone = ({
     currentFile,
     onChange,
     onDelete,
+    idioma,
     type = "video",
 }) => {
     const [isDragging, setIsDragging] = useState(false);

@@ -1,3 +1,4 @@
+import { useLang } from "@/hooks/useLang";
 import { useEffect, useRef, useState } from "react";
 import { SectionBackground } from "./UI/SectionBackground";
 import { Text } from "./UI/Text";
@@ -39,6 +40,7 @@ const instagramUrl = (value) => {
 };
 
 export const AgeGate = ({ instagram, onConfirm }) => {
+    const lang = useLang();
     const [declined, setDeclined] = useState(false);
     const titleRef = useRef(null);
     const instagramHref = instagramUrl(instagram);
@@ -74,7 +76,7 @@ export const AgeGate = ({ instagram, onConfirm }) => {
             <div className="w-full max-w-2xl text-center relative">
                 <img
                     src="/site/img/logo.png"
-                    alt="Altos do Bonito"
+                    alt={lang("marca")}
                     className="mx-auto mb-12 w-40 md:w-52"
                 />
                 <div
@@ -82,7 +84,7 @@ export const AgeGate = ({ instagram, onConfirm }) => {
                     className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black blur-3xl md:h-72 w-[50vw]"
                 />
                 <Title tag="p" variant="subtitle" className="mb-5">
-                    Bem-vindo!
+                    {lang("bemVindo")}
                 </Title>
                 <Title
                     ref={titleRef}
@@ -92,15 +94,14 @@ export const AgeGate = ({ instagram, onConfirm }) => {
                     variant="h3"
                     className="outline-none"
                 >
-                    Você tem 18 anos ou mais?
+                    {lang("idadePergunta")}
                 </Title>
                 <Text
                     id="age-gate-description"
                     variant="p"
                     className="mx-auto mt-6 max-w-md"
                 >
-                    Nosso site é destinado a maiores de 18 anos. Confirme sua
-                    idade para continuar.
+                    {lang("idadeDescricao")}
                 </Text>
 
                 <div className="mt-9 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
@@ -113,7 +114,7 @@ export const AgeGate = ({ instagram, onConfirm }) => {
                             aria-hidden="true"
                             className="h-px w-8 bg-current"
                         />
-                        Sim, tenho 18 anos ou mais
+                        {lang("idadeConfirmar")}
                     </button>
                     <button
                         type="button"
@@ -121,7 +122,7 @@ export const AgeGate = ({ instagram, onConfirm }) => {
                         className="button-secondary min-h-12 justify-center text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary group"
                     >
                         <div className="h-px w-8 md:w-10 bg-white group-hover:bg-black" />
-                        Não tenho 18 anos
+                        {lang("idadeRecusar")}
                     </button>
                 </div>
 
@@ -130,7 +131,7 @@ export const AgeGate = ({ instagram, onConfirm }) => {
                         role="status"
                         className="mx-auto mt-6 max-w-md font-admin text-sm leading-relaxed text-primary"
                     >
-                        O acesso ao site é reservado a maiores de 18 anos.
+                        {lang("idadeRestrita")}
                     </p>
                 )}
 
@@ -139,11 +140,11 @@ export const AgeGate = ({ instagram, onConfirm }) => {
                         href={instagramHref}
                         className="mt-8 inline-block font-admin text-sm text-primary underline underline-offset-4 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                     >
-                        Prefiro visitar o Instagram
+                        {lang("visitarInstagram")}
                     </a>
                 )}
                 <p className="mt-10 font-admin text-xs font-light text-white/40">
-                    Aprecie com moderação.
+                    {lang("aprecieModeracao")}
                 </p>
             </div>
         </main>

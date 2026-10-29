@@ -5,10 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\InstitucionalController;
-use App\Http\Controllers\LinhasController;
 use App\Http\Controllers\ProdutosController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\PoliticasController;
+use App\Http\Controllers\SitemapController;
 
 use App\Http\Controllers\Manager\UsuariosController;
 use App\Http\Controllers\Manager\ConteudosController as ManagerPaginasController;
@@ -17,16 +17,16 @@ use App\Http\Controllers\Manager\ImagensController as ManagerImagensController;
 use App\Http\Controllers\Manager\HomeController as ManagerHomeController;
 use App\Http\Controllers\Manager\SlidesController as ManagerSlidesController;
 use App\Http\Controllers\Manager\InstitucionalController as ManagerInstitucionalController;
-use App\Http\Controllers\Manager\VinhedosController as ManagerVinhedosController;
+use App\Http\Controllers\Manager\ValoresController as ManagerValoresController;
 use App\Http\Controllers\Manager\AcontecimentosController as ManagerAcontecimentosController;
 use App\Http\Controllers\Manager\ProdutosController as ManagerProdutosController;
-use App\Http\Controllers\Manager\DetalhesProdutosController as ManagerDetalhesProdutosController;
-use App\Http\Controllers\Manager\LinhasController as ManagerLinhasController;
-use App\Http\Controllers\Manager\VolumesController as ManagerVolumesController;
+use App\Http\Controllers\Manager\ImagensProdutosController as ManagerImagensProdutosController;
 use App\Http\Controllers\Manager\CategoriasController as ManagerCategoriasController;
 use App\Http\Controllers\Manager\ContatoController as ManagerContatoController;
 use App\Http\Controllers\Manager\NewsletterController as ManagerNewsletterController;
 use App\Http\Controllers\Manager\PoliticasController as ManagerPoliticasController;
+use App\Http\Controllers\Manager\ProfissionaisController as ManagerProfissionaisController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +41,8 @@ use App\Http\Controllers\Manager\PoliticasController as ManagerPoliticasControll
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
     Route::get('/', [HomeController::class, 'index'])->name('Home.index');
+
+    Route::get('/sitemap.xml', [SitemapController::class, '__invoke'])->name('Sitemap.index');
 
     Route::post('/newsletter/enviar', [NewsletterController::class, 'enviar'])->name('Newsletter.enviar');
 
@@ -77,6 +79,8 @@ Route::prefix('/manager')->group(function () {
 
         Route::get('/home', [ManagerHomeController::class, 'index'])->name('Manager.Home.index');
 
+        Route::post('/home/atualizar/dados', [ManagerHomeController::class, 'atualizarInfo'])->name('Manager.Home.atualizarInfo');
+
         Route::post('/slides/ordenar', [ManagerSlidesController::class, 'ordenar'])->name('Manager.Slides.ordenar');
         Route::post('/slides/visibilidade/{id}', [ManagerSlidesController::class, 'visibilidade'])->name('Manager.Slides.visibilidade');
         Route::post('/slides/excluir/{id}', [ManagerSlidesController::class, 'excluir'])->name('Manager.Slides.excluir');
@@ -92,11 +96,22 @@ Route::prefix('/manager')->group(function () {
         Route::post('/valores/visibilidade/{id}', [ManagerValoresController::class, 'visibilidade'])->name('Manager.Valores.visibilidade');
         Route::post('/valores/excluir/{id}', [ManagerValoresController::class, 'excluir'])->name('Manager.Valores.excluir');
 
-        Route::get('/valores/adicionar/{tipo}', [ManagerValoresController::class, 'adicionar'])->name('Manager.Valores.adicionar');
-        Route::post('/valores/adicionar/{tipo}', [ManagerValoresController::class, 'novo'])->name('Manager.Valores.novo');
+        Route::get('/valores/adicionar', [ManagerValoresController::class, 'adicionar'])->name('Manager.Valores.adicionar');
+        Route::post('/valores/adicionar', [ManagerValoresController::class, 'novo'])->name('Manager.Valores.novo');
         Route::get('/valores/editar/{id}', [ManagerValoresController::class, 'editar'])->name('Manager.Valores.editar');
         Route::post('/valores/editar/{id}', [ManagerValoresController::class, 'atualizar'])->name('Manager.Valores.atualizar');
         Route::get('/valores/baixar-video/{id}/{video}', [ManagerValoresController::class, 'baixarVideo'])->name('Manager.Valores.baixarVideo');
+
+
+        Route::post('/profissionais/ordenar', [ManagerProfissionaisController::class, 'ordenar'])->name('Manager.Profissionais.ordenar');
+        Route::post('/profissionais/visibilidade/{id}', [ManagerProfissionaisController::class, 'visibilidade'])->name('Manager.Profissionais.visibilidade');
+        Route::post('/profissionais/excluir/{id}', [ManagerProfissionaisController::class, 'excluir'])->name('Manager.Profissionais.excluir');
+
+        Route::get('/profissionais/adicionar', [ManagerProfissionaisController::class, 'adicionar'])->name('Manager.Profissionais.adicionar');
+        Route::post('/profissionais/adicionar', [ManagerProfissionaisController::class, 'novo'])->name('Manager.Profissionais.novo');
+        Route::get('/profissionais/editar/{id}', [ManagerProfissionaisController::class, 'editar'])->name('Manager.Profissionais.editar');
+        Route::post('/profissionais/editar/{id}', [ManagerProfissionaisController::class, 'atualizar'])->name('Manager.Profissionais.atualizar');
+        Route::get('/profissionais/baixar-video/{id}/{video}', [ManagerProfissionaisController::class, 'baixarVideo'])->name('Manager.Profissionais.baixarVideo');
 
 
         Route::get('/institucional', [ManagerInstitucionalController::class, 'index'])->name('Manager.Institucional.index');
@@ -124,30 +139,14 @@ Route::prefix('/manager')->group(function () {
         Route::post('/produtos/adicionar', [ManagerProdutosController::class, 'novo'])->name('Manager.Produtos.novo');
         Route::get('/produtos/editar/{id}', [ManagerProdutosController::class, 'editar'])->name('Manager.Produtos.editar');
         Route::post('/produtos/editar/{id}', [ManagerProdutosController::class, 'atualizar'])->name('Manager.Produtos.atualizar');
-        Route::get('/produtos/baixar-arquivo/{produto}/{id}', [ManagerProdutosController::class, 'baixarArquivo'])->name('Manager.Produtos.baixarArquivo');
-
-        Route::get('/produtos/detalhes/{id}', [ManagerDetalhesProdutosController::class, 'index'])->name('Manager.Produtos.Detalhes.index');
-
-        Route::post('/produtos/detalhes/ordenar', [ManagerDetalhesProdutosController::class, 'ordenar'])->name('Manager.Produtos.Detalhes.ordenar');
-        Route::post('/produtos/detalhes/visibilidade/{id}', [ManagerDetalhesProdutosController::class, 'visibilidade'])->name('Manager.Produtos.Detalhes.visibilidade');
-        Route::post('/produtos/detalhes/excluir/{id}', [ManagerDetalhesProdutosController::class, 'excluir'])->name('Manager.Produtos.Detalhes.excluir');
-
-        Route::get('/produtos/detalhes/adicionar/{id}', [ManagerDetalhesProdutosController::class, 'adicionar'])->name('Manager.Produtos.Detalhes.adicionar');
-        Route::post('/produtos/detalhes/adicionar/{id}', [ManagerDetalhesProdutosController::class, 'novo'])->name('Manager.Produtos.Detalhes.novo');
-        Route::get('/produtos/detalhes/editar/{id}', [ManagerDetalhesProdutosController::class, 'editar'])->name('Manager.Produtos.Detalhes.editar');
-        Route::post('/produtos/detalhes/editar/{id}', [ManagerDetalhesProdutosController::class, 'atualizar'])->name('Manager.Produtos.Detalhes.atualizar');
 
 
-        Route::get('/linhas', [ManagerLinhasController::class, 'index'])->name('Manager.Linhas.index');
+        Route::get('/produtos/imagens/{id}', [ManagerImagensProdutosController::class, 'index'])->name('Manager.Produtos.Imagens.index');
+        Route::post('/produtos/imagens/adicionar/{id}', [ManagerImagensProdutosController::class, 'novo'])->name('Manager.Produtos.Imagens.novo');
 
-        Route::post('/linhas/ordenar', [ManagerLinhasController::class, 'ordenar'])->name('Manager.Linhas.ordenar');
-        Route::post('/linhas/visibilidade/{id}', [ManagerLinhasController::class, 'visibilidade'])->name('Manager.Linhas.visibilidade');
-        Route::post('/linhas/excluir/{id}', [ManagerLinhasController::class, 'excluir'])->name('Manager.Linhas.excluir');
-
-        Route::get('/linhas/adicionar', [ManagerLinhasController::class, 'adicionar'])->name('Manager.Linhas.adicionar');
-        Route::post('/linhas/adicionar', [ManagerLinhasController::class, 'novo'])->name('Manager.Linhas.novo');
-        Route::get('/linhas/editar/{id}', [ManagerLinhasController::class, 'editar'])->name('Manager.Linhas.editar');
-        Route::post('/linhas/editar/{id}', [ManagerLinhasController::class, 'atualizar'])->name('Manager.Linhas.atualizar');
+        Route::post('/produtos/imagens/ordenar/{id}', [ManagerImagensProdutosController::class, 'ordenar'])->name('Manager.Produtos.Imagens.ordenar');
+        Route::post('/produtos/imagens/visibilidade/{id}', [ManagerImagensProdutosController::class, 'visibilidade'])->name('Manager.Produtos.Imagens.visibilidade');
+        Route::post('/produtos/imagens/excluir/{id}', [ManagerImagensProdutosController::class, 'excluir'])->name('Manager.Produtos.Imagens.excluir');
 
 
         Route::post('/categorias/ordenar', [ManagerCategoriasController::class, 'ordenar'])->name('Manager.Categorias.ordenar');
@@ -158,16 +157,6 @@ Route::prefix('/manager')->group(function () {
         Route::post('/categorias/adicionar', [ManagerCategoriasController::class, 'novo'])->name('Manager.Categorias.novo');
         Route::get('/categorias/editar/{id}', [ManagerCategoriasController::class, 'editar'])->name('Manager.Categorias.editar');
         Route::post('/categorias/editar/{id}', [ManagerCategoriasController::class, 'atualizar'])->name('Manager.Categorias.atualizar');
-
-
-        Route::post('/volumes/ordenar', [ManagerVolumesController::class, 'ordenar'])->name('Manager.Volumes.ordenar');
-        Route::post('/volumes/visibilidade/{id}', [ManagerVolumesController::class, 'visibilidade'])->name('Manager.Volumes.visibilidade');
-        Route::post('/volumes/excluir/{id}', [ManagerVolumesController::class, 'excluir'])->name('Manager.Volumes.excluir');
-
-        Route::get('/volumes/adicionar', [ManagerVolumesController::class, 'adicionar'])->name('Manager.Volumes.adicionar');
-        Route::post('/volumes/adicionar', [ManagerVolumesController::class, 'novo'])->name('Manager.Volumes.novo');
-        Route::get('/volumes/editar/{id}', [ManagerVolumesController::class, 'editar'])->name('Manager.Volumes.editar');
-        Route::post('/volumes/editar/{id}', [ManagerVolumesController::class, 'atualizar'])->name('Manager.Volumes.atualizar');
 
 
         Route::get('/contato', [ManagerContatoController::class, 'index'])->name('Manager.Contato.index');

@@ -1,3 +1,5 @@
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
 import { useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useGsap } from "@/hooks/useGsap";
@@ -6,6 +8,7 @@ import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
 export const HomeTerroir = ({ content }) => {
+    const lang = useLang();
     const sectionRef = useRef(null);
 
     // O quadro inteiro cresce até o tamanho final acompanhando o scroll
@@ -40,7 +43,7 @@ export const HomeTerroir = ({ content }) => {
                 >
                     <img
                         src={content.imagem}
-                        alt={content.titulo || ""}
+                        alt={accessibleText(content.titulo || "")}
                         className="size-full object-cover"
                     />
                 </div>
@@ -64,7 +67,7 @@ export const HomeTerroir = ({ content }) => {
                         className="mx-auto"
                         // href="/acomodacoes"
                     >
-                        Descobrir o terroir
+                        {lang("descobrirTerroir")}
                     </LinkButton>
                 </div>
             </div>

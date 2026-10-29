@@ -24,8 +24,6 @@ export const LanguagesButton = ({ idioma, idiomas, id }) => {
         setIsOpen(!isOpen);
     };
 
-    console.log();
-
     if (idiomas) {
         return (
             <div className="relative" ref={ref}>
@@ -47,16 +45,11 @@ export const LanguagesButton = ({ idioma, idiomas, id }) => {
                     <div className="absolute right-0 mt-2 w-max p-1 bg-white border border-stroke rounded-sm shadow-lg z-[100]">
                         {idiomas.map((idiomaItem, index) => (
                             <Link
-                                href={
-                                    id
-                                        ? route(route().current(), {
-                                              id: id,
-                                              lang: idiomaItem.codigo,
-                                          })
-                                        : route(route().current(), {
-                                              lang: idiomaItem.codigo,
-                                          })
-                                }
+                                href={route(route().current(), {
+                                    ...route().params,
+                                    ...(id ? { id: id } : {}),
+                                    lang: idiomaItem.codigo,
+                                })}
                                 key={index}
                                 className="flex items-center p-2 hover:bg-slate-100 transition"
                             >

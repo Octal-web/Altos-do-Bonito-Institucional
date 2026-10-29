@@ -1,7 +1,9 @@
+import { useLang } from "@/hooks/useLang";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
 export const HomeNews = ({ content, news = [] }) => {
+    const lang = useLang();
     return (
         <section className="relative overflow-hidden py-16 md:py-24 2xl:py-32">
             <div className="container mx-auto max-w-medium text-center">
@@ -48,7 +50,7 @@ export const HomeNews = ({ content, news = [] }) => {
                                     className="underline"
                                     // href={links.link_mapa}
                                 >
-                                    Ver notícia
+                                    {lang("verNoticia")}
                                 </a>
                             </div>
                         </article>

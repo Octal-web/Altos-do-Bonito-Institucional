@@ -1,3 +1,4 @@
+import { accessibleText } from "@/lib/accessibleText";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 import { SectionBackground } from "../UI/SectionBackground";
@@ -49,7 +50,7 @@ export const HomeTradition = ({ content }) => {
                                 >
                                     <img
                                         src={item?.imagem}
-                                        alt={item?.titulo || ""}
+                                        alt={accessibleText(item?.titulo || "")}
                                         className="size-full object-cover"
                                     />
                                 </div>

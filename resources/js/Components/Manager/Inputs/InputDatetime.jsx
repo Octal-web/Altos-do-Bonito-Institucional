@@ -1,6 +1,14 @@
-import React from 'react';
+import React from "react";
+import { Label } from "./Label";
 
-export const InputDatetime = ({ title, name, value, idioma, onChange, max }) => {
+export const InputDatetime = ({
+    title,
+    name,
+    value,
+    idioma,
+    onChange,
+    max,
+}) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         onChange(name, value);
@@ -8,10 +16,7 @@ export const InputDatetime = ({ title, name, value, idioma, onChange, max }) => 
 
     return (
         <div className="mb-6">
-            <div className="flex items-center mb-2">
-                <img src={`/admin/img/flags/${idioma}.png`} className="w-5 mr-1" alt={`${idioma} flag`} />
-                <label className="block font-bold text-gray-500">{title}</label>
-            </div>
+            <Label idioma={idioma} title={title}/>
             <input
                 type="datetime-local"
                 name={name}

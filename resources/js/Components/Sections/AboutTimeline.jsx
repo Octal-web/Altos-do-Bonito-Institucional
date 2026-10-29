@@ -1,3 +1,5 @@
+import { accessibleText } from "@/lib/accessibleText";
+import { useLang } from "@/hooks/useLang";
 import "swiper/swiper-bundle.css";
 
 import { A11y, Keyboard, Mousewheel } from "swiper/modules";
@@ -6,6 +8,7 @@ import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
 export const AboutTimeline = ({ events, content }) => {
+    const lang = useLang();
     return (
         <section className="overflow-hidden pt-20 md:pt-32 2xl:pt-72">
             <div className="container mx-auto max-w-medium">
@@ -39,9 +42,9 @@ export const AboutTimeline = ({ events, content }) => {
                         mousewheel={{ forceToAxis: true, releaseOnEdges: true }}
                         a11y={{
                             containerMessage:
-                                "Linha do tempo da nossa história",
-                            itemRoleDescriptionMessage: "Acontecimento",
-                            slideLabelMessage: "{{index}} de {{slidesLength}}",
+                                lang("linhaTempo"),
+                            itemRoleDescriptionMessage: lang("acontecimento"),
+                            slideLabelMessage: lang("slideContagem"),
                         }}
                         grabCursor
                         watchOverflow
@@ -68,7 +71,7 @@ export const AboutTimeline = ({ events, content }) => {
                                     <div className="mt-20 w-[90%] md:mt-24 2xl:mt-28">
                                         <img
                                             src={item.imagem}
-                                            alt=""
+                                            alt={accessibleText(item.imagem_alt || item.titulo)}
                                             loading="lazy"
                                             className="aspect-[5/3] w-full border-custom object-cover"
                                         />

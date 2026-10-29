@@ -79,7 +79,7 @@ export const AboutTerroirRegion = ({ content = [] }) => {
                         data-grow
                         alt=""
                         loading="lazy"
-                        className="mt-10 aspect-[2/1] w-full border-custom object-cover object-center md:mt-16 md:aspect-[4/1] 2xl:mt-20"
+                        className="mt-10 aspect-[2/1] w-full border-custom object-cover object-top md:mt-16 md:aspect-[4/1] 2xl:mt-20"
                     />
                 </div>
             </section>

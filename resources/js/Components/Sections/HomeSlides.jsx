@@ -13,6 +13,7 @@ import { useGsap } from "@/hooks/useGsap";
 import { getHeaderLogoRect, HERO_LOGO_END } from "@/Components/Header";
 
 export const HomeSlides = ({ slides = [] }) => {
+    const lang = useLang();
     const sectionRef = useRef(null);
     const swiperRef = useRef(null);
     const prevButtonRef = useRef(null);
@@ -175,7 +176,7 @@ export const HomeSlides = ({ slides = [] }) => {
         <section
             ref={sectionRef}
             className="relative z-40 overflow-hidden"
-            aria-label="Destaques da Pizzato"
+            aria-label={lang("destaques")}
         >
             {/* Os slides do gerenciador só trocam o fundo; o conteúdo é sempre o logo */}
             <div data-hero-stage>
@@ -202,11 +203,11 @@ export const HomeSlides = ({ slides = [] }) => {
                 modules={[Navigation, Pagination, Autoplay, EffectFade, A11y]}
                 a11y={{
                     enabled: true,
-                    prevSlideMessage: "Slide anterior",
-                    nextSlideMessage: "Próximo slide",
-                    firstSlideMessage: "Este é o primeiro slide",
-                    lastSlideMessage: "Este é o último slide",
-                    paginationBulletMessage: "Ir para o slide {{index}}",
+                    prevSlideMessage: lang("slideAnterior"),
+                    nextSlideMessage: lang("proximoSlide"),
+                    firstSlideMessage: lang("primeiroSlide"),
+                    lastSlideMessage: lang("ultimoSlide"),
+                    paginationBulletMessage: lang("irSlide"),
                 }}
             >
                 {slides.map((slide, index) => (

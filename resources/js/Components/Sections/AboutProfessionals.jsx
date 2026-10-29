@@ -1,3 +1,4 @@
+import { accessibleText } from "@/lib/accessibleText";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
@@ -28,7 +29,7 @@ export const AboutProfessionals = ({ content, professionals }) => {
                         >
                             <img
                                 src={item.imagem}
-                                alt=""
+                                alt={accessibleText(item.nome)}
                                 loading="lazy"
                                 className="aspect-[0.76] w-full border-custom object-cover"
                             />

@@ -1,24 +1,26 @@
+import { useLang } from "@/hooks/useLang";
 import { Title } from "../UI/Title";
 
 export const ContactBanner = ({ content, data }) => {
+    const lang = useLang();
     const telefone = data.telefone;
     const whatsapp = data.whatsapp;
     const email = data.email;
 
     const contacts = [
         {
-            label: "Telefone",
+            label: lang("telefone"),
             valor: telefone,
             href: `tel:${telefone.replace(/\D/g, "")}`,
         },
         {
-            label: "WhatsApp",
+            label: lang("whatsapp"),
             valor: whatsapp,
             href: `https://wa.me/${whatsapp.replace(/\D/g, "")}`,
             external: true,
         },
         {
-            label: "E-mail",
+            label: lang("email"),
             valor: email,
             href: `mailto:${email}`,
         },

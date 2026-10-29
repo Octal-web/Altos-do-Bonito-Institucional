@@ -12,7 +12,6 @@ use Inertia\Inertia;
 use App\Http\Requests\Manager\PostCategoryRequest;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Response;
 
 class CategoriasController extends Controller
 {
@@ -21,14 +20,8 @@ class CategoriasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function adicionar() {
-        $idiomas = Idioma::query()
-            ->orderBy('padrao', 'DESC')
-            ->orderBy('id', 'DESC')
-            ->get();
-
-        $idioma = request('lang');
-
+    public function adicionar()
+    {
         return Inertia::render('Manager/Categorias/adicionar');
     }
 
@@ -38,17 +31,31 @@ class CategoriasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function novo(PostCategoryRequest $request) {
-        if($request->ajax()){
-            $idioma = inertia()->getShared('idioma');
-            
+    public function novo(PostCategoryRequest $request)
+    {
+        if ($request->ajax()) {
+            $idioma = Idioma::query()
+                ->when(
+                    $request->filled('lang'),
+                    fn($query) => $query->where('codigo', $request->input('lang')),
+                    fn($query) => $query->where('padrao', true)
+                )
+                ->orderByDesc('id')
+                ->first();
+
+            if (!$idioma) {
+                return back()->withInput()->with('message', [
+                    'type' => 'error',
+                    'msg' => 'Não foi possível identificar o idioma do slide. Verifique o idioma selecionado e o cadastro do idioma padrão.',
+                ]);
+            }
+
             $categoria = new Categoria;
             $categoria_idioma = new CategoriaIdioma;
 
             $response = $categoria->save();
 
             $categoria_idioma->nome = $request->nome ?? null;
-            $categoria_idioma->tipo = $request->tipo;
 
             $categoria_idioma->categoria_id = $categoria->id;
             $categoria_idioma->idioma_id = $idioma->id;
@@ -56,7 +63,7 @@ class CategoriasController extends Controller
             $response = $categoria_idioma->save();
 
             if ($response) {
-                return to_route('Manager.Linhas.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
+                return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
             }
         }
     }
@@ -67,11 +74,12 @@ class CategoriasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function editar($id) {
+    public function editar($id)
+    {
         if (!$id) {
-            return Inertia::location(route('Manager.Linhas.index'));
+            return Inertia::location(route('Manager.Produtos.index'));
         }
-        
+
         $idiomas = Idioma::query()
             ->orderBy('padrao', 'DESC')
             ->orderBy('id', 'DESC')
@@ -86,22 +94,22 @@ class CategoriasController extends Controller
             ])
             ->with([
                 'categoriasIdiomas' => function ($q) use ($idioma) {
-                    $q->when($idioma, function ($r) use($idioma) {
-                        $r->whereHas('idiomas', function($query) use($idioma) {
+                    $q->when($idioma, function ($r) use ($idioma) {
+                        $r->whereHas('idiomas', function ($query) use ($idioma) {
                             $query->where('codigo', $idioma);
                         });
                     })
-                    ->when(!$idioma, function ($r) {
-                        $r->whereHas('idiomas', function($query) {
-                            $query->where('padrao', true);
+                        ->when(!$idioma, function ($r) {
+                            $r->whereHas('idiomas', function ($query) {
+                                $query->where('padrao', true);
+                            });
                         });
-                    });
                 },
             ])
             ->first();
 
-        if(!$categoria) {
-            return Inertia::location(route('Manager.Linhas.index'));
+        if (!$categoria) {
+            return Inertia::location(route('Manager.Produtos.index'));
         }
 
         $idioma = inertia()->getShared('idioma');
@@ -109,7 +117,6 @@ class CategoriasController extends Controller
         $categoria = [
             'id' => $categoria->id,
             'nome' => count($categoria->categoriasIdiomas) ? $categoria->categoriasIdiomas[0]->nome : null,
-            'tipo' => count($categoria->categoriasIdiomas) ? $categoria->categoriasIdiomas[0]->tipo : null,
         ];
 
         return Inertia::render('Manager/Categorias/editar', [
@@ -126,8 +133,9 @@ class CategoriasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function atualizar(PostCategoryRequest $request, $id) {
-        if($request->ajax()){
+    public function atualizar(PostCategoryRequest $request, $id)
+    {
+        if ($request->ajax()) {
             $categoria = Categoria::query()
                 ->where([
                     'excluido' => null,
@@ -142,29 +150,29 @@ class CategoriasController extends Controller
                     'excluido' => null,
                     'categoria_id' => $categoria->id
                 ])
-                ->when($idioma, function ($q) use($idioma) {
-                    $q->whereHas('idiomas', function($query) use($idioma) {
+                ->when($idioma, function ($q) use ($idioma) {
+                    $q->whereHas('idiomas', function ($query) use ($idioma) {
                         $query->where('codigo', $idioma);
                     });
                 })
                 ->when(!$idioma, function ($q) {
-                    $q->whereHas('idiomas', function($query) {
+                    $q->whereHas('idiomas', function ($query) {
                         $query->where('padrao', true);
                     });
                 })
                 ->first();
 
             if (!$categoria) {
-                return to_route('Manager.Linhas.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
+                return to_route('Manager.Produtos.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
             }
 
             $idioma = $this->getLanguages($categoria, 'categoriasIdiomas', $idioma);
 
             if (!$idioma) {
                 if ($request->ajax()) {
-                    return to_route('Manager.Linhas.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
+                    return to_route('Manager.Produtos.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
                 }
-                return Inertia::location(route('Manager.Linhas.index'));
+                return Inertia::location(route('Manager.Produtos.index'));
             }
 
             if (!$categoria_idioma) {
@@ -175,17 +183,16 @@ class CategoriasController extends Controller
             }
 
             $categoria_idioma->nome = $request->nome ?? null;
-            $categoria_idioma->tipo = $request->tipo;
 
             $response = $categoria->save();
             $response = $categoria_idioma->save();
 
             if ($response) {
-                return to_route('Manager.Linhas.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
+                return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
             }
         }
 
-        return to_route('Manager.Linhas.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
+        return to_route('Manager.Produtos.index')->with('message', ['type' => 'error', 'msg' => 'Não foi possível salvar as informações. Tente novamente mais tarde.']);
     }
 
     /**
@@ -195,8 +202,9 @@ class CategoriasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function excluir(Request $request, $id) {
-        if ($request->ajax()){
+    public function excluir(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return $request->header('referer');
             }
@@ -225,8 +233,9 @@ class CategoriasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function visibilidade(Request $request, $id) {
-        if ($request->ajax()){
+    public function visibilidade(Request $request, $id)
+    {
+        if ($request->ajax()) {
             if (!$id) {
                 return redirect()->back()->with(['type' => 'error', 'message' => 'Registro não encontrado!']);
             }
@@ -241,14 +250,13 @@ class CategoriasController extends Controller
             if (!$response) {
                 return redirect()->back()->with('message', ['type' => 'error', 'msg' => 'Registro não encontrado!']);
             }
-    
+
             $response->visivel = 1 - $response->visivel;
             $response->save();
-    
+
             if ($response) {
                 return redirect()->back()->with('message', ['type' => 'success', 'msg' => 'Visibilidade alterada com sucesso!']);
-            }
-            else {
+            } else {
                 return redirect()->back()->with('message', ['type' => 'error', 'msg' => 'Visibilidade não alterada!']);
             }
         }
@@ -263,8 +271,9 @@ class CategoriasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function ordenar(Request $request) {
-        if ($request->ajax()){
+    public function ordenar(Request $request)
+    {
+        if ($request->ajax()) {
             $erros = [];
 
             if ($request->odr && is_array($request->odr)) {

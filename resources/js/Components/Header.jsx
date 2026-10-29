@@ -1,3 +1,4 @@
+import { useLang } from "@/hooks/useLang";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, router } from "@inertiajs/react";
@@ -33,6 +34,7 @@ export const Header = ({
     links = {},
 }) => {
     const headerRef = useRef(null);
+    const lang = useLang();
     const dialogRef = useRef(null);
     const timelineRef = useRef(null);
     const [scrolled, setScrolled] = useState(false);
@@ -203,11 +205,11 @@ export const Header = ({
     }, [isOpen]);
 
     const items = [
-        { label: "Nossa História", href: route("Institucional.index") },
-        { label: "Vinhos", href: route("Produtos.index") },
-        { label: "Experiências", href: links.experiencias },
-        { label: "Hospedagem", href: links.hospedagem },
-        { label: "Visite", href: route("Contato.index") },
+        { label: lang("nossaHistoria"), href: route("Institucional.index"), current: route().current("Institucional.*") },
+        { label: lang("vinhos"), href: route("Produtos.index"), current: route().current("Produtos.*") },
+        { label: lang("experiencias"), href: links.experiencias },
+        { label: lang("hospedagem"), href: links.hospedagem },
+        { label: lang("visite"), href: route("Contato.index"), current: route().current("Contato.*") },
     ];
 
     // Na home o banner já tem o próprio h1
@@ -226,13 +228,13 @@ export const Header = ({
                 <button
                     type="button"
                     onClick={opened ? onClose : onToggle}
-                    aria-label={opened ? "Fechar menu" : "Abrir menu"}
+                    aria-label={opened ? lang("fecharMenu") : lang("abrirMenu")}
                     aria-expanded={opened}
                     aria-controls="header-menu"
                     className={`button-secondary !border-white justify-self-start ${opened ? "!px-3" : ""}`}
                 >
                     <FontAwesomeIcon icon={opened ? faXmark : faBars} />
-                    {!opened && <span>Menu</span>}
+                    {!opened && <span>{lang("menu")}</span>}
                 </button>
 
                 <LogoTag>
@@ -243,7 +245,7 @@ export const Header = ({
                     >
                         <img
                             src="/site/img/logo.png"
-                            alt="Logo"
+                            alt={lang("marca")}
                             data-header-logo={opened ? undefined : ""}
                             onLoad={() => ScrollTrigger.refresh()}
                             className="block w-80"
@@ -261,7 +263,7 @@ export const Header = ({
                         aria-hidden="true"
                         className="hidden h-px w-5 bg-current sm:block"
                     />
-                    WhatsApp
+                    {lang("whatsapp")}
                 </a>
             </div>
         </div>
@@ -282,7 +284,7 @@ export const Header = ({
             <dialog
                 id="header-menu"
                 ref={dialogRef}
-                aria-label="Menu principal"
+                aria-label={lang("menuPrincipal")}
                 onCancel={(event) => {
                     event.preventDefault();
                     onClose();
@@ -299,11 +301,11 @@ export const Header = ({
                 <div data-menu-inner className="relative z-10">
                     <div data-menu-bar>{bar(true)}</div>
                     <nav
-                        aria-label="Navegação principal"
+                        aria-label={lang("navegacaoPrincipal")}
                         className="container pb-16 pt-4 md:pt-6"
                     >
                         <ul className="flex flex-col items-center gap-[calc(1.25rem_-_0.15em)] text-center text-3xl md:gap-[calc(1.5rem_-_0.15em)] md:text-4xl 2xl:gap-[calc(2rem_-_0.15em)] 2xl:text-5xl">
-                            {items.map(({ label, href }) => (
+                            {items.map(({ label, href, current }) => (
                                 <li
                                     key={label}
                                     className="overflow-hidden font-primary font-normal leading-[1.4] section-content"
@@ -311,6 +313,7 @@ export const Header = ({
                                     {href ? (
                                         <Link
                                             href={href}
+                                            aria-current={current ? "page" : undefined}
                                             data-menu-item
                                             className="inline-block py-[0.1em] transition-colors hover:text-primary focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-primary"
                                         >
