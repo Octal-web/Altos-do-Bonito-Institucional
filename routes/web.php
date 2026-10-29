@@ -17,6 +17,7 @@ use App\Http\Controllers\Manager\ImagensController as ManagerImagensController;
 use App\Http\Controllers\Manager\HomeController as ManagerHomeController;
 use App\Http\Controllers\Manager\SlidesController as ManagerSlidesController;
 use App\Http\Controllers\Manager\InstitucionalController as ManagerInstitucionalController;
+use App\Http\Controllers\Manager\FinderController as ManagerFinderController;
 use App\Http\Controllers\Manager\ValoresController as ManagerValoresController;
 use App\Http\Controllers\Manager\AcontecimentosController as ManagerAcontecimentosController;
 use App\Http\Controllers\Manager\ProdutosController as ManagerProdutosController;
@@ -157,6 +158,8 @@ Route::prefix('/manager')->group(function () {
         Route::post('/categorias/adicionar', [ManagerCategoriasController::class, 'novo'])->name('Manager.Categorias.novo');
         Route::get('/categorias/editar/{id}', [ManagerCategoriasController::class, 'editar'])->name('Manager.Categorias.editar');
         Route::post('/categorias/editar/{id}', [ManagerCategoriasController::class, 'atualizar'])->name('Manager.Categorias.atualizar');
+
+        Route::post('/enviar-imagem', [ManagerFinderController::class, 'enviar'])->name('Manager.Finder.enviar');
 
 
         Route::get('/contato', [ManagerContatoController::class, 'index'])->name('Manager.Contato.index');
