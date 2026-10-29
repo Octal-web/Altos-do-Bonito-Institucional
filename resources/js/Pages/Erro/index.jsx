@@ -18,7 +18,7 @@ const Page = ({ status }) => {
 
     return (
         <>
-            <Head title={`${status} | Altos do Bonito`}>
+            <Head title={`${status} | ${lang("marca")}`}>
                 <link rel="icon" href="/favicon.ico" type="image/x-icon" />
             </Head>
 
@@ -36,7 +36,7 @@ const Page = ({ status }) => {
                 <div className="w-full max-w-2xl text-center relative">
                     <img
                         src={`/site/img/logo.png`}
-                        alt="Altos do Bonito"
+                        alt={lang("marca")}
                         className="mx-auto mb-8 block w-40 max-w-full md:mb-10 md:w-52"
                     />
                     <div
