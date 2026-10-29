@@ -163,10 +163,6 @@ class ProdutosController extends Controller
             $produto->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_alternativa')->extension());
             $produto->imagem_destaque = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_destaque')->extension());
 
-            $produto->imagem_primaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_primaria')->extension());
-            $produto->imagem_secundaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_secundaria')->extension());
-            $produto->imagem_terciaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_terciaria')->extension());
-
             $produto->slug = $slug;
             $produto->link_loja = $request->link_loja;
             $produto->categoria_id = $request->categoria_id;
@@ -177,17 +173,7 @@ class ProdutosController extends Controller
             $produto_idioma->subtitulo = $request->subtitulo;
             $produto_idioma->descricao = $request->descricao;
 
-            $produto_idioma->historia_subtitulo = $request->historia_subtitulo;
-            $produto_idioma->historia_titulo = $request->historia_titulo;
-            $produto_idioma->historia_descricao = $request->historia_descricao;
-
-            $produto_idioma->origem_titulo = $request->origem_titulo;
-            $produto_idioma->origem_descricao = $request->origem_descricao;
-
-            $produto_idioma->processo_titulo = $request->processo_titulo;
-            $produto_idioma->processo_descricao = $request->processo_descricao;
-
-            $produto_idioma->ficha_tecnica = $request->ficha_tecnica;
+            $produto_idioma->conteudos = $request->conteudos;
 
             $produto_idioma->titulo_pagina = $request->titulo_pagina;
             $produto_idioma->descricao_pagina = $request->descricao_pagina;
@@ -201,10 +187,6 @@ class ProdutosController extends Controller
                 $compressor->compressOrFallback($request->file('img')->getRealPath(), public_path('content/products/items/' . $produto->imagem));
                 $compressor->compressOrFallback($request->file('alternativa')->getRealPath(), public_path('content/products/items/' . $produto->imagem_alternativa));
                 $compressor->compressOrFallback($request->file('img_destaque')->getRealPath(), public_path('content/products/highlight/' . $produto->imagem_destaque));
-
-                $compressor->compressOrFallback($request->file('img_primaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_primaria));
-                $compressor->compressOrFallback($request->file('img_secundaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_secundaria));
-                $compressor->compressOrFallback($request->file('img_terciaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_terciaria));
 
                 return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
             }
@@ -292,9 +274,6 @@ class ProdutosController extends Controller
             'id' => $produto->id,
             'imagem' => rafator('content/products/items/' . $produto->imagem),
             'imagem_alternativa' => rafator('content/products/items/' . $produto->imagem_alternativa),
-            'imagem_primaria' => rafator('content/products/thumbs/' . $produto->imagem_primaria),
-            'imagem_secundaria' => rafator('content/products/thumbs/' . $produto->imagem_secundaria),
-            'imagem_terciaria' => rafator('content/products/thumbs/' . $produto->imagem_terciaria),
             'imagem_destaque' => rafator('content/products/highlight/' . $produto->imagem_destaque),
             'link_loja' => $produto->link_loja,
             'categoria_id' => $produto->categoria_id,
@@ -302,19 +281,7 @@ class ProdutosController extends Controller
             'subtitulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->subtitulo : null,
             'nome' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->nome : null,
             'descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->descricao : null,
-
-            'historia_subtitulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->historia_subtitulo : null,
-            'historia_titulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->historia_titulo : null,
-            'historia_descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->historia_descricao : null,
-
-            'origem_titulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->origem_titulo : null,
-            'origem_descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->origem_descricao : null,
-
-
-            'processo_titulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->processo_titulo : null,
-            'processo_descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->processo_descricao : null,
-
-            'ficha_tecnica' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->ficha_tecnica : null,
+            'conteudos' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->conteudos : null,
 
             'titulo_pagina' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->titulo_pagina : null,
             'descricao_pagina' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->descricao_pagina : null,
@@ -418,33 +385,10 @@ class ProdutosController extends Controller
                 $produto->imagem_destaque = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_destaque')->extension());
             }
 
-            if ($request->file('img_primaria') && $request->file('img_primaria')->getError() == 0) {
-                $produto->imagem_primaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_primaria')->extension());
-            }
-
-            if ($request->file('img_secundaria') && $request->file('img_secundaria')->getError() == 0) {
-                $produto->imagem_secundaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_secundaria')->extension());
-            }
-
-            if ($request->file('img_terciaria') && $request->file('img_terciaria')->getError() == 0) {
-                $produto->imagem_terciaria = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_terciaria')->extension());
-            }
-
             $produto_idioma->nome = $request->nome;
             $produto_idioma->subtitulo = $request->subtitulo;
             $produto_idioma->descricao = $request->descricao;
-
-            $produto_idioma->historia_subtitulo = $request->historia_subtitulo;
-            $produto_idioma->historia_titulo = $request->historia_titulo;
-            $produto_idioma->historia_descricao = $request->historia_descricao;
-
-            $produto_idioma->origem_titulo = $request->origem_titulo;
-            $produto_idioma->origem_descricao = $request->origem_descricao;
-
-            $produto_idioma->processo_titulo = $request->processo_titulo;
-            $produto_idioma->processo_descricao = $request->processo_descricao;
-
-            $produto_idioma->ficha_tecnica = $request->ficha_tecnica;
+            $produto_idioma->conteudos = $request->conteudos;
 
             $produto_idioma->titulo_pagina = $request->titulo_pagina;
             $produto_idioma->descricao_pagina = $request->descricao_pagina;
@@ -476,29 +420,6 @@ class ProdutosController extends Controller
                     }
 
                     $compressor->compressOrFallback($request->file('img_destaque')->getRealPath(), public_path('content/products/highlight/' . $produto->imagem_destaque));
-                }
-
-                if ($request->file('img_primaria') && $request->file('img_primaria')->getError() == 0) {
-                    if ($produto->imagem_primaria && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem_primaria)) {
-                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem_primaria);
-                    }
-                    $compressor->compressOrFallback($request->file('img_primaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_primaria));
-                }
-
-                if ($request->file('img_secundaria') && $request->file('img_secundaria')->getError() == 0) {
-                    if ($produto->imagem_secundaria && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem_secundaria)) {
-                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem_secundaria);
-                    }
-
-                    $compressor->compressOrFallback($request->file('img_secundaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_secundaria));
-                }
-
-                if ($request->file('img_terciaria') && $request->file('img_terciaria')->getError() == 0) {
-                    if ($produto->imagem_terciaria && isset($produtoOriginal) && File::exists('content/products/thumbs/' . $produtoOriginal->imagem_terciaria)) {
-                        File::delete('content/products/thumbs/' . $produtoOriginal->imagem_terciaria);
-                    }
-
-                    $compressor->compressOrFallback($request->file('img_terciaria')->getRealPath(), public_path('content/products/thumbs/' . $produto->imagem_terciaria));
                 }
 
                 return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);

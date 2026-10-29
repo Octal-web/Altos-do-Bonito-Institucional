@@ -9,8 +9,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Breadcrumb } from "@/Components/Manager/Breadcrumb";
-import { ProductFormSections } from "@/Components/Manager/ProductFormSections";
 import AdminLayout from "@/Layouts/AdminLayout";
+import { FormGroup } from "@/Components/Manager/Inputs/FormGroup";
 
 const Page = () => {
     const { idioma, idiomas, categorias } = usePage().props;
@@ -26,40 +26,40 @@ const Page = () => {
     const inputItems = [
         [
             {
+                titulo: "Subtítulo",
+                name: "subtitulo",
+                tamanho: "col-span-12 lg:col-span-4",
+                tipo: "texto",
+                max: 100,
+            },
+            {
                 titulo: "Link da loja",
                 name: "link_loja",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-2",
                 tipo: "texto",
                 max: 2048,
             },
             {
                 titulo: "Categoria",
                 name: "categoria_id",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-2",
                 tipo: "select",
                 options: categorias,
             },
         ],
         [
             {
-                titulo: "Nome do produto",
+                titulo: "Nome",
                 name: "nome",
                 editor: true,
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto",
                 max: 200,
-            },
-            {
-                titulo: "Subtítulo do produto",
-                name: "subtitulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 100,
             },
         ],
         [
             {
-                titulo: "Descrição do produto",
+                titulo: "Descrição",
                 name: "descricao",
                 tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto_longo",
@@ -67,7 +67,17 @@ const Page = () => {
         ],
         [
             {
-                titulo: "Imagem do produto",
+                titulo: "Conteúdos da páginas",
+                name: "conteudos",
+                tamanho: "col-span-12 lg:col-span-8",
+                tipo: "texto_longo",
+                editor: true,
+                toolbar: ['Table', 'Heading', 'Image', 'Bold', 'Italic']
+            },
+        ],
+        [
+            {
+                titulo: "Imagem",
                 name: "img",
                 tamanho: "col-span-12 md:col-span-4",
                 tipo: "imagem",
@@ -76,7 +86,7 @@ const Page = () => {
                 altura: 540,
             },
             {
-                titulo: "Imagem alternativa do produto",
+                titulo: "Imagem alternativa",
                 name: "img_alternativa",
                 tamanho: "col-span-12 md:col-span-4",
                 tipo: "imagem",
@@ -87,113 +97,11 @@ const Page = () => {
             {
                 titulo: "Imagem de destaque",
                 name: "img_destaque",
-                tamanho: "col-span-12 md:col-span-4",
+                tamanho: "col-span-12 md:col-span-8",
                 tipo: "imagem",
                 crop: true,
                 largura: 520,
                 altura: 490,
-            },
-        ],
-        [
-            {
-                titulo: "Título da história",
-                name: "historia_titulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 255,
-            },
-            {
-                titulo: "Subtítulo da história",
-                name: "historia_subtitulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 100,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição da história",
-                name: "historia_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem da história",
-                name: "img_primaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 900,
-            },
-        ],
-        [
-            {
-                titulo: "Título da origem",
-                name: "origem_titulo",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto",
-                max: 255,
-                editor: true,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição da origem",
-                name: "origem_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem da origem",
-                name: "img_secundaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 290,
-            },
-        ],
-        [
-            {
-                titulo: "Título do processo",
-                name: "processo_titulo",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto",
-                max: 255,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição do processo",
-                name: "processo_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Ficha técnica",
-                name: "ficha_tecnica",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-                editor: true,
-                toolbar: ["Heading", "Table"],
-            },
-        ],
-        [
-            {
-                titulo: "Imagem do processo",
-                name: "img_terciaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 370,
             },
         ],
         [
@@ -263,16 +171,35 @@ const Page = () => {
             />
 
             <div className="mb-6 rounded-sm border border-stroke bg-white px-5 py-5 shadow-md">
-                <div>
+                <div className="mt-10">
                     <form onSubmit={handleSubmit}>
-                        <ProductFormSections
-                            inputItems={inputItems}
-                            data={data}
-                            errors={errors}
-                            idioma={idioma}
-                            onChange={onChange}
-                            handleImageCrop={handleImageCrop}
-                        />
+                        {inputItems.map((group, groupIndex) => (
+                            <div
+                                key={groupIndex}
+                                className="grid grid-cols-12 gap-x-6"
+                            >
+                                {group.map((input, index) => (
+                                    <div
+                                        key={index}
+                                        className={`w-full ${input.tamanho}`}
+                                    >
+                                        <FormGroup
+                                            idioma={idioma}
+                                            input={input}
+                                            value={data[input.name]}
+                                            onChange={onChange}
+                                            handleImageCrop={handleImageCrop}
+                                        />
+                                        {errors[input.name] && (
+                                            <p className="text-sm text-red-500 -mt-5 mb-3">
+                                                {errors[input.name]}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+
                         <div className="flex items-center justify-end">
                             <Link
                                 href={route("Manager.Produtos.index")}
