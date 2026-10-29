@@ -11,6 +11,7 @@ import "swiper/swiper-bundle.css";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useGsap } from "@/hooks/useGsap";
 import { getHeaderLogoRect, HERO_LOGO_END } from "@/Components/Header";
+import { useLang } from "@/hooks/useLang";
 
 export const HomeSlides = ({ slides = [] }) => {
     const lang = useLang();
