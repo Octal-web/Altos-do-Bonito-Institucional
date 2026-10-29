@@ -26,7 +26,7 @@ const Page = () => {
     const inputItems = [
         [
             {
-                titulo: "Subtítulo do produto",
+                titulo: "Subtítulo",
                 name: "subtitulo",
                 tamanho: "col-span-12 lg:col-span-4",
                 tipo: "texto",
@@ -49,7 +49,7 @@ const Page = () => {
         ],
         [
             {
-                titulo: "Nome do produto",
+                titulo: "Nome",
                 name: "nome",
                 editor: true,
                 tamanho: "col-span-12 lg:col-span-8",
@@ -59,7 +59,7 @@ const Page = () => {
         ],
         [
             {
-                titulo: "Descrição do produto",
+                titulo: "Descrição",
                 name: "descricao",
                 tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto_longo",
@@ -77,7 +77,7 @@ const Page = () => {
         ],
         [
             {
-                titulo: "Imagem do produto",
+                titulo: "Imagem",
                 name: "img",
                 tamanho: "col-span-12 md:col-span-4",
                 tipo: "imagem",
@@ -86,7 +86,7 @@ const Page = () => {
                 altura: 540,
             },
             {
-                titulo: "Imagem alternativa do produto",
+                titulo: "Imagem alternativa",
                 name: "img_alternativa",
                 tamanho: "col-span-12 md:col-span-4",
                 tipo: "imagem",
