@@ -1,9 +1,29 @@
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, router } from "@inertiajs/react";
-import { useEffect, useRef } from "react";
-import { gsap, MOTION_OK } from "@/lib/gsap";
+import { useEffect, useRef, useState } from "react";
+import { gsap, MOTION_OK, ScrollTrigger } from "@/lib/gsap";
 import { BrandSeal } from "./UI/BrandSeal";
+
+// Fração da altura da tela rolada até o logo do banner da home virar o logo do header
+export const HERO_LOGO_END = 0.55;
+
+// Posição do logo do header no estado expandido (topo da página), mesmo que no
+// momento ele esteja compacto: é para lá que o logo do banner da home voa
+export const getHeaderLogoRect = () => {
+    const header = document.querySelector("header[data-header]");
+    const logo = header?.querySelector("[data-header-logo]");
+
+    if (!logo) return null;
+
+    // Expande só para medir e volta ao estado atual antes do próximo frame
+    const compact = header.style.getPropertyValue("--compact");
+    header.style.setProperty("--compact", "0");
+    const rect = logo.getBoundingClientRect();
+    header.style.setProperty("--compact", compact || "0");
+
+    return rect;
+};
 
 export const Header = ({
     isOpen,
@@ -12,10 +32,64 @@ export const Header = ({
     whatsappHref,
     links = {},
 }) => {
+    const headerRef = useRef(null);
     const dialogRef = useRef(null);
     const timelineRef = useRef(null);
+    const [scrolled, setScrolled] = useState(false);
+
+    const isHome = route().current("Home.index");
 
     useEffect(() => () => timelineRef.current?.kill(), []);
+
+    // Ao rolar o header ganha fundo e fica compacto (--compact vai de 0 a 1 e
+    // reduz o padding). Na home isso só começa depois que o logo do banner chega
+    // ao header (fim da animação em HomeSlides), para não encobri-lo no caminho
+    useEffect(() => {
+        const header = headerRef.current;
+        const start = () => (isHome ? window.innerHeight * HERO_LOGO_END : 1);
+
+        // Na home a compactação acompanha o scroll em vez de ter duração própria:
+        // na volta o header termina de expandir antes de o logo do banner reaparecer
+        const compactOnScroll = !isHome
+            ? null
+            : gsap.fromTo(
+                header,
+                { "--compact": 0 },
+                {
+                    "--compact": 1,
+                    ease: "none",
+                    scrollTrigger: {
+                        start,
+                        end: () => `+=${window.innerHeight * 0.15}`,
+                        scrub: true,
+                    },
+                },
+            );
+
+        const trigger = ScrollTrigger.create({
+            start,
+            end: "max",
+            onToggle: (self) => {
+                setScrolled(self.isActive);
+
+                if (!isHome) {
+                    gsap.to(header, {
+                        "--compact": self.isActive ? 1 : 0,
+                        duration: 0.5,
+                        ease: "power2.out",
+                        overwrite: true,
+                    });
+                }
+            },
+        });
+
+        return () => {
+            trigger.kill();
+            compactOnScroll?.scrollTrigger?.kill();
+            compactOnScroll?.kill();
+            gsap.killTweensOf(header);
+        };
+    }, [isHome]);
 
     // Ao navegar (inclusive para a mesma página) o menu fecha sem animação:
     // a transição de página já está cobrindo a tela nesse momento
@@ -136,13 +210,17 @@ export const Header = ({
         { label: "Visite", href: route("Contato.index") },
     ];
 
-    const isHome = route().current("Home.index");
+    // Na home o banner já tem o próprio h1
+    const LogoTag = isHome ? "div" : "h1";
 
     const bar = (opened) => (
         <div className="container max-w-large">
+            {/* Fechado vai de py-8/xl:py-10/2xl:py-16 até py-6/xl:py-8/2xl:py-10 conforme --compact */}
             <div
-                className={`grid items-center gap-3 py-8 xl:py-10 2xl:py-16 ${
-                    isHome ? "grid-cols-[1fr_auto]" : "grid-cols-[1fr_auto_1fr]"
+                className={`grid grid-cols-[1fr_auto_1fr] items-center gap-3 ${
+                    opened
+                        ? "py-8 xl:py-10 2xl:py-16"
+                        : "py-[calc(2rem_-_0.5rem_*_var(--compact,0))] xl:py-[calc(2.5rem_-_0.5rem_*_var(--compact,0))] 2xl:py-[calc(4rem_-_1.5rem_*_var(--compact,0))]"
                 }`}
             >
                 <button
@@ -157,20 +235,21 @@ export const Header = ({
                     {!opened && <span>Menu</span>}
                 </button>
 
-                {!isHome && (
-                    <h1>
-                        <Link
-                            href={route("Home.index")}
-                            className="flex items-center"
-                        >
-                            <img
-                                src="/site/img/logo.png"
-                                alt="Logo"
-                                className="block w-80"
-                            />
-                        </Link>
-                    </h1>
-                )}
+                <LogoTag>
+                    <Link
+                        href={route("Home.index")}
+                        aria-label="Página inicial"
+                        className="flex items-center"
+                    >
+                        <img
+                            src="/site/img/logo.png"
+                            alt="Logo"
+                            data-header-logo={opened ? undefined : ""}
+                            onLoad={() => ScrollTrigger.refresh()}
+                            className="block w-80"
+                        />
+                    </Link>
+                </LogoTag>
 
                 <a
                     href={whatsappHref}
@@ -190,7 +269,13 @@ export const Header = ({
 
     return (
         <>
-            <header className="header absolute inset-x-0 top-0 z-50 text-white">
+            <header
+                ref={headerRef}
+                data-header
+                className={`header fixed inset-x-0 top-0 z-50 text-white transition-colors duration-500 ${
+                    scrolled ? "bg-black/20" : ""
+                }`}
+            >
                 {bar(false)}
             </header>
 

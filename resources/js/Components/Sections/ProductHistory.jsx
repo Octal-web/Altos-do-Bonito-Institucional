@@ -1,6 +1,16 @@
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
+const titleToAlt = (html) => {
+    const document = new DOMParser().parseFromString(html || "", "text/html");
+
+    document.querySelectorAll("br, p, div, li").forEach((element) => {
+        element.append(" ");
+    });
+
+    return (document.body.textContent || "").replace(/\s+/g, " ").trim();
+};
+
 export const ProductHistory = ({ product }) => {
     return (
         <section className="container max-w-medium mt-20 2xl:mt-32">
@@ -36,7 +46,7 @@ const History1 = ({ product }) => (
         <div className="aspect-[36/33] 2xl:aspect-[36/43]">
             <img
                 src={product.imagem_primaria}
-                alt={product.historia_titulo || ""}
+                alt={titleToAlt(product.historia_titulo)}
                 className="size-full border-custom object-cover"
             />
         </div>
@@ -48,7 +58,7 @@ const History2 = ({ product }) => (
         <div className="aspect-[36/10] md:aspect-[36/18]">
             <img
                 src={product.imagem_primaria}
-                alt={product.origem_titulo || ""}
+                alt={titleToAlt(product.origem_titulo)}
                 className="size-full border-custom !border-black object-cover object-center"
             />
         </div>
