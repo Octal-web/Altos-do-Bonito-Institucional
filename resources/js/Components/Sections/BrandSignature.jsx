@@ -1,6 +1,7 @@
 import { useLang } from "@/hooks/useLang";
 import { Title } from "../UI/Title";
 import { SectionBackground } from "../UI/SectionBackground";
+import { BrandSeal } from "../UI/BrandSeal";
 
 export const BrandSignature = ({ content, children, bgClassName = "" }) => {
     const lang = useLang();
@@ -13,14 +14,13 @@ export const BrandSignature = ({ content, children, bgClassName = "" }) => {
                     className={`inset-0 opacity-45 md:opacity-70 max-sm:h-full md:left-96 md:top-40 ${bgClassName}`}
                 />
             </div>
-            <img
-                src="/site/backgrounds/7f8392a21dce45a283290e735d3157f3.png"
-                alt=""
+            <div
                 aria-hidden="true"
-                loading="lazy"
                 data-parallax="20"
                 className="pointer-events-none absolute right-[85%] 2xl:right-[80%] -bottom-80 -z-10 opacity-25 md:-bottom-80 hidden lg:block"
-            />
+            >
+                <BrandSeal spin loading="lazy" imgClassName="block" />
+            </div>
 
             <div className="container mx-auto max-w-medium text-center">
                 {children && (

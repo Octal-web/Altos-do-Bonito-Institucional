@@ -30,6 +30,7 @@ const DEFAULT_DRIFT = {
  *                           Não combinar com data-fade no mesmo elemento.
  * - data-parallax="10"      desloca o elemento em yPercent (-10 → 10) enquanto o pai cruza a tela
  * - data-wipe               revela o elemento da esquerda para a direita conforme o scroll
+ * - data-grow               o quadro cresce até o tamanho final acompanhando o scroll
  */
 export const useScrollReveal = (scopeRef) => {
     useGsap(scopeRef, ({ mobile }, q) => {
@@ -125,6 +126,23 @@ export const useScrollReveal = (scopeRef) => {
                         trigger: element,
                         start: "top 90%",
                         end: "top 45%",
+                        scrub: true,
+                    },
+                },
+            );
+        });
+
+        q("[data-grow]").forEach((element) => {
+            gsap.fromTo(
+                element,
+                { scale: mobile ? 0.88 : 0.72 },
+                {
+                    scale: 1,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: element,
+                        start: "top bottom",
+                        end: "center 55%",
                         scrub: true,
                     },
                 },

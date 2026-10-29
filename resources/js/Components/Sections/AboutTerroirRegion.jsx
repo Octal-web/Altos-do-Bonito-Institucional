@@ -5,6 +5,7 @@ import { Title } from "../UI/Title";
 export const AboutTerroirRegion = ({ content = [] }) => {
     return (
         <SectionBackground
+            parallax="8"
             className="object-left opacity-55"
             backgroundClassName="inset-x-0 top-[15%] bottom-[25%] md:right-[35%]"
             overlayClassName="bg-[linear-gradient(to_right,transparent,transparent,black),linear-gradient(to_bottom,black,transparent_20%,transparent_75%,black)]"
@@ -16,11 +17,13 @@ export const AboutTerroirRegion = ({ content = [] }) => {
                             tag="p"
                             variant="subtitle"
                             html={content[0].subtitulo}
+                            data-fade
                         />
                         <Title
                             tag="h2"
                             variant="h2"
                             html={content[0].titulo}
+                            data-split
                             className="mt-2 2xl:mt-6"
                         />
                         <RegionText
@@ -33,6 +36,8 @@ export const AboutTerroirRegion = ({ content = [] }) => {
                     <div className="mt-16 grid grid-cols-1 items-end gap-10 md:mt-28 md:grid-cols-2 md:gap-16 2xl:mt-40 2xl:gap-20">
                         <img
                             src={content[1].imagem_mobile}
+                            data-reveal="left"
+                            data-drift="100"
                             alt=""
                             loading="lazy"
                             className="aspect-[9/10] w-full border-custom object-cover md:mt-40 2xl:mt-56"
@@ -41,6 +46,8 @@ export const AboutTerroirRegion = ({ content = [] }) => {
                         <div>
                             <img
                                 src={content[1].imagem}
+                                data-reveal="right"
+                                data-drift="35"
                                 alt=""
                                 loading="lazy"
                                 className="aspect-square w-full border-custom object-cover"
@@ -50,11 +57,13 @@ export const AboutTerroirRegion = ({ content = [] }) => {
                                     tag="p"
                                     variant="subtitle"
                                     html={content[1].subtitulo}
+                                    data-fade
                                 />
                                 <Title
                                     tag="h3"
                                     variant="h2"
                                     html={content[1].titulo}
+                                    data-split
                                     className="mt-2 2xl:mt-6 md:[&_strong]:block "
                                 />
                                 <RegionText
@@ -67,6 +76,7 @@ export const AboutTerroirRegion = ({ content = [] }) => {
 
                     <img
                         src={content[0].imagem}
+                        data-grow
                         alt=""
                         loading="lazy"
                         className="mt-10 aspect-[2/1] w-full border-custom object-cover object-top md:mt-16 md:aspect-[4/1] 2xl:mt-20"
@@ -79,6 +89,8 @@ export const AboutTerroirRegion = ({ content = [] }) => {
 
 const RegionText = ({ content, className = "" }) => (
     <Text
+        data-fade
+        data-delay="0.2"
         className={`terroir-region-text ${className}`}
         dangerouslySetInnerHTML={{ __html: content.texto }}
     />

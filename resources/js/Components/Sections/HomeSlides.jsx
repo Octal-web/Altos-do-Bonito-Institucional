@@ -1,6 +1,4 @@
-import { accessibleText } from "@/lib/accessibleText";
-import { useLang } from "@/hooks/useLang";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
     Navigation,
@@ -10,8 +8,9 @@ import {
     A11y,
 } from "swiper/modules";
 import "swiper/swiper-bundle.css";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useGsap } from "@/hooks/useGsap";
+import { getHeaderLogoRect, HERO_LOGO_END } from "@/Components/Header";
 
 export const HomeSlides = ({ slides = [] }) => {
     const lang = useLang();
@@ -20,9 +19,106 @@ export const HomeSlides = ({ slides = [] }) => {
     const prevButtonRef = useRef(null);
     const nextButtonRef = useRef(null);
 
-    const [activeIndex, setActiveIndex] = useState(0);
-
     useGsap(sectionRef, (_, q) => {
+        // Entrada do logo: a ilustração se ergue de baixo, o nome sobe da máscara
+        // e a localização aparece por último (anima as imagens internas para não
+        // disputar propriedades com a animação de scroll, que move as camadas externas)
+        gsap.timeline({ delay: 0.4 })
+            .fromTo(
+                q("[data-logo-illustration] img"),
+                { clipPath: "inset(100% 0% 0% 0%)" },
+                {
+                    clipPath: "inset(0% 0% 0% 0%)",
+                    duration: 1.6,
+                    ease: "expo.inOut",
+                },
+            )
+            .from(
+                q("[data-logo-name] img"),
+                { yPercent: 105, duration: 1.4, ease: "expo.out" },
+                0.5,
+            )
+            .from(
+                q("[data-logo-location] img"),
+                { autoAlpha: 0, yPercent: 60, duration: 1.2, ease: "expo.out" },
+                0.9,
+            );
+
+        // Saída do logo, presa ao scroll: ilustração e localização se desfazem e
+        // o nome (mesma imagem do logo do header) voa até o header; ao chegar
+        // as duas imagens coincidem e a troca entre elas fica invisível
+        const name = q("[data-logo-name]")[0];
+        const headerLogo = document.querySelector("header [data-header-logo]");
+
+        if (name && headerLogo) {
+            // Posição sem transforms (offset*), relativa à camada fixa em 0,0,
+            // para continuar correta quando o ScrollTrigger recalcula no meio do scroll
+            const flight = () => {
+                const rect = getHeaderLogoRect();
+
+                return {
+                    x:
+                        rect.left +
+                        rect.width / 2 -
+                        (name.offsetLeft + name.offsetWidth / 2),
+                    y:
+                        rect.top +
+                        rect.height / 2 -
+                        (name.offsetTop + name.offsetHeight / 2),
+                    scale: rect.width / (name.offsetWidth || rect.width),
+                };
+            };
+
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top top",
+                    end: () => `+=${window.innerHeight * HERO_LOGO_END}`,
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                },
+            })
+                .to(
+                    q("[data-logo-illustration]"),
+                    {
+                        yPercent: -35,
+                        clipPath: "inset(0% 0% 100% 0%)",
+                        autoAlpha: 0,
+                        duration: 0.5,
+                        ease: "power2.in",
+                    },
+                    0,
+                )
+                .to(
+                    q("[data-logo-location]"),
+                    {
+                        yPercent: 80,
+                        autoAlpha: 0,
+                        duration: 0.4,
+                        ease: "power2.in",
+                    },
+                    0,
+                )
+                .to(
+                    name,
+                    {
+                        x: () => flight().x,
+                        y: () => flight().y,
+                        scale: () => flight().scale,
+                        duration: 0.87,
+                        ease: "power3.inOut",
+                    },
+                    0.1,
+                )
+                .to(name, { autoAlpha: 0, duration: 0.03 }, 0.97)
+                .fromTo(
+                    headerLogo,
+                    { autoAlpha: 0 },
+                    { autoAlpha: 1, duration: 0.03 },
+                    0.97,
+                );
+        }
+
         // Entrada: a mídia desfaz um zoom lento ao carregar a página
         gsap.from(q("picture img, video"), {
             scale: 1.25,
@@ -31,7 +127,7 @@ export const HomeSlides = ({ slides = [] }) => {
         });
 
         // Saída: a mídia desce mais devagar que o scroll (efeito cortina),
-        // o conteúdo sobe e some e a tela escurece
+        // o indicador de scroll some e a tela escurece
         const scrollTrigger = {
             trigger: sectionRef.current,
             start: "top top",
@@ -44,11 +140,10 @@ export const HomeSlides = ({ slides = [] }) => {
             ease: "none",
             scrollTrigger,
         });
-        gsap.to(q("[data-hero-content]"), {
-            yPercent: -25,
+        gsap.to(q("[data-hero-scroll]"), {
             autoAlpha: 0,
             ease: "none",
-            scrollTrigger: { ...scrollTrigger, end: "60% top" },
+            scrollTrigger: { ...scrollTrigger, end: "20% top" },
         });
         gsap.to(q("[data-hero-shade]"), {
             opacity: 1,
@@ -83,6 +178,7 @@ export const HomeSlides = ({ slides = [] }) => {
             className="relative z-40 overflow-hidden"
             aria-label={lang("destaques")}
         >
+            {/* Os slides do gerenciador só trocam o fundo; o conteúdo é sempre o logo */}
             <div data-hero-stage>
             <Swiper
                 ref={swiperRef}
@@ -103,12 +199,8 @@ export const HomeSlides = ({ slides = [] }) => {
                 }}
                 onSwiper={(swiper) => {
                     swiperRef.current = swiper;
-                    setActiveIndex(swiper.realIndex);
                 }}
-                onSlideChange={(swiper) => {
-                    setActiveIndex(swiper.realIndex);
-                }}
-                modules={[Navigation, Autoplay, EffectFade, A11y]}
+                modules={[Navigation, Pagination, Autoplay, EffectFade, A11y]}
                 a11y={{
                     enabled: true,
                     prevSlideMessage: lang("slideAnterior"),
@@ -134,7 +226,7 @@ export const HomeSlides = ({ slides = [] }) => {
                                         src={
                                             slide.imagem_mobile || slide.imagem
                                         }
-                                        alt={accessibleText(slide.titulo)}
+                                        alt={slide.titulo ?? ""}
                                         loading={index === 0 ? "eager" : "lazy"}
                                         decoding={
                                             index === 0 ? "sync" : "async"
@@ -180,89 +272,6 @@ export const HomeSlides = ({ slides = [] }) => {
                                 className="absolute inset-0 bg-black/60"
                                 aria-hidden="true"
                             />
-
-                            <div className="container h-full max-w-large">
-                                <div
-                                    data-hero-content
-                                    className="container relative z-[1] flex h-full max-w-large items-center justify-center"
-                                >
-                                    <div
-                                        className={`flex flex-col justify-center py-16 md:py-20 m-auto relative w-full min-h-[calc(85vh_-_75px)] xl:min-h-[calc(100vh_-_90px)] 2xl:min-h-[calc(100vh_-_113px)] transition-opacity duration-1000 ease-in-out z-[1] ${activeIndex === index ? "animate-fade-in-down" : "opacity-0"}`}
-                                    >
-                                        {slide.titulo && (
-                                            <Text text={slide.titulo} />
-                                        )}
-
-                                        {slide.descricao && (
-                                            <div
-                                                className="text-white text-center uppercase
-                                                [&_img]:fixed
-                                                [&_img]:top-1/2
-                                                [&_img]:left-1/2
-                                                [&_img]:-translate-x-1/2
-                                                [&_img]:-translate-y-1/2
-                                                [&_img]:max-w-[90vw]
-                                                [&_img]:lg:max-w-[50vw]
-                                                [&_img]:w-auto
-                                                [&_img]:h-auto
-                                                [&_img]:object-contain
-                                                [&_img]:!cursor-default
-
-                                                [&_h1]:mx-auto
-                                                [&_h1]:font-secondary
-                                                [&_h1]:leading-[40px]
-                                                [&_h1]:text-[30px]
-    
-                                                [&_strong]:text-[54px]
-                                                [&_strong]:my-2
-                                                [&_strong]:text-[#D9D7BF]
-                                                [&_strong]:font-tertiary
-                                                [&_strong]:block 
-                                                [&_strong]:uppercase 
-                                                [&_strong]:font-normal 
-
-                                                [&_ul]:flex
-                                                [&_ul]:flex-wrap
-                                                [&_ul]:justify-center
-                                                [&_ul]:gap-2
-                                                [&_ul]:mt-20
-                                                [&_ul]:mb-5
-
-                                                [&_li]:text-xs
-                                                [&_li]:tracking-[4.8px]
-                                                [&_li]:font-normal
-
-                                                md:[&_h1]:text-[35px]
-                                                md:[&_h1]:leading-[45px]
-                                                md:[&_strong]:text-[77px]
-                                                md:[&_ul]:my-20
-                                                md:[&_li]:text-sm
-                                                md:[&_img]:mb-7
-                                                md:[&_li:not(:last-child)]:after:content-['·']
-                                                md:[&_li:not(:last-child)]:after:ml-2
-                                                
-                                                2xl:[&_h1]:text-[40px]
-                                                2xl:[&_strong]:text-[96px]
-                                                2xl:[&_h1]:leading-[65px]
-                                                2xl:[&_li]:text-base"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: slide.descricao,
-                                                }}
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center">
-                                <span
-                                    data-hero-line
-                                    className="mb-3 h-16 w-px bg-white"
-                                />
-
-                                <span className="text-[10px] font-medium tracking-[5px] text-white uppercase">
-                                    {lang("rolar")}
-                                </span>
-                            </div>
                         </article>
                     </SwiperSlide>
                 ))}
@@ -274,6 +283,61 @@ export const HomeSlides = ({ slides = [] }) => {
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 z-[2] bg-black opacity-0"
             />
+
+            {/* Camada fixa (sem transforms nos ancestrais) para o nome poder voar até
+                o header; com movimento reduzido ela só rola junto com o banner.
+                Larguras e espaçamentos (em % da largura) seguem a arte original */}
+            <div className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center motion-safe:fixed">
+                <div className="flex w-[90vw] max-w-[820px] flex-col items-center lg:w-[50vw]">
+                    <div
+                        data-logo-illustration
+                        className="mb-[5.13%] w-[49.3%] will-change-transform"
+                    >
+                        <img
+                            src="/site/img/logo-ilustracao.png"
+                            alt=""
+                            fetchpriority="high"
+                            className="block h-auto w-full"
+                        />
+                    </div>
+
+                    <h1
+                        data-logo-name
+                        className="w-full overflow-hidden will-change-transform"
+                    >
+                        <img
+                            src="/site/img/logo.png"
+                            alt="Altos do Bonito"
+                            fetchpriority="high"
+                            onLoad={() => ScrollTrigger.refresh()}
+                            className="block h-auto w-full"
+                        />
+                    </h1>
+
+                    <p
+                        data-logo-location
+                        className="mt-[3.3%] w-[49.1%] will-change-transform"
+                    >
+                        <img
+                            src="/site/img/logo-localizacao.png"
+                            alt="Nova Pádua, RS"
+                            fetchpriority="high"
+                            className="block h-auto w-full"
+                        />
+                    </p>
+                </div>
+            </div>
+
+            <div
+                data-hero-scroll
+                className="absolute bottom-6 left-1/2 z-[3] flex -translate-x-1/2 flex-col items-center"
+            >
+                <span data-hero-line className="mb-3 h-16 w-px bg-white" />
+
+                <span className="text-[10px] font-medium tracking-[5px] text-white">
+                    SCROLL
+                </span>
+            </div>
 
             {/* <div className="absolute bottom-10 z-10 w-full">
                 <div className="container max-w-large">

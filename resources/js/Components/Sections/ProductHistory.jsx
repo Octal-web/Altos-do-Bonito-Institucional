@@ -2,6 +2,16 @@ import { accessibleText } from "@/lib/accessibleText";
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
 
+const titleToAlt = (html) => {
+    const document = new DOMParser().parseFromString(html || "", "text/html");
+
+    document.querySelectorAll("br, p, div, li").forEach((element) => {
+        element.append(" ");
+    });
+
+    return (document.body.textContent || "").replace(/\s+/g, " ").trim();
+};
+
 export const ProductHistory = ({ product }) => {
     return (
         <section className="container max-w-medium mt-20 2xl:mt-32">

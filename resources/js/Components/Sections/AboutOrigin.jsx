@@ -26,11 +26,14 @@ export const AboutOrigin = ({ content }) => {
                                         tag="h2"
                                         variant="h2"
                                         html={item?.titulo}
+                                        data-split
                                         className="md:max-w-[500px] 2xl:max-w-[600px]"
                                     />
                                 )}
 
                                 <Text
+                                    data-fade
+                                    data-delay="0.2"
                                     className="md:max-w-[1390px] em-emphasis pt-8 2xl:pt-12"
                                     dangerouslySetInnerHTML={{
                                         __html: item.texto,
@@ -46,6 +49,7 @@ export const AboutOrigin = ({ content }) => {
                                 }
                             >
                                 <img
+                                    data-reveal={reverse ? "right" : "left"}
                                     src={item?.imagem}
                                     alt={accessibleText(item?.titulo || "")}
                                     className="aspect-[36/43] border-custom object-cover"
