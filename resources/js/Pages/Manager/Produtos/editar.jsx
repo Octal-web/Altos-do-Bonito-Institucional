@@ -8,7 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Breadcrumb } from "@/Components/Manager/Breadcrumb";
-import { ProductFormSections } from "@/Components/Manager/ProductFormSections";
+import { FormGroup } from "@/Components/Manager/Inputs/FormGroup";
 import AdminLayout from "@/Layouts/AdminLayout";
 
 const Page = () => {
@@ -23,16 +23,23 @@ const Page = () => {
     const inputItems = [
         [
             {
+                titulo: "Subtítulo do produto",
+                name: "subtitulo",
+                tamanho: "col-span-12 lg:col-span-4",
+                tipo: "texto",
+                max: 100,
+            },
+            {
                 titulo: "Link da loja",
                 name: "link_loja",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-2",
                 tipo: "texto",
                 max: 2048,
             },
             {
                 titulo: "Categoria",
                 name: "categoria_id",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-2",
                 tipo: "select",
                 options: categorias,
             },
@@ -42,16 +49,9 @@ const Page = () => {
                 titulo: "Nome do produto",
                 name: "nome",
                 editor: true,
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto",
                 max: 200,
-            },
-            {
-                titulo: "Subtítulo do produto",
-                name: "subtitulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 100,
             },
         ],
         [
@@ -86,117 +86,12 @@ const Page = () => {
             {
                 titulo: "Imagem de destaque",
                 name: "img_destaque",
-                tamanho: "col-span-12 md:col-span-4",
+                tamanho: "col-span-12 md:col-span-8",
                 tipo: "imagem",
                 crop: true,
                 largura: 520,
                 altura: 490,
                 imagem: produto.imagem_destaque,
-            },
-        ],
-        [
-            {
-                titulo: "Título da história",
-                name: "historia_titulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 255,
-            },
-            {
-                titulo: "Subtítulo da história",
-                name: "historia_subtitulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 100,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição da história",
-                name: "historia_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem da história",
-                name: "img_primaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 900,
-                imagem: produto.imagem_primaria,
-            },
-        ],
-        [
-            {
-                titulo: "Título da origem",
-                name: "origem_titulo",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto",
-                max: 255,
-                editor: true,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição da origem",
-                name: "origem_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem da origem",
-                name: "img_secundaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 290,
-                imagem: produto.imagem_secundaria,
-            },
-        ],
-        [
-            {
-                titulo: "Título do processo",
-                name: "processo_titulo",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto",
-                max: 255,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição do processo",
-                name: "processo_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Ficha técnica",
-                name: "ficha_tecnica",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-                editor: true,
-                toolbar: ["Heading", "Table"],
-            },
-        ],
-        [
-            {
-                titulo: "Imagem do processo",
-                name: "img_terciaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 370,
-                imagem: produto.imagem_terciaria,
             },
         ],
         [
@@ -248,8 +143,7 @@ const Page = () => {
             <Breadcrumb
                 icon={faImage}
                 items={breadcrumbItems}
-                current="Editar"
-                id={produto.id}
+                current="Adicionar"
                 idioma={idioma.codigo}
                 idiomas={idiomas}
             />
@@ -267,17 +161,35 @@ const Page = () => {
                     />
                     Imagens
                 </Link>
-
-                <div>
+                <div className="mt-10">
                     <form onSubmit={handleSubmit}>
-                        <ProductFormSections
-                            inputItems={inputItems}
-                            data={data}
-                            errors={errors}
-                            idioma={idioma}
-                            onChange={onChange}
-                            handleImageCrop={handleImageCrop}
-                        />
+                        {inputItems.map((group, groupIndex) => (
+                            <div
+                                key={groupIndex}
+                                className="grid grid-cols-12 gap-x-6"
+                            >
+                                {group.map((input, index) => (
+                                    <div
+                                        key={index}
+                                        className={`w-full ${input.tamanho}`}
+                                    >
+                                        <FormGroup
+                                            idioma={idioma}
+                                            input={input}
+                                            value={data[input.name]}
+                                            onChange={onChange}
+                                            handleImageCrop={handleImageCrop}
+                                        />
+                                        {errors[input.name] && (
+                                            <p className="text-sm text-red-500 -mt-5 mb-3">
+                                                {errors[input.name]}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+
                         <div className="flex items-center justify-end">
                             <Link
                                 href={route("Manager.Produtos.index")}
