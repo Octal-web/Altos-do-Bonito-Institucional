@@ -848,7 +848,6 @@ export const InputTipTapEditor = ({
 
                     {toolbar.includes("Image") && (
                         <>
-                            <span className="border-l h-8 ml-1" />
                             <button
                                 className="p-2 rounded hover:bg-gray-200 ml-1"
                                 title="Inserir Imagem"
