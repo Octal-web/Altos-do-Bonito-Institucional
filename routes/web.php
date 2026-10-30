@@ -14,6 +14,7 @@ use App\Http\Controllers\Manager\UsuariosController;
 use App\Http\Controllers\Manager\ConteudosController as ManagerPaginasController;
 use App\Http\Controllers\Manager\ConteudosController as ManagerConteudosController;
 use App\Http\Controllers\Manager\ImagensController as ManagerImagensController;
+use App\Http\Controllers\Manager\FinderController as ManagerFinderController;
 use App\Http\Controllers\Manager\HomeController as ManagerHomeController;
 use App\Http\Controllers\Manager\SlidesController as ManagerSlidesController;
 use App\Http\Controllers\Manager\InstitucionalController as ManagerInstitucionalController;
@@ -75,6 +76,13 @@ Route::prefix('/manager')->group(function () {
         Route::post('/imagens/conteudo/ordenar/{id}', [ManagerImagensController::class, 'ordenar'])->name('Manager.Imagens.ordenar');
         Route::post('/imagens/conteudo/visibilidade/{id}', [ManagerImagensController::class, 'visibilidade'])->name('Manager.Imagens.visibilidade');
         Route::post('/imagens/conteudo/excluir/{id}', [ManagerImagensController::class, 'excluir'])->name('Manager.Imagens.excluir');
+
+        Route::get('/finder/list', [ManagerFinderController::class, 'list'])->name('Manager.Finder.list');
+        Route::post('/finder/upload', [ManagerFinderController::class, 'upload'])->name('Manager.Finder.upload');
+        Route::delete('/finder/delete', [ManagerFinderController::class, 'delete'])->name('Manager.Finder.delete');
+        Route::post('/finder/rename', [ManagerFinderController::class, 'rename'])->name('Manager.Finder.rename');
+        Route::post('/finder/folder', [ManagerFinderController::class, 'createFolder'])->name('Manager.Finder.createFolder');
+        Route::post('/finder/move', [ManagerFinderController::class, 'move'])->name('Manager.Finder.move');
 
 
         Route::get('/home', [ManagerHomeController::class, 'index'])->name('Manager.Home.index');

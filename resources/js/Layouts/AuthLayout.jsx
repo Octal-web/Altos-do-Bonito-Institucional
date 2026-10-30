@@ -8,7 +8,7 @@ const AuthLayout = ({ children }) => {
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, shrink-to-fit=no"/>
                 <meta charset="utf-8"/>
-                <title>Pizzato | Acesso</title>
+                <title>Altos do Bonito | Acesso</title>
                 <meta name="robots" content="noindex, nofollow"/>
             </Head>
             

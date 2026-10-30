@@ -190,10 +190,10 @@ class ProdutosController extends Controller
 
         $pagina = new Pagina();
 
-        $pagina->titulo = $produto->produtosIdiomas[0]->titulo_pagina . ' - Pizzato';
-        $pagina->descricao = $produto->produtosIdiomas[0]->descricao_pagina . ' - Pizzato';
-        $pagina->titulo_compartilhamento = $produto->produtosIdiomas[0]->titulo_pagina . ' - Pizzato';
-        $pagina->descricao_compartilhamento = $produto->produtosIdiomas[0]->descricao_pagina . ' - Pizzato';
+        $pagina->titulo = $produto->produtosIdiomas[0]->titulo_pagina . ' - Altos do Bonito';
+        $pagina->descricao = $produto->produtosIdiomas[0]->descricao_pagina . ' - Altos do Bonito';
+        $pagina->titulo_compartilhamento = $produto->produtosIdiomas[0]->titulo_pagina . ' - Altos do Bonito';
+        $pagina->descricao_compartilhamento = $produto->produtosIdiomas[0]->descricao_pagina . ' - Altos do Bonito';
 
         list($width, $height, $type, $attr) = getimagesize(public_path('/content/products/items/' . $produto->imagem));
 
@@ -232,7 +232,7 @@ class ProdutosController extends Controller
                     'slug' => $item->slug,
                     'subtitulo' => $idiomaProduto?->subtitulo,
                     'nome' => $idiomaProduto?->nome,
-                    'imagem' => $item->imagem_destaque ? rafator('content/products/highlight/' . $item->imagem_destaque) : rafator('content/products/thumbs/' .  $item->imagem_primaria),
+                    'imagem' => $item->imagem_destaque ? rafator('content/products/highlight/' . $item->imagem_destaque) : rafator('content/products/items/' . $item->imagem),
                 ];
             });
 
@@ -243,19 +243,7 @@ class ProdutosController extends Controller
             'link_loja' => $produto->link_loja,
             'descricao' => $produto->produtosIdiomas[0]->descricao,
 
-            'imagem_primaria' => rafator('content/products/thumbs/' . $produto->imagem_primaria),
-            'historia_subtitulo' => $produto->produtosIdiomas[0]->historia_subtitulo,
-            'historia_titulo' => $produto->produtosIdiomas[0]->historia_titulo,
-            'historia_descricao' => $produto->produtosIdiomas[0]->historia_descricao,
-
-            'imagem_secundaria' => rafator('content/products/thumbs/' . $produto->imagem_secundaria),
-            'origem_titulo' => $produto->produtosIdiomas[0]->origem_titulo,
-            'origem_descricao' => $produto->produtosIdiomas[0]->origem_descricao,
-
-            'imagem_terciaria' => rafator('content/products/thumbs/' . $produto->imagem_terciaria),
-            'processo_titulo' => $produto->produtosIdiomas[0]->processo_titulo,
-            'processo_descricao' => $produto->produtosIdiomas[0]->processo_descricao,
-            'ficha_tecnica' => $produto->produtosIdiomas[0]->ficha_tecnica,
+            'conteudos' => $produto->produtosIdiomas[0]->conteudos,
 
             'galeria' => $produto->produtosImagens->isNotEmpty() ? $produto->produtosImagens->map(function ($item) {
                 return [

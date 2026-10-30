@@ -5,11 +5,18 @@ export const ProductSuggestions = ({ suggestions, content }) => {
     return (
         <section className="relative overflow-hidden pt-40 md:pt-40 2xl:pt-72">
             <div className="container mx-auto max-w-medium text-center">
-                <Title tag="p" variant="subtitle" html={content.subtitulo} />
+                <Title
+                    tag="p"
+                    variant="subtitle"
+                    html={content.subtitulo}
+                    data-fade
+                />
                 <Title
                     tag="h2"
                     variant="h2"
                     html={content.titulo}
+                    data-split
+                    data-drift="0"
                     className="mx-auto  mt-2 2xl:mt-6"
                 />
 
@@ -20,6 +27,8 @@ export const ProductSuggestions = ({ suggestions, content }) => {
                                 slug: item.slug,
                             })}
                             key={item.id ?? index}
+                            data-reveal="up"
+                            data-drift={index === 1 ? "70" : "30"}
                             className={`mx-auto w-full max-w-sm md:max-w-none group ${index === 1 ? "" : "md:mt-20 2xl:mt-24"}`}
                         >
                             <img

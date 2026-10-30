@@ -8,7 +8,9 @@ export const AGE_CONFIRMATION_KEY = "altos-do-bonito:age-confirmed";
 
 export const hasAgeConfirmation = () => {
     try {
-        return window.sessionStorage.getItem(AGE_CONFIRMATION_KEY) === "true";
+        return document.cookie.split(";").some(
+            (cookie) => cookie.trim() === `${encodeURIComponent(AGE_CONFIRMATION_KEY)}=true`,
+        );
     } catch {
         return false;
     }
@@ -50,7 +52,7 @@ export const AgeGate = ({ instagram, onConfirm }) => {
     }, []);
 
     const confirm = () => {
-        window.sessionStorage.setItem(AGE_CONFIRMATION_KEY, "true");
+        document.cookie = `${encodeURIComponent(AGE_CONFIRMATION_KEY)}=true; Max-Age=31536000; Path=/; SameSite=Lax${window.location.protocol === "https:" ? "; Secure" : ""}`;
 
         onConfirm();
     };

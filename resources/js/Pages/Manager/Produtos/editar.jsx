@@ -96,107 +96,23 @@ const Page = () => {
         ],
         [
             {
-                titulo: "Título da história",
-                name: "historia_titulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 255,
-            },
-            {
-                titulo: "Subtítulo da história",
-                name: "historia_subtitulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 100,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição da história",
-                name: "historia_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem da história",
-                name: "img_primaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 900,
-                imagem: produto.imagem_primaria,
-            },
-        ],
-        [
-            {
-                titulo: "Título da origem",
-                name: "origem_titulo",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto",
-                max: 255,
-                editor: true,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição da origem",
-                name: "origem_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem da origem",
-                name: "img_secundaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 290,
-                imagem: produto.imagem_secundaria,
-            },
-        ],
-        [
-            {
-                titulo: "Título do processo",
-                name: "processo_titulo",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto",
-                max: 255,
-            },
-        ],
-        [
-            {
-                titulo: "Descrição do processo",
-                name: "processo_descricao",
-                tamanho: "col-span-12 lg:col-span-8",
-                tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Ficha técnica",
-                name: "ficha_tecnica",
-                tamanho: "col-span-12 lg:col-span-8",
+                titulo: "Conteúdo",
+                name: "conteudos",
+                tamanho: "col-span-12",
                 tipo: "texto_longo",
                 editor: true,
-                toolbar: ["Heading", "Table"],
-            },
-        ],
-        [
-            {
-                titulo: "Imagem do processo",
-                name: "img_terciaria",
-                tamanho: "col-span-12 md:col-span-8",
-                tipo: "imagem",
-                crop: true,
-                largura: 740,
-                altura: 370,
-                imagem: produto.imagem_terciaria,
+                previewClass: "product-content",
+                toolbar: [
+                    "Heading",
+                    "Bold",
+                    "Italic",
+                    "Underline",
+                    "List",
+                    "Link",
+                    "Align",
+                    "Image",
+                    "Table",
+                ],
             },
         ],
         [

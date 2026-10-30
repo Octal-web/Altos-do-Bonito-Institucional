@@ -15,19 +15,10 @@ const sections = [
         description: "Imagem principal e imagem de destaque.",
     },
     {
-        id: "historia",
-        title: "História",
-        description: "Textos e imagem que contam a história do produto.",
-    },
-    {
-        id: "origem",
-        title: "Origem",
-        description: "Informações sobre a origem e sua imagem.",
-    },
-    {
-        id: "processo",
-        title: "Processo e ficha técnica",
-        description: "Detalhes de produção e características do produto.",
+        id: "conteudo",
+        title: "Conteúdo",
+        description:
+            "Textos, imagens e ficha técnica exibidos na página do produto.",
     },
     {
         id: "pagina",
@@ -37,15 +28,7 @@ const sections = [
 ];
 
 const sectionFor = (name) => {
-    if (name.startsWith("historia_") || name === "img_primaria")
-        return "historia";
-    if (name.startsWith("origem_") || name === "img_secundaria")
-        return "origem";
-    if (
-        name.startsWith("processo_") ||
-        ["ficha_tecnica", "img_terciaria"].includes(name)
-    )
-        return "processo";
+    if (name === "conteudos") return "conteudo";
     if (["titulo_pagina", "descricao_pagina"].includes(name)) return "pagina";
     if (["img", "img_destaque"].includes(name)) return "imagens";
     return "geral";
