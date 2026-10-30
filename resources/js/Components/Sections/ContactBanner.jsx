@@ -34,13 +34,17 @@ export const ContactBanner = ({ content, data }) => {
                         tag="h2"
                         variant="h2"
                         html={content.titulo}
+                        data-split
+                        data-drift="0"
                         className="md:max-w-[700px] 2xl:max-w-[898px]"
                     />
 
                     <div className="w-full">
-                        {contacts.filter(({ valor }) => valor?.trim()).map(({ label, valor, href, external }) => (
+                        {contacts.filter(({ valor }) => valor?.trim()).map(({ label, valor, href, external }, index) => (
                             <div
                                 key={label}
+                                data-fade
+                                data-delay={0.3 + index * 0.15}
                                 className="grid grid-cols-[100px_1fr] items-center gap-4 border-b border-white/20 py-3 last:pb-0 first:pt-0 last:border-b-0"
                             >
                                 <Title tag="h5" variant="h5">
@@ -65,11 +69,12 @@ export const ContactBanner = ({ content, data }) => {
                 </div>
             </div>
 
-            <div className="aspect-[16/9] w-full md:aspect-[4/1]">
+            <div className="relative aspect-[16/9] w-full overflow-hidden md:aspect-[4/1]">
                 <img
                     src={content.imagem}
                     alt=""
-                    className="size-full object-cover object-bottom"
+                    data-parallax="10"
+                    className="absolute -top-[15%] h-[130%] w-full object-cover object-bottom"
                 />
             </div>
         </section>

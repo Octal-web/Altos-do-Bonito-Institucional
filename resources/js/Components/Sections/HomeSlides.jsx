@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
     Navigation,
@@ -12,15 +12,28 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useGsap } from "@/hooks/useGsap";
 import { getHeaderLogoRect, HERO_LOGO_END } from "@/Components/Header";
 import { useLang } from "@/hooks/useLang";
+import { usePageEntrance } from "@/hooks/PageEntrance";
 
 export const HomeSlides = ({ slides = [] }) => {
     const lang = useLang();
+    const pageReady = usePageEntrance();
     const sectionRef = useRef(null);
     const swiperRef = useRef(null);
     const prevButtonRef = useRef(null);
     const nextButtonRef = useRef(null);
 
+    useEffect(() => {
+        const swiper = swiperRef.current;
+        if (pageReady) swiper?.autoplay?.start();
+        else swiper?.autoplay?.stop();
+        sectionRef.current?.querySelectorAll("video").forEach((video) => {
+            if (pageReady) video.play().catch(() => {});
+            else video.pause();
+        });
+    }, [pageReady]);
+
     useGsap(sectionRef, (_, q) => {
+        if (!pageReady) return;
         // Entrada do logo: a ilustração se ergue de baixo, o nome sobe da máscara
         // e a localização aparece por último (anima as imagens internas para não
         // disputar propriedades com a animação de scroll, que move as camadas externas)
@@ -121,8 +134,8 @@ export const HomeSlides = ({ slides = [] }) => {
         }
 
         // Entrada: a mídia desfaz um zoom lento ao carregar a página
-        gsap.from(q("picture img, video"), {
-            scale: 1.25,
+        gsap.fromTo(q("picture img, video"), { scale: 1.25 }, {
+            scale: 1,
             duration: 2.8,
             ease: "expo.out",
         });
@@ -169,7 +182,7 @@ export const HomeSlides = ({ slides = [] }) => {
                 repeatDelay: 0.3,
             },
         );
-    });
+    }, [pageReady]);
 
     if (!slides.length) return null;
 
@@ -200,6 +213,7 @@ export const HomeSlides = ({ slides = [] }) => {
                 }}
                 onSwiper={(swiper) => {
                     swiperRef.current = swiper;
+                    if (!pageReady) swiper.autoplay?.stop();
                 }}
                 modules={[Navigation, Pagination, Autoplay, EffectFade, A11y]}
                 a11y={{
@@ -236,6 +250,7 @@ export const HomeSlides = ({ slides = [] }) => {
                                             index === 0 ? "high" : "auto"
                                         }
                                         className="h-full w-full object-cover"
+                                        style={!pageReady ? { transform: "scale(1.25)" } : undefined}
                                     />
                                 </picture>
                             )}
@@ -243,7 +258,8 @@ export const HomeSlides = ({ slides = [] }) => {
                             {slide.tipo === "video" && (
                                 <video
                                     className="absolute inset-0 h-full w-full object-cover"
-                                    autoPlay
+                                    autoPlay={pageReady}
+                                    style={!pageReady ? { transform: "scale(1.25)" } : undefined}
                                     muted
                                     loop
                                     playsInline
@@ -288,7 +304,8 @@ export const HomeSlides = ({ slides = [] }) => {
             {/* Camada fixa (sem transforms nos ancestrais) para o nome poder voar até
                 o header; com movimento reduzido ela só rola junto com o banner.
                 Larguras e espaçamentos (em % da largura) seguem a arte original */}
-            <div className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center motion-safe:fixed">
+            <div className="pointer-events-none absolute inset-0 z-[3] flex items-center justify-center motion-safe:fixed"
+                style={{ visibility: pageReady ? "visible" : "hidden" }}>
                 <div className="flex w-[90vw] max-w-[820px] flex-col items-center lg:w-[50vw]">
                     <div
                         data-logo-illustration

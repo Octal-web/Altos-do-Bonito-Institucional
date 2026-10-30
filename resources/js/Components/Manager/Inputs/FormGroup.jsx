@@ -50,6 +50,7 @@ export const FormGroup = ({
                     value={value}
                     max={input.max}
                     toolbar={input.toolbar}
+                    previewClass={input.previewClass}
                     onChange={onChange}
                     idioma={idioma.codigo}
                 />

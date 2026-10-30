@@ -48,8 +48,8 @@ class NewsletterController extends Controller
                 ];
 
                 // Mail::send('emails.newsletter', $data, function($message)use($data) {
-                //     $message->from('envios@pizzato.net', 'Pizzato')
-                //             ->to('atendimento@pizzato.net')
+                //     $message->from('envios@Altos do Bonito.net', 'Altos do Bonito')
+                //             ->to('atendimento@Altos do Bonito.net')
                 //             ->bcc('rafael@8poroito.com.br')
                 //             ->subject('Uma nova assinatura de newsletter foi recebida através do site');
                 // });

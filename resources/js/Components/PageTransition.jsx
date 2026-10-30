@@ -5,6 +5,9 @@ import { BrandSeal } from "./UI/BrandSeal";
 
 const MAX_IMAGE_WAIT = 2500;
 
+const isManagerPath = (pathname) =>
+    pathname === "/manager" || pathname.startsWith("/manager/");
+
 // Só navegações de página inteira ganham transição (recargas parciais e
 // visitas que preservam estado, como filtros e paginação, passam direto)
 const isPageVisit = (visit) =>
@@ -61,6 +64,10 @@ export const PageTransition = () => {
         };
 
         const removeStart = router.on("start", (event) => {
+            if (
+                isManagerPath(window.location.pathname) ||
+                isManagerPath(event.detail.visit.url.pathname)
+            ) return;
             if (!isPageVisit(event.detail.visit)) return;
             if (!window.matchMedia(MOTION_OK).matches) return;
 
@@ -181,6 +188,7 @@ export const PageTransition = () => {
                     aria-hidden="true"
                     data-transition-logo
                     className="relative w-24 md:w-32 2xl:w-40"
+                    imgClassName="block w-full motion-safe:animate-spin-loading"
                 />
             </div>
         </dialog>

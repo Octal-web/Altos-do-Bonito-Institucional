@@ -46,7 +46,7 @@ const Login = () => {
                         <div className="flex justify-center">
                             <img
                                 src="/admin/img/logo.png"
-                                className="my-3 w-44"
+                                className="my-3 w-72"
                             />
                         </div>
 

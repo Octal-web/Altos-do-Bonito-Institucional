@@ -1,17 +1,12 @@
 import { useLang } from "@/hooks/useLang";
 import { useForm } from "@inertiajs/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { InputMask } from "@react-input/mask";
 import Select, { components } from "react-select";
 
 import { Text } from "../UI/Text";
 import { Title } from "../UI/Title";
-
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const subjectOptions = [
     { value: "Informações gerais", key: "informacoesGerais" },
@@ -45,8 +40,6 @@ const selectClassNames = {
 export const ContactForm = () => {
     const lang = useLang();
     const assuntos = subjectOptions.map(({ value, key }) => ({ value, label: lang(key) }));
-    const sectionRef = useRef(null);
-    const formWrapperRef = useRef(null);
 
     const [phoneMask, setPhoneMask] = useState("(__) ____-____");
 
@@ -107,29 +100,6 @@ export const ContactForm = () => {
             numbers.length >= 10 ? "(__) _____-____" : "(__) ____-____",
         );
     }, [data.telefone]);
-
-    useEffect(() => {
-        const context = gsap.context(() => {
-            const timeline = gsap.timeline({
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 72%",
-                    once: true,
-                },
-            });
-
-            timeline.fromTo(
-                formWrapperRef.current,
-                { x: 35, opacity: 0 },
-                { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" },
-                "-=0.55",
-            );
-        }, sectionRef);
-
-        ScrollTrigger.refresh();
-
-        return () => context.revert();
-    }, []);
 
     useEffect(() => {
         let hideTimeout;
@@ -196,27 +166,32 @@ export const ContactForm = () => {
 
     return (
         <section
-            ref={sectionRef}
             id="orcamento"
             aria-labelledby="contact-form-title"
+            data-drift="-20"
             className="min-w-0"
         >
-            <div ref={formWrapperRef}>
-                <Title tag="p" variant="subtitle" className="mb-3">
+            <div>
+                <Title tag="p" variant="subtitle" data-fade className="mb-3">
                     {lang("formulario")}
                 </Title>
                 <Title
                     tag="h2"
                     variant="h3"
                     id="contact-form-title"
+                    html={lang("faleConosco")}
+                    data-split
+                    data-drift="0"
                     className="mb-7 md:mb-9"
-                >
-                    {lang("faleConosco")}
-                </Title>
+                />
 
+                {/* O fade fica no formulário inteiro: transform em cada campo criaria
+                    um stacking context e o menu do select ficaria atrás do campo seguinte */}
                 <form
                     onSubmit={handleSubmit}
                     noValidate
+                    data-fade
+                    data-delay="0.15"
                     className="section-content"
                     aria-label={lang("formularioContato")}
                     aria-busy={processing}
@@ -301,7 +276,7 @@ export const ContactForm = () => {
                                 placeholder={lang("mensagem")}
                                 rows={5}
                                 maxLength={1200}
-                                className={`${inputClassName} min-h-[144px] resize-y`}
+                                className={`${inputClassName} min-h-[144px] resize-none`}
                             />
                             <ErrorMessage field="mensagem" />
                         </div>

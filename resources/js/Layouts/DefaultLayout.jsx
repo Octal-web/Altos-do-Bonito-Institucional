@@ -9,6 +9,8 @@ import { CookieModal } from "../Components/CookieModal";
 import { Footer } from "../Components/Footer";
 import { Header } from "../Components/Header";
 import { AgeGate, hasAgeConfirmation } from "../Components/AgeGate";
+import { AgeGateTransition } from "../Components/AgeGateTransition";
+import { PageEntranceContext } from "@/hooks/PageEntrance";
 
 const DefaultLayout = ({ children }) => {
     const lang = useLang();
@@ -26,6 +28,8 @@ const DefaultLayout = ({ children }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [trackingEnabled, setTrackingEnabled] = useState(false);
     const [ageConfirmed, setAgeConfirmed] = useState(hasAgeConfirmation);
+    const [pageReady, setPageReady] = useState(hasAgeConfirmation);
+    const [ageTransition, setAgeTransition] = useState(false);
     const lenisRef = useRef(null);
     const mainRef = useRef(null);
     const focusAfterConfirmation = useRef(false);
@@ -57,16 +61,16 @@ const DefaultLayout = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        if (isMenuOpen || !ageConfirmed) lenisRef.current?.stop();
+        if (isMenuOpen || !pageReady) lenisRef.current?.stop();
         else lenisRef.current?.start();
-    }, [isMenuOpen, ageConfirmed]);
+    }, [isMenuOpen, pageReady]);
 
     useEffect(() => {
-        if (ageConfirmed && focusAfterConfirmation.current) {
+        if (pageReady && focusAfterConfirmation.current) {
             mainRef.current?.focus({ preventScroll: true });
             focusAfterConfirmation.current = false;
         }
-    }, [ageConfirmed]);
+    }, [pageReady]);
 
     const toggleMenu = () => {
         setIsMenuOpen((open) => !open);
@@ -269,12 +273,21 @@ const DefaultLayout = ({ children }) => {
                 ))} */}
             </Head>
 
+            {ageTransition && (
+                <AgeGateTransition
+                    onCovered={() => setAgeConfirmed(true)}
+                    onComplete={() => {
+                        setPageReady(true);
+                        setAgeTransition(false);
+                    }}
+                />
+            )}
             {!ageConfirmed ? (
                 <AgeGate
                     instagram={dadosGerais?.instagram}
                     onConfirm={() => {
                         focusAfterConfirmation.current = true;
-                        setAgeConfirmed(true);
+                        setAgeTransition(true);
                     }}
                 />
             ) : (
@@ -299,7 +312,9 @@ const DefaultLayout = ({ children }) => {
                         tabIndex={-1}
                         className={`overflow-x-clip overflow-y-visible bg-black ${["Cases", "Politicas"].includes(controller) || ["produto"].includes(action) ? " pt-[85px] md:pt-[110px] min-[1441px]:pt-[160px]" : ""}`}
                     >
-                        {children}
+                        <PageEntranceContext.Provider value={pageReady}>
+                            {children}
+                        </PageEntranceContext.Provider>
                     </main>
 
                     <div className="bg-black">

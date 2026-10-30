@@ -19,7 +19,8 @@ class PostProductRequest extends FormRequest
             'nome' => 'required|string|max:200',
             'subtitulo' => 'required|string|max:100',
             'descricao' => 'required|string',
-            'conteudos' => 'required',
+
+            'conteudos' => 'required|string',
 
             'titulo_pagina' => 'required|string|max:255',
             'descricao_pagina' => 'required|string|max:500',
@@ -55,7 +56,8 @@ class PostProductRequest extends FormRequest
             'descricao.required' => 'Por favor, informe a descrição.',
             'descricao.string' => 'A descrição deve ser um texto válido.',
 
-            'conteudos.required' => 'Por favor, informe os conteúdos da página.',
+            'conteudos.required' => 'Por favor, informe o conteúdo.',
+            'conteudos.string' => 'O conteúdo deve ser um texto válido.',
 
             'titulo_pagina.required' => 'Por favor, informe o título da página.',
             'titulo_pagina.string' => 'O título da página deve ser um texto válido.',

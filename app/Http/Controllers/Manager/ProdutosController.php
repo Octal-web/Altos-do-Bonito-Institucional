@@ -160,7 +160,7 @@ class ProdutosController extends Controller
             }
 
             $produto->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img')->extension());
-            $produto->imagem = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_alternativa')->extension());
+            $produto->imagem_alternativa = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_alternativa')->extension());
             $produto->imagem_destaque = md5(uniqid((string) rand(), true)) . '.' . strtolower($request->file('img_destaque')->extension());
 
             $produto->slug = $slug;
@@ -185,7 +185,7 @@ class ProdutosController extends Controller
 
             if ($response) {
                 $compressor->compressOrFallback($request->file('img')->getRealPath(), public_path('content/products/items/' . $produto->imagem));
-                $compressor->compressOrFallback($request->file('alternativa')->getRealPath(), public_path('content/products/items/' . $produto->imagem_alternativa));
+                $compressor->compressOrFallback($request->file('img_alternativa')->getRealPath(), public_path('content/products/items/' . $produto->imagem_alternativa));
                 $compressor->compressOrFallback($request->file('img_destaque')->getRealPath(), public_path('content/products/highlight/' . $produto->imagem_destaque));
 
                 return to_route('Manager.Produtos.index')->with('message', ['type' => 'success', 'msg' => 'Registro salvo com sucesso!']);
@@ -281,6 +281,7 @@ class ProdutosController extends Controller
             'subtitulo' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->subtitulo : null,
             'nome' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->nome : null,
             'descricao' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->descricao : null,
+
             'conteudos' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->conteudos : null,
 
             'titulo_pagina' => count($produto->produtosIdiomas) ? $produto->produtosIdiomas[0]->titulo_pagina : null,
@@ -388,6 +389,7 @@ class ProdutosController extends Controller
             $produto_idioma->nome = $request->nome;
             $produto_idioma->subtitulo = $request->subtitulo;
             $produto_idioma->descricao = $request->descricao;
+
             $produto_idioma->conteudos = $request->conteudos;
 
             $produto_idioma->titulo_pagina = $request->titulo_pagina;

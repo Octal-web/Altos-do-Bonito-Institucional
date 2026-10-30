@@ -190,10 +190,10 @@ class ProdutosController extends Controller
 
         $pagina = new Pagina();
 
-        $pagina->titulo = $produto->produtosIdiomas[0]->titulo_pagina . ' - Pizzato';
-        $pagina->descricao = $produto->produtosIdiomas[0]->descricao_pagina . ' - Pizzato';
-        $pagina->titulo_compartilhamento = $produto->produtosIdiomas[0]->titulo_pagina . ' - Pizzato';
-        $pagina->descricao_compartilhamento = $produto->produtosIdiomas[0]->descricao_pagina . ' - Pizzato';
+        $pagina->titulo = $produto->produtosIdiomas[0]->titulo_pagina . ' - Altos do Bonito';
+        $pagina->descricao = $produto->produtosIdiomas[0]->descricao_pagina . ' - Altos do Bonito';
+        $pagina->titulo_compartilhamento = $produto->produtosIdiomas[0]->titulo_pagina . ' - Altos do Bonito';
+        $pagina->descricao_compartilhamento = $produto->produtosIdiomas[0]->descricao_pagina . ' - Altos do Bonito';
 
         list($width, $height, $type, $attr) = getimagesize(public_path('/content/products/items/' . $produto->imagem));
 
@@ -232,7 +232,7 @@ class ProdutosController extends Controller
                     'slug' => $item->slug,
                     'subtitulo' => $idiomaProduto?->subtitulo,
                     'nome' => $idiomaProduto?->nome,
-                    'imagem' => $item->imagem_destaque ? rafator('content/products/highlight/' . $item->imagem_destaque) : rafator('content/products/thumbs/' .  $item->imagem_primaria),
+                    'imagem' => $item->imagem_destaque ? rafator('content/products/highlight/' . $item->imagem_destaque) : rafator('content/products/items/' . $item->imagem),
                 ];
             });
 

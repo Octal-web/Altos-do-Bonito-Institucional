@@ -6,7 +6,7 @@ import { BrandSeal } from "../UI/BrandSeal";
 export const BrandSignature = ({ content, children, bgClassName = "" }) => {
     const lang = useLang();
     return (
-        <section className="relative z-20 overflow-visible py-40 md:py-32 2xl:pt-80 2xl:pb-52">
+        <section className="relative z-20 overflow-visible py-24 md:py-32 2xl:pt-40 2xl:pb-52">
             <div className="pointer-events-none absolute inset-0 -z-20 overflow-visible" aria-hidden="true">
                 <SectionBackground
                     parallax="8"

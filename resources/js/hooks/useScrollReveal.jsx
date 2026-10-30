@@ -31,8 +31,10 @@ const DEFAULT_DRIFT = {
  * - data-parallax="10"      desloca o elemento em yPercent (-10 → 10) enquanto o pai cruza a tela
  * - data-wipe               revela o elemento da esquerda para a direita conforme o scroll
  * - data-grow               o quadro cresce até o tamanho final acompanhando o scroll
+ *
+ * Passe `deps` quando os elementos do escopo mudam depois de montar (filtros, paginação).
  */
-export const useScrollReveal = (scopeRef) => {
+export const useScrollReveal = (scopeRef, deps = []) => {
     useGsap(scopeRef, ({ mobile }, q) => {
         q("[data-split]").forEach((element) => {
             const split = splitWords(element);
@@ -148,5 +150,5 @@ export const useScrollReveal = (scopeRef) => {
                 },
             );
         });
-    });
+    }, deps);
 };

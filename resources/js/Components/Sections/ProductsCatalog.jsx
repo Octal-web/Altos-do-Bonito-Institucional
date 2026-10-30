@@ -1,5 +1,7 @@
 import { accessibleText } from "@/lib/accessibleText";
 import { useLang } from "@/hooks/useLang";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { ScrollTrigger } from "@/lib/gsap";
 import { Link, router } from "@inertiajs/react";
 import { useEffect, useId, useRef, useState } from "react";
 import ReactPaginate from "react-paginate";
@@ -38,6 +40,16 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
         currentPage * PRODUCTS_PER_PAGE,
         (currentPage + 1) * PRODUCTS_PER_PAGE,
     );
+
+    // Filtros e paginação trocam os cards e a altura da seção
+    const catalogDeps = [categoria?.id, query, currentPage];
+
+    useScrollReveal(catalogRef, catalogDeps);
+
+    useEffect(() => {
+        ScrollTrigger.refresh();
+    }, catalogDeps);
+
     const pageLinkClass =
         "flex size-7 cursor-pointer items-center justify-center rounded-full border border-white/15 font-admin text-xs text-white/50 transition-colors hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:size-8 md:text-sm";
 
@@ -119,8 +131,13 @@ export const ProductsCatalog = ({ categoria, categoriasMenu = [] }) => {
                     aria-busy={loading}
                     className={`mt-10 grid gap-x-5 gap-y-14 grid-cols-2 lg:grid-cols-4 md:mt-14 md:gap-y-20 ${loading ? "opacity-50" : ""}`}
                 >
-                    {visibleProducts.map((product) => (
-                        <article key={product.id} className="min-w-0">
+                    {visibleProducts.map((product, index) => (
+                        <article
+                            key={product.id}
+                            data-reveal="up"
+                            data-drift={index % 2 === 0 ? "-25" : "25"}
+                            className="min-w-0"
+                        >
                             <Link
                                 href={route("Produtos.produto", {
                                     slug: product.slug,

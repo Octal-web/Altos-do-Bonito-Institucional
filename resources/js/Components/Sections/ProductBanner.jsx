@@ -20,31 +20,43 @@ export const ProductBanner = ({ product, tastingHref }) => {
     const lang = useLang();
     return (
         <SectionBackground
+            parallax="8"
             className="object-left opacity-55"
             backgroundClassName="inset-y-0 left-0 right-0 md:right-1/3 bottom-40 md:-bottom-64"
-            overlayClassName="bg-gradient-to-r from-transparent via-transparent to-black"
+            overlayClassName="bg-gradient-to-t from-black via-transparent to-black"
         >
             <section className="py-5 md:py-8 2xl:py-10">
                 <div className="container mx-auto max-w-medium">
                     <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 md:gap-16 2xl:gap-20">
                         <ProductGallery key={product.id} product={product} />
 
-                        <div className="md:pt-6 2xl:pt-10">
+                        <div data-drift="-20" className="md:pt-6 2xl:pt-10">
                             <Title
                                 tag="p"
                                 variant="subtitle"
                                 html={product.subtitulo}
+                                data-fade
                             />
                             <Title
                                 tag="h1"
                                 variant="h2"
                                 html={product.nome}
+                                data-split
+                                data-drift="0"
                                 className="mt-3 md:mt-6 [&_strong]:md:block"
                             />
-                            <Text className="mt-8 md:mt-12 2xl:mt-16">
+                            <Text
+                                data-fade
+                                data-delay="0.15"
+                                className="mt-8 md:mt-12 2xl:mt-16"
+                            >
                                 {product.descricao}
                             </Text>
-                            <div className="mt-6 md:mt-8 flex flex-wrap gap-1.5 2xl:mt-10">
+                            <div
+                                data-fade
+                                data-delay="0.3"
+                                className="mt-6 md:mt-8 flex flex-wrap gap-1.5 2xl:mt-10"
+                            >
                                 <LinkButton href={route("Contato.index")}>
                                     {lang("ondeEncontrar")}
                                 </LinkButton>
@@ -83,7 +95,7 @@ const ProductGallery = ({ product }) => {
         setIndex((selected + step + slides.length) % slides.length);
 
     return (
-        <div className="min-w-0">
+        <div data-reveal="left" data-drift="30" className="min-w-0">
             <div className="relative">
                 <button
                     type="button"

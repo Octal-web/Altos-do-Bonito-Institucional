@@ -1,0 +1,1 @@
+import{r as s,j as o}from"./app-FJkG2XSh.js";import{a as t}from"./BrandSignature-g3WeegcD.js";const c=({children:r})=>{const e=s.useRef(null);return t(e),o.jsx("div",{ref:e,children:r})};export{c as S};

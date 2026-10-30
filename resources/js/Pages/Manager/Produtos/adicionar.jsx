@@ -67,12 +67,23 @@ const Page = () => {
         ],
         [
             {
-                titulo: "Conteúdos da páginas",
+                titulo: "Conteúdo",
                 name: "conteudos",
-                tamanho: "col-span-12 lg:col-span-8",
+                tamanho: "col-span-12",
                 tipo: "texto_longo",
                 editor: true,
-                toolbar: ['Table', 'Heading', 'Image', 'Bold', 'Italic']
+                previewClass: "product-content",
+                toolbar: [
+                    "Heading",
+                    "Bold",
+                    "Italic",
+                    "Underline",
+                    "List",
+                    "Link",
+                    "Align",
+                    "Image",
+                    "Table",
+                ],
             },
         ],
         [

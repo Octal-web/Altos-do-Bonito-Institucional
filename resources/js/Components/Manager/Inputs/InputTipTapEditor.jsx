@@ -297,6 +297,7 @@ export const InputTipTapEditor = ({
     idioma,
     onChange,
     max = null,
+    previewClass = null,
 }) => {
     const [showGrid, setShowGrid] = useState(false);
     const gridRef = useRef(null);
@@ -333,6 +334,14 @@ export const InputTipTapEditor = ({
                 }),
             ],
             content: value,
+            // The preview class goes on the ProseMirror root so selectors like `.product-content > table` match.
+            ...(previewClass && {
+                editorProps: {
+                    attributes: {
+                        class: `${previewClass} rich-text-preview`,
+                    },
+                },
+            }),
             onUpdate: ({ editor }) => {
                 const content = editor.getHTML();
                 const textLength = editor.getText().length;
@@ -347,7 +356,7 @@ export const InputTipTapEditor = ({
                 setInTable(editor.isActive("table"));
             },
         },
-        [name, max],
+        [name, max, previewClass],
     );
 
     const editorWrapperRef = useRef(null);
@@ -500,6 +509,8 @@ export const InputTipTapEditor = ({
             <Label title={title} idioma={idioma} />
 
             <div className="border">
+                {/* Toolbars stay pinned while the editor is on screen (top-16 clears the mobile header). */}
+                <div className="sticky top-16 md:top-0 z-20">
                 {/* ── Main toolbar ── */}
                 <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b">
                     {toolbar.includes("Heading") && (
@@ -1012,14 +1023,20 @@ export const InputTipTapEditor = ({
                 </div>
 
                 {toolbar.includes("Table") && <TableToolbar editor={editor} />}
+                </div>
 
                 <div
                     ref={editorWrapperRef}
-                    className="p-3 min-h-40 overflow-auto max-h-screen"
+                    className={`min-h-40 overflow-x-auto ${previewClass ? "bg-black p-6 md:p-10" : "p-3"}`}
                 >
+                    {/* With a preview class the site's own styles apply, so the generic typography is skipped. */}
                     <EditorContent
                         editor={editor}
-                        className="[&_.ProseMirror]:min-h-[8.5em] [&_p]:text-sm [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_h4]:text-xl [&_h5]:text-base [&_th]:border [&_td]:border [&_ul]:list-inside [&_ul_li]:list-disc [&_ul>li>p]:inline [&_ul>li>p]:my-0 [&_ol]:list-inside [&_ol_li]:list-decimal [&_ol>li>p]:inline [&_ol>li>p]:my-0 [&_a]:underline [&_a]:text-blue-500 [&_.ProseMirror-focused]:outline-none [&_img]:cursor-pointer"
+                        className={
+                            previewClass
+                                ? "[&_.ProseMirror]:min-h-[8.5em] [&_.ProseMirror-focused]:outline-none"
+                                : "[&_.ProseMirror]:min-h-[8.5em] [&_p]:text-sm [&_h1]:text-4xl [&_h2]:text-3xl [&_h3]:text-2xl [&_h4]:text-xl [&_h5]:text-base [&_th]:border [&_td]:border [&_ul]:list-inside [&_ul_li]:list-disc [&_ul>li>p]:inline [&_ul>li>p]:my-0 [&_ol]:list-inside [&_ol_li]:list-decimal [&_ol>li>p]:inline [&_ol>li>p]:my-0 [&_a]:underline [&_a]:text-blue-500 [&_.ProseMirror-focused]:outline-none [&_img]:cursor-pointer"
+                        }
                     />
                 </div>
 

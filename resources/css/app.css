@@ -93,6 +93,160 @@
         margin: 0;
     }
 
+    /* Conteúdo do produto: tabela de duas colunas, cada linha é um bloco */
+    .product-content > table {
+        @apply block border-collapse;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .product-content > table + table {
+        padding-top: 8rem;
+    }
+
+    .product-content colgroup {
+        display: none;
+    }
+
+    .product-content > table > tbody {
+        @apply block;
+    }
+
+    .product-content > table > tbody > tr {
+        @apply grid grid-cols-1 items-end gap-5 md:grid-cols-2;
+    }
+
+    .product-content > table > tbody > tr + tr {
+        @apply mt-6 md:mt-8 2xl:mt-11;
+    }
+
+    .product-content > table > tbody > tr:has(table) {
+        @apply items-start gap-8 md:gap-16 2xl:gap-24;
+    }
+
+    .product-content > table > tbody > tr + tr:has(table) {
+        @apply mt-40 2xl:mt-72;
+    }
+
+    .product-content > table > tbody > tr > :is(td, th) {
+        @apply block min-w-0 border-0 p-0 text-left align-top font-normal;
+    }
+
+    .product-content :is(h1, h2, h3, h4) {
+        @apply font-primary font-normal text-white md:max-w-[500px] 2xl:max-w-[600px];
+    }
+
+    .product-content h1 {
+        @apply text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl;
+    }
+
+    .product-content h2 {
+        @apply text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl;
+    }
+
+    .product-content h3 {
+        @apply text-xl lg:text-2xl 2xl:text-3xl;
+    }
+
+    .product-content h4 {
+        @apply text-lg lg:text-xl 2xl:text-2xl;
+    }
+
+    .product-content :is(h1, h2, h3, h4) strong {
+        @apply font-normal text-primary;
+    }
+
+    .product-content :is(h1, h2, h3, h4) em {
+        @apply italic text-primary;
+    }
+
+    .product-content h5 {
+        @apply font-admin text-sm font-light uppercase tracking-[5px] text-primary md:text-base lg:text-lg 2xl:text-xl;
+    }
+
+    .product-content h5 + :is(h1, h2, h3, h4) {
+        @apply mt-2 2xl:mt-6;
+    }
+
+    .product-content p {
+        @apply whitespace-pre-line font-admin text-sm font-light leading-[25px] text-white/60 md:max-w-[524px] md:text-base md:leading-[28px] lg:text-lg 2xl:text-xl 2xl:leading-[30px];
+    }
+
+    .product-content p em {
+        @apply font-primary text-base text-white md:text-lg lg:text-xl 2xl:text-2xl;
+    }
+
+    .product-content :is(h1, h2) + p {
+        @apply pt-8 2xl:pt-12;
+    }
+
+    .product-content :is(h3, h4) + p {
+        @apply pt-3 2xl:pt-5;
+    }
+
+    .product-content img {
+        @apply border-custom w-full object-cover !cursor-auto;
+    }
+
+    .product-content :is(td, th) > :not(:first-child):is(img, figure) {
+        @apply mt-6 2xl:mt-12;
+    }
+
+    /* Tabela dentro da célula: características técnicas */
+    .product-content :is(td, th) table {
+        @apply mt-4 w-full border-collapse;
+        min-width: 0 !important;
+    }
+
+    .product-content :is(td, th) table tr {
+        @apply border-b border-primary/50;
+    }
+
+    .product-content :is(td, th) table :is(td, th) {
+        @apply border-0 bg-transparent pb-3 pt-7 text-left align-middle font-admin text-sm font-normal leading-relaxed text-white/80 md:text-base lg:text-lg 2xl:pb-5 2xl:pt-11 2xl:text-xl;
+    }
+
+    .product-content :is(td, th) table :is(td, th):first-child {
+        @apply w-[58%] pr-4 font-primary text-lg text-white md:text-xl lg:text-2xl 2xl:text-3xl;
+    }
+
+    .product-content :is(td, th) table :is(td, th):last-child {
+        @apply pl-2;
+    }
+
+    .product-content :is(td, th) table p {
+        @apply m-0 max-w-none p-0;
+        font: inherit;
+        color: inherit;
+        line-height: inherit;
+    }
+
+    /* Editor do manager com o visual do site: guias para enxergar a estrutura das tabelas */
+    .rich-text-preview {
+        @apply text-white caret-white;
+    }
+
+    .rich-text-preview > table > tbody > tr > :is(td, th) {
+        @apply min-h-12 outline-dashed outline-1 outline-offset-4 outline-white/20;
+    }
+
+    .rich-text-preview :is(td, th) table :is(td, th) {
+        @apply outline-dashed outline-1 -outline-offset-1 outline-white/10;
+    }
+
+    .rich-text-preview .selectedCell {
+        @apply bg-primary/15;
+    }
+
+    .rich-text-preview img {
+        @apply !cursor-pointer;
+    }
+
+    /* No editor as imagens ficam dentro do wrapper de resize do TipTap */
+    .rich-text-preview :is(td, th) > :not(:first-child):has(> img) {
+        @apply mt-6 2xl:mt-12;
+    }
+
     .winery-options {
         @apply flex max-w-full items-center;
     }
