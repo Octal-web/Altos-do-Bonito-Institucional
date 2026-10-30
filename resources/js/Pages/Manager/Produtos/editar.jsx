@@ -8,7 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Breadcrumb } from "@/Components/Manager/Breadcrumb";
-import { ProductFormSections } from "@/Components/Manager/ProductFormSections";
+import { FormGroup } from "@/Components/Manager/Inputs/FormGroup";
 import AdminLayout from "@/Layouts/AdminLayout";
 
 const Page = () => {
@@ -23,75 +23,43 @@ const Page = () => {
     const inputItems = [
         [
             {
+                titulo: "Subtítulo",
+                name: "subtitulo",
+                tamanho: "col-span-12 lg:col-span-4",
+                tipo: "texto",
+                max: 100,
+            },
+            {
                 titulo: "Link da loja",
                 name: "link_loja",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-2",
                 tipo: "texto",
                 max: 2048,
             },
             {
                 titulo: "Categoria",
                 name: "categoria_id",
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-2",
                 tipo: "select",
                 options: categorias,
             },
         ],
         [
             {
-                titulo: "Nome do produto",
+                titulo: "Nome",
                 name: "nome",
                 editor: true,
-                tamanho: "col-span-12 lg:col-span-4",
+                tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto",
                 max: 200,
             },
-            {
-                titulo: "Subtítulo do produto",
-                name: "subtitulo",
-                tamanho: "col-span-12 lg:col-span-4",
-                tipo: "texto",
-                max: 100,
-            },
         ],
         [
             {
-                titulo: "Descrição do produto",
+                titulo: "Descrição",
                 name: "descricao",
                 tamanho: "col-span-12 lg:col-span-8",
                 tipo: "texto_longo",
-            },
-        ],
-        [
-            {
-                titulo: "Imagem do produto",
-                name: "img",
-                tamanho: "col-span-12 md:col-span-4",
-                tipo: "imagem",
-                crop: true,
-                largura: 390,
-                altura: 540,
-                imagem: produto.imagem,
-            },
-            {
-                titulo: "Imagem alternativa do produto",
-                name: "img_alternativa",
-                tamanho: "col-span-12 md:col-span-4",
-                tipo: "imagem",
-                crop: true,
-                largura: 390,
-                altura: 540,
-                imagem: produto.imagem_alternativa,
-            },
-            {
-                titulo: "Imagem de destaque",
-                name: "img_destaque",
-                tamanho: "col-span-12 md:col-span-4",
-                tipo: "imagem",
-                crop: true,
-                largura: 520,
-                altura: 490,
-                imagem: produto.imagem_destaque,
             },
         ],
         [
@@ -113,6 +81,38 @@ const Page = () => {
                     "Image",
                     "Table",
                 ],
+            },
+        ],
+        [
+            {
+                titulo: "Imagem",
+                name: "img",
+                tamanho: "col-span-12 md:col-span-4",
+                tipo: "imagem",
+                crop: true,
+                largura: 390,
+                altura: 540,
+                imagem: produto.imagem,
+            },
+            {
+                titulo: "Imagem alternativa",
+                name: "img_alternativa",
+                tamanho: "col-span-12 md:col-span-4",
+                tipo: "imagem",
+                crop: true,
+                largura: 390,
+                altura: 540,
+                imagem: produto.imagem_alternativa,
+            },
+            {
+                titulo: "Imagem de destaque",
+                name: "img_destaque",
+                tamanho: "col-span-12 md:col-span-8",
+                tipo: "imagem",
+                crop: true,
+                largura: 520,
+                altura: 490,
+                imagem: produto.imagem_destaque,
             },
         ],
         [
@@ -183,17 +183,35 @@ const Page = () => {
                     />
                     Imagens
                 </Link>
-
-                <div>
+                <div className="mt-10">
                     <form onSubmit={handleSubmit}>
-                        <ProductFormSections
-                            inputItems={inputItems}
-                            data={data}
-                            errors={errors}
-                            idioma={idioma}
-                            onChange={onChange}
-                            handleImageCrop={handleImageCrop}
-                        />
+                        {inputItems.map((group, groupIndex) => (
+                            <div
+                                key={groupIndex}
+                                className="grid grid-cols-12 gap-x-6"
+                            >
+                                {group.map((input, index) => (
+                                    <div
+                                        key={index}
+                                        className={`w-full ${input.tamanho}`}
+                                    >
+                                        <FormGroup
+                                            idioma={idioma}
+                                            input={input}
+                                            value={data[input.name]}
+                                            onChange={onChange}
+                                            handleImageCrop={handleImageCrop}
+                                        />
+                                        {errors[input.name] && (
+                                            <p className="text-sm text-red-500 -mt-5 mb-3">
+                                                {errors[input.name]}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+
                         <div className="flex items-center justify-end">
                             <Link
                                 href={route("Manager.Produtos.index")}

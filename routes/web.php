@@ -166,6 +166,8 @@ Route::prefix('/manager')->group(function () {
         Route::get('/categorias/editar/{id}', [ManagerCategoriasController::class, 'editar'])->name('Manager.Categorias.editar');
         Route::post('/categorias/editar/{id}', [ManagerCategoriasController::class, 'atualizar'])->name('Manager.Categorias.atualizar');
 
+        Route::post('/enviar-imagem', [ManagerFinderController::class, 'enviar'])->name('Manager.Finder.enviar');
+
 
         Route::get('/contato', [ManagerContatoController::class, 'index'])->name('Manager.Contato.index');
         Route::get('/contato/visualizar/{id}', [ManagerContatoController::class, 'visualizar'])->name('Manager.Contato.visualizar');
